@@ -1,0 +1,278 @@
+# 🎨 Plan de Desarrollo — Artfolio v1.0.0
+
+## Diagnóstico del Estado Actual
+
+El proyecto es un Laravel 13 recién instalado (scaffolding mínimo). Se detectaron las siguientes brechas respecto al documento de especificaciones:
+
+### ✅ Lo que YA existe
+| Elemento | Estado |
+|---|---|
+| Estructura base de Laravel 13 | ✓ Listo |
+| Migración `users` básica | ✓ (pero incompleta, le faltan 8+ columnas) |
+| Migraciones de `jobs`, `cache`, `sessions` | ✓ (colas de base de datos listas) |
+| `QUEUE_CONNECTION=database` en `.env` | ✓ Correcto |
+| `database.sqlite` (dev rápido) | ✓ |
+| Vite configurado | ✓ |
+
+### ❌ Lo que FALTA por completo
+| Elemento | Prioridad ERS |
+|---|---|
+| Laravel Breeze (autenticación) | **Must** |
+| Tailwind CSS + Alpine.js (vía Breeze) | **Must** |
+| Migración `artworks` | **Must** |
+| Migración `collections` + tabla pivot `artwork_collection` | **Must** |
+| Migración `bookmarks` (favoritos privados) | **Should** |
+| Migración `reports` | **Must** |
+| Columnas adicionales en `users` (slug, avatar_url, crop, bio, is_admin, status…) | **Must** |
+| Modelo `Artwork`, `Collection`, `Bookmark`, `Report` | **Must** |
+| `EmbedService` (oEmbed / OpenGraph + whitelist) | **Must** |
+| `ExplorerController` (galería pública + buscador) | **Must** |
+| `ArtworkController` (CRUD artista) | **Must** |
+| `CollectionController` | **Must** |
+| `TrashController` (papelera /perfil/papelera) | **Must** |
+| `BookmarkController` | **Should** |
+| `ContactController` (formulario seguro + cola) | **Must** |
+| `Admin\ReportController` | **Must** |
+| `Admin\UserController` | **Must** |
+| `Admin\DashboardController` | **Must** |
+| Middleware `EnsureIsAdmin` (`can:admin`) | **Must** |
+| `DatabaseSeeder` con admin desde `.env` (RF-12) | **Must** |
+| Vistas Blade: layout principal, galería, perfil, papelera | **Must** |
+| Componente Blade `<x-guest-modal />` (RF-08) | **Must** |
+| Componente Alpine.js: visor modal adaptativo (RF-03) | **Must** |
+| Componente Alpine.js: drag-to-crop avatar (RF-01) | **Must** |
+| Mailable `LinkDownAlert` + Job encolado | **Must** |
+| Mailable `ContactArtist` + Job encolado | **Must** |
+| Panel `/admin` con rutas protegidas | **Must** |
+| Política/Gate `admin` | **Must** |
+| Configuración de MySQL en `.env` (cambio de SQLite) | **Must** |
+| Variables `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` en `.env` | **Must** |
+| `APP_NAME=Artfolio` y `APP_URL` correctos en `.env` | **Must** |
+
+---
+
+## 🔴 Alertas Críticas Detectadas
+
+> [!CAUTION]
+> **La versión de Laravel es 13** (el spec menciona Laravel 11). Son compatibles en arquitectura, pero se deben verificar diferencias en Breeze y algunos helpers. No representa un bloqueante, pero se documenta.
+
+> [!WARNING]
+> **Base de datos configurada con SQLite** en `.env`. El spec exige MySQL 8.0 sobre Laragon. Habrá que cambiar `DB_CONNECTION=mysql` y descomentar las variables MySQL antes de comenzar las migraciones definitivas.
+
+> [!IMPORTANT]
+> **Laravel Breeze no está instalado**. Es el punto de partida obligatorio antes de cualquier vista. Sin Breeze no hay Tailwind CSS ni Alpine.js ni rutas de autenticación.
+
+> [!NOTE]
+> El `welcome.blade.php` existe (72 KB) pero es el default de Laravel. Se reemplazará por completo con el diseño de la galería pública.
+
+---
+
+## 🗺️ Hoja de Ruta — Fases de Desarrollo
+
+### FASE 0 — Configuración del Entorno (Pre-código)
+*Objetivo: dejar la base lista antes de escribir una sola línea de negocio.*
+
+1. Configurar MySQL en Laragon, crear base de datos `artfolio`
+2. Actualizar `.env`: `DB_CONNECTION=mysql`, credenciales, `APP_NAME=Artfolio`, `APP_URL=http://germanBianchi_artfolio.test`, agregar `ADMIN_*` y `MAIL_MAILER=smtp` (Mailpit)
+3. Instalar Laravel Breeze (stack Blade + Alpine + Tailwind)
+4. Instalar `guzzlehttp/guzzle` (para EmbedService)
+5. Publicar assets Vite y compilar
+
+---
+
+### FASE 1 — Base de Datos y Modelos
+*Objetivo: tener el esquema relacional completo y los modelos Eloquent.*
+
+#### Migraciones (en orden de dependencia)
+
+| # | Archivo | Descripción |
+|---|---|---|
+| 1 | `alter_users_table` | Agrega: `slug`, `avatar_url`, `avatar_crop_x/y`, `avatar_zoom`, `bio`, `price_guide`, `commission_status`, `is_admin`, `status`, `softDeletes` |
+| 2 | `create_artworks_table` | `id`, `user_id`, `title`, `description`, `price_hint`, `external_url`, `provider`, `category`, `render_type`, `thumbnail_url`, `embed_html`, `status`, `timestamps`, `softDeletes` + índices compuestos |
+| 3 | `create_collections_table` | `id`, `user_id`, `name`, `description`, `timestamps`, `softDeletes` |
+| 4 | `create_artwork_collection_table` | Pivot: `artwork_id`, `collection_id` |
+| 5 | `create_bookmarks_table` | `user_id`, `artwork_id`, timestamps + índice único |
+| 6 | `create_reports_table` | `user_id`, `artwork_id`, `reason`, `details`, `admin_note`, `status` (pending/resolved), timestamps |
+
+#### Modelos Eloquent
+
+| Modelo | Traits / Relaciones clave |
+|---|---|
+| `User` | `SoftDeletes`, `HasMany` artworks/collections, `BelongsToMany` bookmarks, scope `isAdmin()` |
+| `Artwork` | `SoftDeletes`, `Prunable` (30 días), `BelongsTo` user, `BelongsToMany` collections, `HasMany` reports, `ScopeSearch` fulltext |
+| `Collection` | `SoftDeletes`, `Prunable`, `BelongsTo` user, `BelongsToMany` artworks |
+| `Bookmark` | `BelongsTo` user + artwork |
+| `Report` | `BelongsTo` user + artwork, scopes por estado |
+
+---
+
+### FASE 2 — Servicios y Lógica de Negocio Core
+*Objetivo: construir los motores internos del sistema.*
+
+#### `App\Services\EmbedService`
+- Whitelist estricta de dominios (RF-02 / RN-01)
+- Validación + bloqueo anti-SSRF (RNF-02)
+- Extracción de metadatos oEmbed / OpenGraph
+- Determinación de `render_type` (video/3d/audio/doc/image)
+- Timeout 4 segundos
+
+#### Gates y Políticas
+- Gate `admin`: `$user->is_admin === 1`
+- Policy `ArtworkPolicy`: verificar ownership
+- Middleware `EnsureIsAdmin` para grupo de rutas `/admin`
+
+#### Jobs y Mailables
+- `App\Jobs\SendContactEmail` + `App\Mail\ContactArtist`
+- `App\Jobs\SendLinkDownAlert` + `App\Mail\LinkDownAlert`
+
+---
+
+### FASE 3 — Controladores y Rutas
+*Objetivo: conectar la lógica con las URLs del sistema.*
+
+#### Rutas Públicas (guest)
+```
+GET  /                    → ExplorerController@index  (galería + buscador + filtros)
+GET  /artista/{slug}      → ProfileController@show    (perfil público)
+GET  /obras/{id}          → ArtworkController@show    (detalle - puede ser modal)
+```
+
+#### Rutas Autenticadas (auth)
+```
+GET|PUT  /perfil/editar         → ProfileController@edit / update
+GET      /perfil/obras          → ArtworkController@index
+GET|POST /perfil/obras/crear    → ArtworkController@create / store
+GET|PUT  /perfil/obras/{id}     → ArtworkController@edit / update
+DELETE   /perfil/obras/{id}     → ArtworkController@destroy
+GET      /perfil/colecciones    → CollectionController@index
+POST     /perfil/obras/{id}/report → ReportController@store
+POST     /perfil/obras/{id}/bookmark → BookmarkController@toggle
+GET      /perfil/papelera       → TrashController@index
+POST     /perfil/papelera/{id}/restaurar → TrashController@restore
+DELETE   /perfil/papelera/{id}  → TrashController@forceDelete
+POST     /contacto/{slug}       → ContactController@send
+```
+
+#### Rutas Administrador (admin middleware)
+```
+GET    /admin                          → Admin\DashboardController@index
+GET    /admin/usuarios                 → Admin\UserController@index
+PATCH  /admin/usuarios/{id}/suspender  → Admin\UserController@suspend
+GET    /admin/reportes                 → Admin\ReportController@index
+PATCH  /admin/reportes/{id}/resolver   → Admin\ReportController@resolve
+POST   /admin/reportes/{id}/alertar    → Admin\ReportController@sendAlert
+GET    /admin/papelera                 → Admin\TrashController@index
+```
+
+---
+
+### FASE 4 — Vistas Blade y Diseño UI
+*Objetivo: construir la interfaz visual completa con Tailwind + Alpine.js.*
+
+#### Layout y Componentes Base
+- `layouts/app.blade.php` — layout principal con navbar y footer
+- `layouts/admin.blade.php` — layout del panel de administración
+- `components/artwork-card.blade.php` — tarjeta de obra en galería
+- `components/guest-modal.blade.php` — interceptor de visitantes (RF-08)
+- `components/viewer-modal.blade.php` — visor adaptativo Alpine.js (RF-03)
+- `components/avatar-crop.blade.php` — drag-to-crop Alpine.js (RF-01)
+
+#### Páginas Principales
+| Vista | Descripción |
+|---|---|
+| `explorer/index` | Galería pública: buscador, pestañas de categoría, grid de obras, paginación numerada |
+| `profile/show` | Perfil público del artista con obras y colecciones |
+| `profile/edit` | Formulario de edición: bio, avatar, tarifas, estado de comisiones |
+| `artworks/create` | Formulario de publicación con validación whitelist en tiempo real |
+| `artworks/edit` | Edición de obra existente |
+| `trash/index` | Papelera personal con contador de días restantes |
+| `contact/show` | Formulario de contacto seguro |
+| `admin/dashboard` | Resumen de métricas internas |
+| `admin/reports/index` | Bandeja de reportes con acción de alerta manual |
+| `admin/users/index` | Gestión de usuarios |
+
+#### Diseño Visual (Tailwind + Alpine)
+- Paleta oscura/artística (fondos oscuros, acentos en colores vibrantes)
+- Tipografía Google Fonts: `Inter` o `Outfit`
+- Cards con hover animations, gradientes en thumbnails
+- Visor modal: overlay oscuro, transiciones suaves
+- Panel admin: sidebar colapsable, tablas con filtros
+
+---
+
+### FASE 5 — Funcionalidades Avanzadas
+*Objetivo: implementar los sistemas complejos de la especificación.*
+
+1. **Buscador Multi-campo (RF-07):** Scope `scopeSearch` en Eloquent con `whereHas` + `orWhere` + `withQueryString()` en paginación
+2. **Obras Destacadas:** Campo `is_featured` en artworks, lógica de prioridad en la galería
+3. **Visor Modal Adaptativo (RF-03):** Alpine.js con estados para `render_type`
+4. **Drag-to-Crop Avatar (RF-01):** Alpine.js con eventos de mouse/touch + persistencia de `crop_x`, `crop_y`, `zoom`
+5. **Modal Interceptor de Visitantes (RF-08):** Componente `x-guest-modal` Alpine.js
+6. **Sistema de Reportes (RF-09):** Prevención de duplicados, admin_note, envío manual de alerta
+7. **Papelera con Restauración Independiente (RF-10, RN-03):** Lógica de desvinculación de colección
+8. **Purga Automática (RN-04):** `model:prune` con `prunable()` en Artwork y Collection (30 días)
+
+---
+
+### FASE 6 — Seguridad y Tests
+*Objetivo: validar que el sistema cumple los requerimientos no funcionales.*
+
+- Validación anti-SSRF en EmbedService (bloqueo de IPs privadas)
+- CSRF en todos los formularios
+- Política de sandbox en iframes (RNF-04)
+- Tests PHPUnit según RTM del spec:
+  - `ArtworkEmbedTest` (RF-02)
+  - `ExplorerSearchTest` (RF-07)
+  - `GuestInterceptorTest` (RF-08)
+  - `AdminManualReportTest` (RF-09)
+  - `TrashIndependentTest` (RF-10)
+  - `AdminSeederTest` (RF-12)
+
+---
+
+### FASE 7 — Ajustes y Despliegue Local
+- Configurar worker de colas: `php artisan queue:work --daemon`
+- Configurar `model:prune` en schedule (Kernel)
+- Verificar Mailpit local para testing de emails
+- Optimización de índices MySQL
+- `npm run build` para assets de producción
+
+---
+
+## 📋 Preguntas Abiertas para Revisión
+
+> [!IMPORTANT]
+> **¿Usamos SQLite para desarrollo rápido o cambiamos a MySQL ahora?**
+> El spec exige MySQL 8.0 en Laragon (para los índices FullText/compuestos del buscador). Se recomienda configurar MySQL desde el inicio para evitar una migración posterior.
+
+> [!IMPORTANT]
+> **¿Arrancamos con el diseño de la galería pública primero, o con las migraciones/modelos?**
+> La recomendación técnica es: base de datos primero, luego UI. Pero si querés ver resultados visuales rápido, podemos hacer mockups de la galería en paralelo.
+
+> [!NOTE]
+> **Laravel 13 vs Laravel 11 del spec:** El proyecto ya usa Laravel 13. No hay incompatibilidades bloqueantes, pero se debe verificar la versión de Breeze compatible.
+
+> [!NOTE]
+> **¿Se necesita reCAPTCHA en esta primera versión?** El spec lo menciona en la versión 1.0.0 consolidada. Requiere credenciales de Google reCAPTCHA. ¿Lo incluimos desde el inicio o lo agregamos en una segunda iteración?
+
+---
+
+## 📊 Orden de Prioridad de Ejecución Recomendado
+
+```
+FASE 0 → FASE 1 → FASE 2 → FASE 3 → FASE 4 → FASE 5 → FASE 6 → FASE 7
+ Env       BD      Lógica   Rutas    Vistas   Avanzado  Tests    Deploy
+```
+
+**Tiempo estimado por fase (en sesiones de trabajo):**
+| Fase | Estimado |
+|---|---|
+| FASE 0: Entorno | 1 sesión |
+| FASE 1: BD + Modelos | 2-3 sesiones |
+| FASE 2: Servicios | 2 sesiones |
+| FASE 3: Controladores + Rutas | 3-4 sesiones |
+| FASE 4: Vistas + UI | 4-6 sesiones |
+| FASE 5: Funcionalidades avanzadas | 3-4 sesiones |
+| FASE 6: Seguridad + Tests | 2-3 sesiones |
+| FASE 7: Deploy local | 1 sesión |
+| **Total estimado** | **18-24 sesiones** |

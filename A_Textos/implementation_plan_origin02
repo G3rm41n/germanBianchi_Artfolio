@@ -1,0 +1,276 @@
+# 🎨 Artfolio — Plan de Desarrollo en 10 Etapas
+
+## Estado del Proyecto al Inicio
+
+### ✅ Confirmado instalado y listo
+| Elemento | Estado |
+|---|---|
+| Laravel 13 (base framework) | ✓ |
+| **Laravel Breeze 2.4** (auth completa) | ✓ Instalado |
+| **Tailwind CSS 3 + Alpine.js 3** | ✓ Instalados vía Breeze |
+| `@tailwindcss/forms` | ✓ |
+| Vite 8 configurado | ✓ |
+| Rutas de auth (`/login`, `/register`, `/profile`) | ✓ |
+| Layouts `app.blade.php` + `guest.blade.php` | ✓ |
+| 13 componentes Blade de UI base | ✓ |
+| Migraciones de `jobs`, `cache`, `sessions` | ✓ (colas DB listas) |
+| `QUEUE_CONNECTION=database` | ✓ |
+
+### ⚠️ Cambios previos obligatorios antes de la Etapa 1
+> [!CAUTION]
+> Antes de ejecutar cualquier etapa se debe:
+> 1. Crear la base de datos MySQL `artfolio` en Laragon
+> 2. Cambiar `.env`: `DB_CONNECTION=mysql`, descomentar host/port/db/user/pass
+> 3. Cambiar `APP_NAME=Artfolio` y `APP_URL=http://germanBianchi_artfolio.test`
+> 4. Agregar variables `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` al `.env`
+> 5. Cambiar `MAIL_MAILER=smtp` y `MAIL_PORT=1025` (Mailpit de Laragon)
+
+---
+
+## 🗓️ Las 10 Etapas
+
+---
+
+## ETAPA 1 — Prototipo Funcional con los 3 Roles
+**Objetivo:** Tener la aplicación en pie, accesible en el navegador, con los tres roles activos y el perfil básico del artista funcionando. No hay galería ni obras aún — es el esqueleto vivo.
+
+### Entregable verificable
+- Visitante puede ver la home (placeholder elegante)
+- Artista puede registrarse, iniciar sesión, editar su perfil básico y cerrar sesión
+- Administrador puede iniciar sesión y ver un `/admin` simple (aunque sea un dashboard mínimo)
+- Las rutas protegidas redirigen correctamente según el rol
+
+### Tareas
+- [ ] **Configurar MySQL** en `.env` y crear BD `artfolio`
+- [ ] **Migración `alter_users_table`:** agregar `slug` (único), `bio` (text, nullable), `commission_status` (enum, default 'open'), `is_admin` (boolean, default false), `status` (enum 'active'/'suspended', default 'active'), `softDeletes`
+- [ ] **Actualizar modelo `User`:** agregar `SoftDeletes`, fillable completo, cast de `is_admin`, scope `isAdmin()`, generación automática de `slug` desde `name` en `RegisteredUserController`
+- [ ] **`DatabaseSeeder`:** leer `ADMIN_NAME/EMAIL/PASSWORD` desde `.env` con `updateOrCreate`, asignar `is_admin = true`
+- [ ] **Gate `admin`:** definir en `AppServiceProvider`
+- [ ] **Middleware `EnsureIsAdmin`:** redirigir 403 si `!$user->is_admin`
+- [ ] **Rutas `/admin`:** grupo protegido con el middleware, `Admin\DashboardController@index` simple
+- [ ] **Vista `/admin/dashboard`:** página mínima con mensaje de bienvenida al admin (usa layout `app`)
+- [ ] **Redesign de `welcome.blade.php`:** página de inicio con la identidad visual de Artfolio (header, hero section con mensaje, footer) — sin galería todavía
+- [ ] **`php artisan migrate --seed`** y verificación en Laragon
+- [ ] **`npm run dev`** y prueba de acceso en browser
+
+---
+
+## ETAPA 2 — Esquema de Base de Datos Completo
+**Objetivo:** Tener el 100% del esquema relacional del spec construido y migrado. Los modelos Eloquent con sus relaciones correctamente configuradas.
+
+### Entregable verificable
+- `php artisan migrate` exitoso sin errores
+- `php artisan tinker` puede crear un `Artwork`, una `Collection`, un `Bookmark` y un `Report` sin errores
+- Las relaciones Eloquent responden correctamente
+
+### Tareas
+- [ ] **Migración `create_artworks_table`:** `id`, `user_id` (FK), `title`, `description`, `price_hint` (nullable), `external_url`, `provider` (varchar 50), `category` (enum: '3d','video','audio','image','document'), `render_type` (enum: 'iframe','image','audio','document'), `thumbnail_url` (nullable), `embed_html` (text, nullable), `status` (enum 'published'/'hidden', default 'published'), `is_featured` (boolean, default false), `timestamps`, `softDeletes` — **Índice compuesto** en `(category, status, deleted_at, created_at)`
+- [ ] **Migración `create_collections_table`:** `id`, `user_id` (FK), `name`, `description` (nullable), `timestamps`, `softDeletes`
+- [ ] **Migración `create_artwork_collection_table`:** tabla pivot `artwork_id` + `collection_id` con FK y unique compuesto
+- [ ] **Migración `create_bookmarks_table`:** `user_id`, `artwork_id`, timestamps — unique `(user_id, artwork_id)`
+- [ ] **Migración `create_reports_table`:** `user_id` (reporter), `artwork_id`, `reason` (varchar), `details` (text, nullable), `admin_note` (text, nullable), `status` (enum 'pending'/'resolved', default 'pending'), timestamps
+- [ ] **Modelo `Artwork`:** `SoftDeletes`, `Prunable` (30 días), `BelongsTo` User, `BelongsToMany` Collections, `HasMany` Reports, `scopeSearch()` (multi-campo), `scopePublished()`, `scopeByCategory()`
+- [ ] **Modelo `Collection`:** `SoftDeletes`, `Prunable`, `BelongsTo` User, `BelongsToMany` Artworks
+- [ ] **Modelo `Bookmark`:** `BelongsTo` User, `BelongsTo` Artwork
+- [ ] **Modelo `Report`:** `BelongsTo` User, `BelongsTo` Artwork, scopes `pending()`, `resolved()`
+- [ ] **Actualizar modelo `User`:** agregar `HasMany` artworks/collections/reports, `BelongsToMany` bookmarks
+- [ ] Verificar en Tinker todas las relaciones
+
+---
+
+## ETAPA 3 — Publicación de Obras (EmbedService + Formulario)
+**Objetivo:** Un artista autenticado puede publicar su primera obra desde un enlace externo. El sistema valida la whitelist, extrae metadatos y la guarda.
+
+### Entregable verificable
+- Artista puede ir a `/perfil/obras/crear`, pegar un enlace de YouTube/ArtStation/Sketchfab y publicarlo
+- Un enlace fuera de la whitelist muestra error 422
+- La obra queda guardada en la BD con thumbnail, título extraído y provider correcto
+
+### Tareas
+- [ ] **`App\Services\EmbedService`:** clase con lista blanca de dominios (RN-01), validación anti-SSRF (bloqueo de IPs privadas RFC 1918), lógica de extracción oEmbed para cada proveedor, fallback a OpenGraph, método `resolve(string $url): array`, timeout 4s con Guzzle
+- [ ] **Instalar `guzzlehttp/guzzle`** vía Composer
+- [ ] **`ArtworkController`:** métodos `index`, `create`, `store`, `edit`, `update`, `destroy`
+- [ ] **`ArtworkRequest`:** validación con regla personalizada `WhitelistUrl` que usa `EmbedService`
+- [ ] **Vista `artworks/create.blade.php`:** formulario con campo URL, categoría, título (autocompletado desde metadata), descripción, precio orientativo
+- [ ] **Vista `artworks/index.blade.php`:** lista de obras del artista (panel personal)
+- [ ] **Rutas** en `web.php` para el resource de artworks bajo auth
+- [ ] **Test manual:** publicar obras de 3 proveedores distintos y uno inválido
+
+---
+
+## ETAPA 4 — Galería Pública con Buscador
+**Objetivo:** La página de inicio muestra una galería real de obras con búsqueda y filtros por categoría funcionales.
+
+### Entregable verificable
+- Visitante ve la galería en `/` con las obras publicadas
+- El buscador filtra en tiempo real por título, descripción y nombre del artista
+- Las pestañas de categoría filtran el grid
+- La paginación numerada preserva los parámetros `?search=...&category=...&page=...`
+
+### Tareas
+- [ ] **`ExplorerController@index`:** query con `scopeSearch()` (whereHas para users.name, orWhere título/descripción), filtro por categoría, paginación `paginate(20)->withQueryString()`
+- [ ] **Redesign completo de `welcome.blade.php` / nueva vista `explorer/index.blade.php`:** grid de tarjetas de obras (CSS Grid responsivo), buscador en header, pestañas de categoría con Alpine.js, paginación numerada
+- [ ] **Componente `<x-artwork-card />`:** tarjeta de obra con thumbnail, título, proveedor, nombre del artista, hover animation
+- [ ] **Ruta `/` apunta a `ExplorerController@index`** (reemplazar el closure actual)
+- [ ] **Índice FullText** en MySQL para `artworks.title` y `artworks.description` si se usa `MATCH AGAINST`, o índice compuesto simple para `LIKE`
+- [ ] Verificar paginación y preservación de query string
+
+---
+
+## ETAPA 5 — Visor Modal Adaptativo
+**Objetivo:** Al hacer clic en una obra, se abre un modal que reproduce el contenido según su tipo (video, 3D, audio, imagen, documento).
+
+### Entregable verificable
+- Clic en card de YouTube → modal con iframe 16:9
+- Clic en SoundCloud → modal con reproductor compacto 160px
+- Clic en imagen/Pinterest → modal con imagen + botón "Ver publicación original"
+- Clic en Google Docs → modal con visor 80vh
+- Tecla `Escape` o clic fuera cierra el modal y destruye el iframe
+
+### Tareas
+- [ ] **Componente Alpine.js `viewer-modal`:** estado `open`, `renderType`, `embedHtml`, `thumbnailUrl`, `originalUrl`; estructura condicional por tipo con `x-show`; sandbox en iframes (`allow-scripts allow-same-origin allow-presentation`); destrucción del src al cerrar (RNF-04)
+- [ ] **Integrar modal en el layout principal** con evento personalizado `@open-viewer.window`
+- [ ] **Botón en cada card** que dispara el evento con los datos de la obra
+- [ ] **Vista `artworks/show.blade.php`** (fallback sin JS) con datos de la obra
+- [ ] Prueba en 5 tipos de contenido distintos
+
+---
+
+## ETAPA 6 — Perfil Público del Artista y Colecciones
+**Objetivo:** Cada artista tiene su página pública (`/@slug`) con sus obras, bio y colecciones temáticas. El artista puede crear y gestionar colecciones.
+
+### Entregable verificable
+- URL `/@german` muestra el perfil público con obras y colecciones del artista
+- Artista puede crear una colección y asignarle obras desde su panel
+- La colección filtra las obras en el perfil público
+
+### Tareas
+- [ ] **`ProfileController@show`** para perfil público (reemplazar el Breeze que solo hace edit)
+- [ ] **Vista `profile/show.blade.php`:** bio, avatar (con URL externa), pestañas "Todas las obras" / por colección, grid de obras del artista
+- [ ] **`CollectionController`:** CRUD completo, método para asociar obras (`sync`)
+- [ ] **Vista `collections/index.blade.php`** y `create/edit` simples
+- [ ] **Ruta `/@{slug}`** → `ProfileController@show` (wildcard con regex `[a-z0-9_-]+`)
+- [ ] **Actualizar navbar** con link al perfil del artista autenticado
+- [ ] Integrar el avatar con URL externa en el perfil (sin drag-to-crop todavía)
+
+---
+
+## ETAPA 7 — Papelera, Favoritos y Contacto
+**Objetivo:** Las funciones secundarias pero importantes del artista: borrado con papelera propia, guardados privados y el formulario de contacto seguro.
+
+### Entregable verificable
+- Artista borra una obra → va a `/perfil/papelera` con contador de 30 días
+- Artista restaura obra → si su colección fue borrada, aparece sin colección (RN-03)
+- Artista guarda una obra como favorito (toggle AJAX sin recarga)
+- Artista puede contactar a otro artista desde su perfil público (formulario encolado)
+
+### Tareas
+- [ ] **`TrashController`:** `index`, `restore` (con lógica de desvinculación de colección eliminada), `forceDelete`
+- [ ] **Vista `trash/index.blade.php`:** lista con días restantes, botones restaurar/borrar permanente
+- [ ] **`BookmarkController@toggle`:** petición AJAX, respuesta JSON, toggle con `firstOrCreate`/`delete`
+- [ ] **Integrar botón favorito** en cards con Alpine.js (estado local optimista)
+- [ ] **`ContactController@send`:** validar auth, bloquear auto-contacto (RN-05), encolar `SendContactEmail` job, respuesta < 100ms
+- [ ] **Job `App\Jobs\SendContactEmail`** + **Mailable `App\Mail\ContactArtist`**
+- [ ] **Vista `contact/show.blade.php`:** formulario seguro con remitente bloqueado al user auth
+- [ ] **Purga automática:** método `prunable()` en `Artwork` y `Collection` (30 días)
+- [ ] **Programar `model:prune`** en `Schedule` de `routes/console.php`
+
+---
+
+## ETAPA 8 — Panel de Administración Completo
+**Objetivo:** El administrador tiene control total sobre la plataforma: usuarios, reportes de enlaces caídos con alerta manual por correo, papelera global y supervisión de colas.
+
+### Entregable verificable
+- Admin ve dashboard con conteos de obras, usuarios, reportes pendientes
+- Admin puede suspender/activar un usuario
+- Admin recibe un reporte de "enlace caído" → puede agregar nota y enviar correo de alerta al artista
+- El estado de la obra pasa a `hidden` tras la alerta
+
+### Tareas
+- [ ] **`Admin\DashboardController`:** estadísticas básicas (count usuarios, obras, reportes pendientes)
+- [ ] **`Admin\UserController`:** `index`, `suspend`, `activate`, `destroy` (soft)
+- [ ] **`Admin\ReportController`:** `index` con filtros por estado, `resolve`, `sendAlert` (encolar alerta + cambiar status obra a hidden)
+- [ ] **`Admin\TrashController`:** vista de papelera global, restauración y purga manual
+- [ ] **`ReportController@store`** para artistas (con prevención de duplicados pendientes)
+- [ ] **Job `SendLinkDownAlert`** + **Mailable `LinkDownAlert`** con plantilla al artista
+- [ ] **Layout admin `layouts/admin.blade.php`:** sidebar con links a cada sección
+- [ ] **Vistas admin:** dashboard, usuarios, reportes (con `admin_note` editable), papelera
+- [ ] **Rutas `/admin/*`** agrupadas con middleware `EnsureIsAdmin`
+
+---
+
+## ETAPA 9 — Funcionalidades Avanzadas de UI
+**Objetivo:** Agregar las funcionalidades de interfaz más elaboradas: Modal Interceptor de visitantes, Avatar drag-to-crop, y el refinamiento visual general de la plataforma.
+
+### Entregable verificable
+- Visitante hace clic en "Guardar" → aparece modal de login/registro sin redirigir
+- Artista arrastra su avatar, hace zoom y las coordenadas se guardan en BD
+- La galería y los perfiles tienen el diseño visual final pulido
+
+### Tareas
+- [ ] **Componente `<x-guest-modal />`:** Alpine.js con `$store.guestModal`, escucha eventos de botones restringidos, muestra overlay con links a login/registro (RF-08)
+- [ ] **Aplicar interceptor** en botones de favorito, reporte y contacto
+- [ ] **Avatar drag-to-crop:** componente Alpine.js con eventos `mousedown/mousemove/mouseup/wheel`, persistencia de `avatar_crop_x`, `avatar_crop_y`, `avatar_zoom` en BD (RF-01)
+- [ ] **Migración:** agregar `avatar_url`, `avatar_crop_x`, `avatar_crop_y`, `avatar_zoom`, `price_guide` a users si no se hicieron en Etapa 1
+- [ ] **Aplicar estilos de crop CSS** con `object-fit: none; object-position: calc(...)` en el avatar
+- [ ] **Fallback visual con iniciales** si `avatar_url` es nulo o la URL falla (RF-01)
+- [ ] **Pulido visual:** tipografía Google Fonts definitiva, paleta de colores coherente, animaciones de hover en cards, transiciones de página
+- [ ] **Responsive**: verificar mobile/tablet en todas las vistas principales
+
+---
+
+## ETAPA 10 — Versión Objetiva Completa (Tests, Seguridad y Cierre)
+**Objetivo:** La plataforma tiene todas las funcionalidades del spec operativas. Tests automatizados verifican los puntos críticos. La aplicación está lista para demostración y revisión final.
+
+### Entregable verificable
+- Todos los tests PHPUnit de la RTM del spec pasan en verde
+- La whitelist rechaza correctamente cualquier dominio fuera de lista (test automatizado)
+- El worker de colas procesa emails correctamente (verificar con Mailpit)
+- La purga automática funciona (test manual con `model:prune`)
+- Revisión completa de los 3 flujos de usuario end-to-end
+
+### Tareas
+- [ ] **Tests PHPUnit** según RTM del spec:
+  - `ArtworkEmbedTest` → whitelist estricta y anti-SSRF (RF-02)
+  - `ExplorerSearchTest` → buscador multi-campo con paginación (RF-07)
+  - `GuestInterceptorTest` → modal interceptor de visitantes (RF-08)
+  - `AdminManualReportTest` → reporte + alerta manual admin (RF-09)
+  - `TrashIndependentTest` → restauración huérfana de colección (RF-10)
+  - `AdminSeederTest` → provisión de admin desde .env (RF-12)
+- [ ] **Seguridad final:** revisar sandbox en todos los iframes, CSRF en todos los forms, anti-suplantación en contacto
+- [ ] **Configuración de `queue:work`** en Laragon para producción local
+- [ ] **`php artisan optimize`** y verificación de performance
+- [ ] **Revisión de `storage/logs`** para detectar errores residuales
+- [ ] **Prueba end-to-end Visitante:** navegar, buscar, filtrar, intentar guardar (interceptor), ver modal
+- [ ] **Prueba end-to-end Artista:** registrar, crear perfil, publicar 3 obras, crear colección, gestionar papelera, contactar otro artista
+- [ ] **Prueba end-to-end Admin:** revisar reporte, enviar alerta, suspender usuario, limpiar papelera
+
+---
+
+## 📊 Resumen de Progresión
+
+```
+E1        E2        E3        E4        E5        E6        E7        E8        E9        E10
+│Prototipo│Esquema  │Publica  │Galería  │Visor    │Perfiles │Papelera │Panel    │UI       │Tests &  │
+│3 roles  │BD+Modelos│Obras   │+Buscador│Modal    │+Colec.  │Favoritos│Admin    │Avanzada │Cierre   │
+│accesible│completo  │EmbedSvc│Público  │Adaptativo│Públicos│Contacto │Completo │Drag-crop│Completo │
+```
+
+| Etapa | Foco Principal | Complejidad |
+|---|---|---|
+| 1 | Infraestructura + 3 roles | ⭐⭐ |
+| 2 | BD relacional completa | ⭐⭐ |
+| 3 | EmbedService + publicar obras | ⭐⭐⭐⭐ |
+| 4 | Galería pública + buscador | ⭐⭐⭐ |
+| 5 | Visor modal adaptativo | ⭐⭐⭐⭐ |
+| 6 | Perfiles públicos + colecciones | ⭐⭐⭐ |
+| 7 | Papelera + favoritos + contacto | ⭐⭐⭐⭐ |
+| 8 | Panel admin completo | ⭐⭐⭐⭐ |
+| 9 | UI avanzada (drag-crop + interceptor) | ⭐⭐⭐⭐⭐ |
+| 10 | Tests + cierre + revisión | ⭐⭐⭐ |
+
+> [!TIP]
+> Cada etapa está diseñada para ser **verificable de forma independiente**. Al final de cada una, la aplicación es funcional e incrementalmente más completa. Ninguna etapa deja el sistema "roto" para la siguiente.
+
+> [!NOTE]
+> **reCAPTCHA** queda fuera de estas 10 etapas deliberadamente. Se puede agregar en una Etapa 11 opcional si se requiere antes de salir a producción real.
