@@ -26,10 +26,15 @@
                             </svg>
                         </div>
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Mis Obras</h4>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Aún no has publicado ninguna obra. ¡Empieza a llenar tu portafolio!</p>
-                        <button disabled class="w-full inline-flex justify-center items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest opacity-50 cursor-not-allowed">
-                            Publicar Obra (Próximamente)
-                        </button>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Gestiona tu portafolio, añade nuevas obras y controla su visibilidad.</p>
+                        <div class="space-y-3">
+                            <a href="{{ route('artworks.create') }}" class="w-full inline-flex justify-center items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150 shadow-sm">
+                                Publicar Nueva Obra
+                            </a>
+                            <a href="{{ route('artworks.index') }}" class="w-full inline-flex justify-center items-center px-4 py-2 bg-white dark:bg-gray-800 border border-indigo-600 dark:border-indigo-400 rounded-md font-semibold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:bg-indigo-50 dark:hover:bg-gray-700 transition ease-in-out duration-150">
+                                Gestionar mis Obras
+                            </a>
+                        </div>
                     </div>
                 </div>
 

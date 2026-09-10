@@ -64,4 +64,26 @@ class User extends Authenticatable
     {
         return $this->status === 'suspended';
     }
+
+    // ── Relaciones ───────────────────────────────────────────────────────────────
+    public function artworks()
+    {
+        return $this->hasMany(Artwork::class);
+    }
+
+    public function collections()
+    {
+        return $this->hasMany(Collection::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
+    public function bookmarks()
+    {
+        return $this->belongsToMany(Artwork::class, 'bookmarks')
+                    ->withTimestamps();
+    }
 }
