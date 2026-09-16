@@ -16,6 +16,8 @@ class EmbedService
         'soundcloud.com',
         'spotify.com',
         'pinterest.com',
+        'ar.pinterest.com',
+        'es.pinterest.com',
         'pin.it',
         'deviantart.com',
         'drive.google.com',

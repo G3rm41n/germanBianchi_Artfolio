@@ -26,7 +26,7 @@ class ArtworkRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price_hint' => ['nullable', 'string', 'max:50'],
-            'status' => ['nullable', 'in:public,hidden'],
+            'status' => ['nullable', 'in:published,hidden'],
         ];
 
         if ($this->isMethod('post')) {

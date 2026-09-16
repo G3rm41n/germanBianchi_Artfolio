@@ -41,8 +41,8 @@
                         <div class="p-6">
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 truncate pr-2" title="{{ $artwork->title }}">{{ $artwork->title }}</h3>
-                                <span class="px-2 py-1 text-xs rounded-full flex-shrink-0 {{ $artwork->status === 'public' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-yellow-100 text-yellow-800 border border-yellow-200' }}">
-                                    {{ $artwork->status === 'public' ? 'Público' : 'Oculto' }}
+                                <span class="px-2 py-1 text-xs rounded-full flex-shrink-0 {{ $artwork->status === 'published' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-yellow-100 text-yellow-800 border border-yellow-200' }}">
+                                    {{ $artwork->status === 'published' ? 'Público' : 'Oculto' }}
                                 </span>
                             </div>
                             

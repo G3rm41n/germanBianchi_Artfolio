@@ -53,7 +53,7 @@ class ArtworkController extends Controller
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'price_hint' => $request->input('price_hint'),
-            'status' => $request->input('status', 'public'),
+            'status' => $request->input('status', 'published'),
             'external_url' => $url,
             'provider' => $embedData['provider'],
             'category' => $embedData['category'],
@@ -86,7 +86,7 @@ class ArtworkController extends Controller
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'price_hint' => $request->input('price_hint'),
-            'status' => $request->input('status', 'public'),
+            'status' => $request->input('status', 'published'),
         ]);
 
         return redirect()->route('artworks.index')->with('success', 'Obra actualizada correctamente.');

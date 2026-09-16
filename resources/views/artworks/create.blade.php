@@ -56,7 +56,7 @@
                             <div>
                                 <label for="status" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Estado de Publicación</label>
                                 <select id="status" name="status" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                    <option value="public" {{ old('status') == 'public' ? 'selected' : '' }}>Público (Visible en la Galería)</option>
+                                    <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Público (Visible en la Galería)</option>
                                     <option value="hidden" {{ old('status') == 'hidden' ? 'selected' : '' }}>Oculto (Sólo visible para ti)</option>
                                 </select>
                                 @error('status')
