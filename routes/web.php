@@ -5,10 +5,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\EnsureIsAdmin;
 use Illuminate\Support\Facades\Route;
 
-// ── Página de inicio (placeholder Etapa 1) ───────────────────────────────────
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// ── Página de inicio (Galería Pública) ───────────────────────────────────
+Route::get('/', [App\Http\Controllers\ExplorerController::class, 'index'])->name('home');
+
+// ── Perfil Público de Artista ────────────────────────────────────────────────
+Route::get('/artista/{slug}', [App\Http\Controllers\PublicProfileController::class, 'show'])->name('profile.public');
 
 // ── Artista autenticado: Dashboard y Perfil ──────────────────────────────────
 Route::get('/dashboard', function () {

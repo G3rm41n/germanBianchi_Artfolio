@@ -27,12 +27,8 @@ class ArtworkRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'price_hint' => ['nullable', 'string', 'max:50'],
             'status' => ['nullable', 'in:published,hidden'],
+            'external_url' => ['required', 'url', 'max:2000'],
         ];
-
-        if ($this->isMethod('post')) {
-            // Creation
-            $rules['external_url'] = ['required', 'url', 'max:2000'];
-        }
 
         return $rules;
     }

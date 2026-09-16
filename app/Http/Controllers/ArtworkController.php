@@ -82,11 +82,28 @@ class ArtworkController extends Controller
     {
         abort_if($artwork->user_id !== Auth::id(), 403, 'No tienes permiso para editar esta obra.');
 
+        $url = $request->input('external_url');
+        
+        // Si la URL cambió o queremos forzar el reprocesamiento
+        $embedData = $this->embedService->processUrl($url);
+
+        if (!$embedData) {
+            return back()->withInput()->withErrors([
+                'external_url' => 'La URL proporcionada no pertenece a nuestra lista blanca de sitios permitidos, o el enlace no es válido.'
+            ]);
+        }
+
         $artwork->update([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'price_hint' => $request->input('price_hint'),
             'status' => $request->input('status', 'published'),
+            'external_url' => $url,
+            'provider' => $embedData['provider'],
+            'category' => $embedData['category'],
+            'render_type' => $embedData['render_type'],
+            'embed_html' => $embedData['embed_html'],
+            'thumbnail_url' => $embedData['thumbnail_url'],
         ]);
 
         return redirect()->route('artworks.index')->with('success', 'Obra actualizada correctamente.');

@@ -23,14 +23,16 @@
                             @enderror
                         </div>
 
-                        <!-- URL Externa (Solo Lectura) -->
+                        <!-- URL Externa -->
                         <div class="mb-6">
-                            <label class="block font-medium text-sm text-gray-700 dark:text-gray-300">Enlace Multimedia (No editable)</label>
-                            <input class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-gray-500 cursor-not-allowed" type="text" value="{{ $artwork->external_url }}" disabled />
+                            <label for="external_url" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Enlace Multimedia <span class="text-red-500">*</span></label>
+                            <input id="external_url" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="url" name="external_url" value="{{ old('external_url', $artwork->external_url) }}" required />
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                Para cambiar la URL multimedia, debes crear una nueva obra. 
-                                Tipo actual: <span class="font-bold uppercase">{{ $artwork->provider }}</span> ({{ $artwork->category }}).
+                                Puedes actualizar la URL en cualquier momento. Tipo actual: <span class="font-bold uppercase">{{ $artwork->provider }}</span> ({{ $artwork->category }}).
                             </p>
+                            @error('external_url')
+                                <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Descripción -->
