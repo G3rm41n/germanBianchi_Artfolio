@@ -7,13 +7,19 @@ use Illuminate\Http\Request;
 
 class ExplorerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $artworks = Artwork::with('user')
-            ->where('status', 'published')
-            ->latest()
-            ->paginate(12);
+        $search = $request->input('search');
+        $category = $request->input('category');
 
-        return view('explorer.index', compact('artworks'));
+        $artworks = Artwork::with('user')
+            ->published()
+            ->search($search)
+            ->when($category, fn($query, $category) => $query->byCategory($category))
+            ->latest()
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('explorer.index', compact('artworks', 'search', 'category'));
     }
 }

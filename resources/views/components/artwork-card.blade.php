@@ -1,5 +1,9 @@
 @props(['artwork'])
 
+@php
+    $isBookmarked = auth()->check() ? auth()->user()->bookmarks()->where('artwork_id', $artwork->id)->exists() : false;
+@endphp
+
 <div 
     class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-xl border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group"
     x-data
@@ -9,10 +13,15 @@
         'description' => $artwork->description,
         'author_name' => $artwork->user->name,
         'author_url' => route('profile.public', $artwork->user->slug),
+        'author_avatar' => $artwork->user->avatar_url,
+        'author_crop_x' => $artwork->user->crop_x ?? 0,
+        'author_crop_y' => $artwork->user->crop_y ?? 0,
+        'author_crop_zoom' => $artwork->user->crop_zoom ?? 1,
         'embed_html' => $artwork->embed_html,
         'thumbnail_url' => $artwork->thumbnail_url,
         'external_url' => $artwork->external_url,
-        'render_type' => $artwork->render_type
+        'render_type' => $artwork->render_type,
+        'is_bookmarked' => $isBookmarked
     ]) }})"
 >
     <!-- Thumbnail/Preview area -->
@@ -46,16 +55,63 @@
     </div>
     
     <div class="p-5">
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" title="{{ $artwork->title }}">
-            {{ $artwork->title }}
-        </h3>
-        
-        <div class="flex items-center mt-2">
-            <!-- Mini avatar placeholder -->
-            <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex-shrink-0"></div>
-            <a href="{{ route('profile.public', $artwork->user->slug) }}" class="ml-2 text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline transition-colors" @click.stop>
-                {{ $artwork->user->name }}
-            </a>
+        <div class="flex justify-between items-start">
+            <div class="w-10/12">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" title="{{ $artwork->title }}">
+                    {{ $artwork->title }}
+                </h3>
+                
+                <div class="flex items-center mt-2">
+                    @if($artwork->user->avatar_url)
+                        <div class="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 relative bg-gray-200 dark:bg-gray-700">
+                            <div class="w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none"
+                                 style="background-image: url('{{ $artwork->user->avatar_url }}'); transform: translate({{ $artwork->user->crop_x ?? 0 }}%, {{ $artwork->user->crop_y ?? 0 }}%) scale({{ $artwork->user->crop_zoom ?? 1 }});">
+                            </div>
+                        </div>
+                    @else
+                        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0">
+                            {{ substr($artwork->user->name, 0, 1) }}
+                        </div>
+                    @endif
+                    <a href="{{ route('profile.public', $artwork->user->slug) }}" class="ml-2 text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline transition-colors" @click.stop>
+                        {{ $artwork->user->name }}
+                    </a>
+                </div>
+            </div>
+            
+            <div class="w-2/12 flex justify-end">
+                @auth
+                    @php
+                        $isBookmarked = auth()->user()->bookmarks()->where('artwork_id', $artwork->id)->exists();
+                    @endphp
+                    <div x-data="{ bookmarked: {{ $isBookmarked ? 'true' : 'false' }}, loading: false }"
+                         @bookmark-updated.window="if ($event.detail.id === {{ $artwork->id }}) bookmarked = $event.detail.status">
+                        <button type="button" @click.stop="
+                            loading = true;
+                            fetch('{{ route('bookmarks.toggle', $artwork->id) }}', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                    'Accept': 'application/json'
+                                }
+                            }).then(res => res.json()).then(data => {
+                                bookmarked = data.is_bookmarked;
+                                loading = false;
+                            }).catch(() => loading = false)
+                        " class="transition-colors focus:outline-none" :class="bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Guardar a Favoritos">
+                            <svg class="w-6 h-6 transition-all" :class="bookmarked ? 'fill-current scale-110' : 'scale-100'" :class="{'opacity-50': loading}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                @else
+                    <button type="button" @click.stop="$dispatch('open-guest-modal')" class="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Guardar a Favoritos">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
+                @endauth
+            </div>
         </div>
     </div>
 </div>

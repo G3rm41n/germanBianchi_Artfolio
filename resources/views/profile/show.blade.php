@@ -4,9 +4,17 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
             <div class="flex flex-col md:flex-row md:items-center md:space-x-8">
                 <!-- Avatar -->
-                <div class="w-32 h-32 md:w-40 md:h-40 flex-shrink-0 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-full shadow-lg border-4 border-white dark:border-gray-900 flex items-center justify-center text-white text-4xl font-bold mb-6 md:mb-0 mx-auto md:mx-0">
-                    {{ substr($user->name, 0, 1) }}
-                </div>
+                @if($user->avatar_url)
+                    <div class="w-32 h-32 md:w-40 md:h-40 flex-shrink-0 relative rounded-full shadow-lg border-4 border-white dark:border-gray-900 mb-6 md:mb-0 mx-auto md:mx-0 overflow-hidden bg-gray-200 dark:bg-gray-700">
+                        <div class="w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none"
+                             style="background-image: url('{{ $user->avatar_url }}'); transform: translate({{ $user->crop_x ?? 0 }}%, {{ $user->crop_y ?? 0 }}%) scale({{ $user->crop_zoom ?? 1 }});">
+                        </div>
+                    </div>
+                @else
+                    <div class="w-32 h-32 md:w-40 md:h-40 flex-shrink-0 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-full shadow-lg border-4 border-white dark:border-gray-900 flex items-center justify-center text-white text-4xl font-bold mb-6 md:mb-0 mx-auto md:mx-0">
+                        {{ substr($user->name, 0, 1) }}
+                    </div>
+                @endif
                 
                 <!-- Info -->
                 <div class="text-center md:text-left flex-1">

@@ -28,6 +28,7 @@ class ArtworkRequest extends FormRequest
             'price_hint' => ['nullable', 'string', 'max:50'],
             'status' => ['nullable', 'in:published,hidden'],
             'external_url' => ['required', 'url', 'max:2000'],
+            'category' => ['required', 'in:image,video,3d,audio,doc'],
         ];
 
         return $rules;
@@ -42,6 +43,8 @@ class ArtworkRequest extends FormRequest
             'external_url.required' => 'Debes proporcionar un enlace a tu obra.',
             'external_url.url' => 'El enlace proporcionado no tiene un formato válido.',
             'title.required' => 'El título de la obra es obligatorio.',
+            'category.required' => 'Debes seleccionar una categoría para tu obra.',
+            'category.in' => 'La categoría seleccionada no es válida.',
         ];
     }
 }

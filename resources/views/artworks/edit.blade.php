@@ -44,21 +44,35 @@
                             @enderror
                         </div>
 
-                        <!-- Precio / Disponibilidad -->
-                        <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Precio / Categoría / Disponibilidad -->
+                        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                                <label for="price_hint" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Indicación de Precio (Opcional)</label>
-                                <input id="price_hint" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" name="price_hint" value="{{ old('price_hint', $artwork->price_hint) }}" placeholder="Ej: $150 USD o 'No a la venta'" />
+                                <label for="category" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Categoría <span class="text-red-500">*</span></label>
+                                <select id="category" name="category" required class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <option value="image" {{ old('category', $artwork->category) == 'image' ? 'selected' : '' }}>Ilustración / 2D</option>
+                                    <option value="video" {{ old('category', $artwork->category) == 'video' ? 'selected' : '' }}>Animación / Cine</option>
+                                    <option value="3d" {{ old('category', $artwork->category) == '3d' ? 'selected' : '' }}>Modelado 3D</option>
+                                    <option value="audio" {{ old('category', $artwork->category) == 'audio' ? 'selected' : '' }}>Música / Podcast</option>
+                                    <option value="doc" {{ old('category', $artwork->category) == 'doc' ? 'selected' : '' }}>Documento / Cómic</option>
+                                </select>
+                                @error('category')
+                                    <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="price_hint" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Indicación de Precio</label>
+                                <input id="price_hint" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" name="price_hint" value="{{ old('price_hint', $artwork->price_hint) }}" placeholder="Ej: $150 USD" />
                                 @error('price_hint')
                                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label for="status" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Estado de Publicación</label>
+                                <label for="status" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Estado</label>
                                 <select id="status" name="status" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                    <option value="published" {{ old('status', $artwork->status) == 'published' ? 'selected' : '' }}>Público (Visible en la Galería)</option>
-                                    <option value="hidden" {{ old('status', $artwork->status) == 'hidden' ? 'selected' : '' }}>Oculto (Sólo visible para ti)</option>
+                                    <option value="published" {{ old('status', $artwork->status) == 'published' ? 'selected' : '' }}>Público (Galería)</option>
+                                    <option value="hidden" {{ old('status', $artwork->status) == 'hidden' ? 'selected' : '' }}>Oculto (Privado)</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>

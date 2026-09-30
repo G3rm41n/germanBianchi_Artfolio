@@ -95,10 +95,47 @@
 
                     <template x-if="artwork">
                         <div class="mt-4 sm:mt-0 pt-4 flex flex-col h-full">
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4" x-text="artwork.title"></h2>
+                            <div class="flex justify-between items-start mb-4">
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="artwork.title"></h2>
+                                
+                                @auth
+                                    <button type="button" @click.stop="
+                                        fetch('/obras/' + artwork.id + '/bookmark', {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                'Accept': 'application/json'
+                                            }
+                                        }).then(res => res.json()).then(data => {
+                                            artwork.is_bookmarked = data.is_bookmarked;
+                                            $dispatch('bookmark-updated', { id: artwork.id, status: data.is_bookmarked });
+                                        })
+                                    " class="ml-4 flex-shrink-0 transition-colors focus:outline-none" :class="artwork.is_bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Guardar a Favoritos">
+                                        <svg class="w-8 h-8 transition-all" :class="artwork.is_bookmarked ? 'fill-current scale-110' : 'scale-100'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    </button>
+                                @else
+                                    <button type="button" @click.stop="$dispatch('open-guest-modal')" class="ml-4 flex-shrink-0 text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Guardar a Favoritos">
+                                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    </button>
+                                @endauth
+                            </div>
                             
                             <div class="flex items-center mb-6 pb-6 border-b border-gray-200 dark:border-gray-800">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 mr-4 shadow-inner"></div>
+                                <!-- Avatar -->
+                                <template x-if="artwork.author_avatar">
+                                    <div class="w-12 h-12 rounded-full overflow-hidden mr-4 relative bg-gray-200 dark:bg-gray-700 flex-shrink-0">
+                                        <div class="w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none"
+                                             :style="`background-image: url('${artwork.author_avatar}'); transform: translate(${artwork.author_crop_x}%, ${artwork.author_crop_y}%) scale(${artwork.author_crop_zoom});`">
+                                        </div>
+                                    </div>
+                                </template>
+                                <template x-if="!artwork.author_avatar">
+                                    <div class="w-12 h-12 rounded-full mr-4 bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl flex-shrink-0" x-text="artwork.author_name ? artwork.author_name.substring(0, 1) : ''"></div>
+                                </template>
                                 <div>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Publicado por</p>
                                     <a :href="artwork.author_url" class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 hover:underline" x-text="artwork.author_name"></a>

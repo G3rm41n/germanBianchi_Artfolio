@@ -23,6 +23,15 @@ Route::middleware('auth')->group(function () {
     
     // Gestión de Obras (Artista)
     Route::resource('artworks', App\Http\Controllers\ArtworkController::class);
+
+    // Favoritos
+    Route::get('/favoritos', [App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
+    Route::post('/obras/{id}/bookmark', [App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+
+    // Papelera
+    Route::get('/papelera', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
+    Route::post('/papelera/{id}/restore', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
+    Route::delete('/papelera/{id}', [App\Http\Controllers\TrashController::class, 'destroy'])->name('trash.destroy');
 });
 
 // ── Panel de Administración ──────────────────────────────────────────────────
