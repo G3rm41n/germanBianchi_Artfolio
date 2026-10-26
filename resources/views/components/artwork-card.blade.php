@@ -27,7 +27,7 @@
     <!-- Thumbnail/Preview area -->
     <div class="h-56 bg-gray-100 dark:bg-gray-900 flex items-center justify-center border-b border-gray-100 dark:border-gray-800 relative overflow-hidden">
         @if($artwork->thumbnail_url)
-            <img src="{{ $artwork->thumbnail_url }}" alt="{{ $artwork->title }}" {!! str_contains($artwork->thumbnail_url, 'pinimg.com') ? 'referrerpolicy="no-referrer"' : '' !!} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+            <img src="{{ $artwork->thumbnail_url }}" alt="{{ $artwork->title }}" referrerpolicy="no-referrer" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
         @else
             <!-- Placeholder icons based on category (since we don't have real thumbnails yet) -->
             @if($artwork->category === 'video')

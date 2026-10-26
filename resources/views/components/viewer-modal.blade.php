@@ -46,10 +46,28 @@
                     <template x-if="artwork">
                         <div class="w-full h-full relative flex justify-center items-center" id="media-container">
 
-                            <!-- CASO 1: iframe (YouTube, Vimeo, Sketchfab, Pinterest oEmbed) -->
+                            <!-- CASO 1: iframe (YouTube, Vimeo, Sketchfab, Spotify, Google Docs) -->
                             <template x-if="artwork.render_type === 'iframe' && artwork.embed_html">
-                                <div class="w-full h-full flex justify-center items-center overflow-auto bg-gray-900">
-                                    <div x-html="artwork.embed_html" style="line-height:0"></div>
+                                <div class="w-full h-full flex flex-col justify-center items-center overflow-auto bg-gray-950 relative p-3 sm:p-5">
+                                    <!-- Contenedor adaptativo según el tipo de recurso -->
+                                    <div class="w-full h-full flex items-center justify-center" 
+                                         :class="artwork.provider === 'spotify' ? 'max-w-xl' : (artwork.provider === 'youtube' ? 'w-full max-w-4xl aspect-video' : 'w-full h-full')">
+                                        <div x-html="artwork.embed_html" class="w-full h-full flex items-center justify-center [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:rounded-xl" style="line-height:0"></div>
+                                    </div>
+
+                                    <!-- Botón de Atribución y Apertura Externa -->
+                                    <a :href="artwork.external_url" target="_blank" rel="noopener noreferrer" 
+                                       class="absolute bottom-4 right-4 inline-flex items-center space-x-1.5 text-xs backdrop-blur-md px-3.5 py-1.5 rounded-full font-medium shadow-lg transition-all duration-300 border border-white/10 group z-10"
+                                       :class="artwork.provider === 'youtube' ? 'bg-[#ff0000]/90 hover:bg-[#cc0000] text-white font-medium' : 
+                                              (artwork.provider === 'spotify' ? 'bg-[#1DB954]/90 hover:bg-[#1ed760] text-black font-semibold' : 
+                                              (artwork.provider === 'google_docs' ? 'bg-[#4285F4]/90 hover:bg-[#3367d6] text-white font-medium' : 
+                                              (artwork.provider === 'sketchfab' ? 'bg-[#1caad9] hover:bg-[#1594be] text-white font-medium' : 'bg-black/70 hover:bg-indigo-600 text-white')))">
+                                        <span x-text="artwork.provider === 'youtube' ? 'Ver en YouTube' : 
+                                                     (artwork.provider === 'spotify' ? 'Escuchar en Spotify' : 
+                                                     (artwork.provider === 'google_docs' ? 'Abrir en Google Docs' : 
+                                                     (artwork.provider === 'sketchfab' ? 'Ver en Sketchfab' : 'Abrir original')))"></span>
+                                        <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>
                                 </div>
                             </template>
 
@@ -60,12 +78,15 @@
                                 </div>
                             </template>
 
-                            <!-- CASO 3: Pinterest página de pin con thumbnail del oEmbed -->
+                            <!-- CASO 3: Pinterest página de pin con imagen en alta definición -->
                             <template x-if="artwork.render_type === 'image' && artwork.thumbnail_url && !artwork.external_url.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) && !artwork.external_url.includes('i.pinimg.com')">
-                                <div class="w-full h-full flex flex-col justify-center items-center p-4 bg-gray-900 relative">
-                                    <img :src="artwork.thumbnail_url" :alt="artwork.title" referrerpolicy="no-referrer" class="max-w-full max-h-[90%] object-contain shadow-lg rounded">
-                                    <a :href="artwork.external_url" target="_blank" class="absolute bottom-4 right-4 text-xs text-white bg-black bg-opacity-60 px-3 py-1 rounded-full hover:bg-opacity-90 transition">
-                                        Ver en Pinterest ↗
+                                <div class="w-full h-full flex flex-col justify-center items-center p-4 bg-gray-950 relative">
+                                    <img :src="artwork.thumbnail_url" :alt="artwork.title" referrerpolicy="no-referrer" class="max-w-full max-h-full object-contain shadow-2xl rounded-lg">
+                                    <a :href="artwork.external_url" target="_blank" rel="noopener noreferrer" 
+                                       class="absolute bottom-4 right-4 inline-flex items-center space-x-1.5 text-xs backdrop-blur-md px-3.5 py-1.5 rounded-full font-medium shadow-lg transition-all duration-300 border border-white/10 group"
+                                       :class="artwork.provider === 'deviantart' ? 'bg-[#00e59b]/90 hover:bg-[#00e59b] text-gray-950 font-semibold' : (artwork.provider === 'sketchfab' ? 'bg-[#1caad9] hover:bg-[#1594be] text-white font-medium' : 'bg-black/70 hover:bg-[#e60023] text-white')">
+                                        <span x-text="artwork.provider === 'deviantart' ? 'Ver en DeviantArt' : (artwork.provider === 'sketchfab' ? 'Ver modelo 3D en Sketchfab' : (artwork.provider === 'pinterest' ? 'Ver pin en Pinterest' : 'Ver original'))"></span>
+                                        <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                     </a>
                                 </div>
                             </template>

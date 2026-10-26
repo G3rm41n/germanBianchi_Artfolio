@@ -21,8 +21,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // Gestión de Obras (Artista)
+    // Gestión de Obras y Colecciones (Artista)
+    Route::post('artworks/preview-url', [App\Http\Controllers\ArtworkController::class, 'previewUrl'])->name('artworks.preview');
     Route::resource('artworks', App\Http\Controllers\ArtworkController::class);
+    Route::resource('collections', App\Http\Controllers\CollectionController::class);
 
     // Favoritos
     Route::get('/favoritos', [App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');

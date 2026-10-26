@@ -11,11 +11,19 @@ class PublicProfileController extends Controller
     {
         $user = User::where('slug', $slug)->firstOrFail();
 
-        $artworks = $user->artworks()
-            ->where('status', 'published')
-            ->latest()
-            ->paginate(12);
+        $collections = $user->collections()->has('artworks')->get();
+        $selectedCollectionId = request('collection_id');
 
-        return view('profile.show', compact('user', 'artworks'));
+        $query = $user->artworks()->where('status', 'published')->latest();
+
+        if ($selectedCollectionId) {
+            $query->whereHas('collections', function($q) use ($selectedCollectionId) {
+                $q->where('collections.id', $selectedCollectionId);
+            });
+        }
+
+        $artworks = $query->paginate(12)->withQueryString();
+
+        return view('profile.show', compact('user', 'artworks', 'collections', 'selectedCollectionId'));
     }
 }

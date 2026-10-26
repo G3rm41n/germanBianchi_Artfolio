@@ -52,6 +52,9 @@
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Profile') }}
                             </x-dropdown-link>
+                            <x-dropdown-link :href="route('collections.index')">
+                                {{ __('Mis Colecciones') }}
+                            </x-dropdown-link>
                             <x-dropdown-link :href="route('bookmarks.index')">
                                 {{ __('Mis Favoritos') }}
                             </x-dropdown-link>
@@ -121,6 +124,9 @@
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('collections.index')">
+                        {{ __('Mis Colecciones') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('bookmarks.index')">
                         {{ __('Mis Favoritos') }}
