@@ -1,54 +1,209 @@
 <x-admin-layout>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <!-- Stat: Usuarios -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                </div>
-                <div class="ml-4">
-                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Artistas Registrados</p>
-                    <p class="text-3xl font-bold text-gray-700 dark:text-white">{{ $stats['total_users'] }}</p>
-                </div>
+    <div class="space-y-6">
+        <!-- Encabezado de Bienvenida -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
+            <div>
+                <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Panel de Control General</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Supervisión en tiempo real de artistas, publicaciones, reportes y salud del sistema.</p>
+            </div>
+            <div class="mt-4 sm:mt-0 flex items-center space-x-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                    <span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Sistema Operativo
+                </span>
             </div>
         </div>
 
-        <!-- Stat: Admins -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <!-- Tarjetas de Métricas (KPIs) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- KPI 1: Artistas -->
+            <a href="{{ route('admin.users.index') }}" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
+                <div class="flex items-center justify-between">
+                    <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-medium text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 flex items-center">
+                        Gestionar <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </span>
                 </div>
-                <div class="ml-4">
-                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Administradores</p>
-                    <p class="text-3xl font-bold text-gray-700 dark:text-white">{{ $stats['total_admins'] }}</p>
+                <div class="mt-4">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Artistas Registrados</p>
+                    <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ number_format($stats['total_users']) }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        @if($stats['suspended_users'] > 0)
+                            <span class="text-amber-600 dark:text-amber-400 font-semibold">{{ $stats['suspended_users'] }} suspendidos</span>
+                        @else
+                            <span class="text-emerald-600 dark:text-emerald-400 font-medium">Todos activos</span>
+                        @endif
+                    </p>
                 </div>
-            </div>
+            </a>
+
+            <!-- KPI 2: Obras Publicadas -->
+            <a href="{{ route('home') }}" target="_blank" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
+                <div class="flex items-center justify-between">
+                    <div class="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 group-hover:scale-105 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-medium text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex items-center">
+                        Ver Galería <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Obras Públicas</p>
+                    <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ number_format($stats['published_artworks']) }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <span class="text-gray-600 dark:text-gray-300 font-medium">{{ $stats['hidden_artworks'] }} ocultas</span> • <span class="text-gray-400">{{ $stats['trashed_artworks'] }} en papelera</span>
+                    </p>
+                </div>
+            </a>
+
+            <!-- KPI 3: Reportes Pendientes -->
+            <a href="{{ route('admin.reports.index') }}" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border {{ $stats['pending_reports'] > 0 ? 'border-amber-300 dark:border-amber-800 bg-amber-50/30 dark:bg-amber-950/20' : 'border-gray-200 dark:border-gray-800' }} shadow-sm hover:shadow-md transition-all">
+                <div class="flex items-center justify-between">
+                    <div class="p-3 rounded-xl {{ $stats['pending_reports'] > 0 ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400' }} group-hover:scale-105 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-medium {{ $stats['pending_reports'] > 0 ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-gray-400' }} flex items-center">
+                        Bandeja <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reportes Pendientes</p>
+                    <p class="text-2xl font-black {{ $stats['pending_reports'] > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-900 dark:text-white' }} mt-1">
+                        {{ number_format($stats['pending_reports']) }}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {{ $stats['resolved_reports'] }} reportes resueltos
+                    </p>
+                </div>
+            </a>
+
+            <!-- KPI 4: Monitor de Colas -->
+            <a href="{{ route('admin.queues.index') }}" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border {{ $stats['failed_jobs'] > 0 ? 'border-red-300 dark:border-red-800 bg-red-50/30 dark:bg-red-950/20' : 'border-gray-200 dark:border-gray-800' }} shadow-sm hover:shadow-md transition-all">
+                <div class="flex items-center justify-between">
+                    <div class="p-3 rounded-xl {{ $stats['failed_jobs'] > 0 ? 'bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-400' : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' }} group-hover:scale-105 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-medium {{ $stats['failed_jobs'] > 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-400' }} flex items-center">
+                        Inspeccionar <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado de Colas</p>
+                    <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ number_format($stats['queued_jobs']) }} <span class="text-xs font-normal text-gray-400">en cola</span></p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        @if($stats['failed_jobs'] > 0)
+                            <span class="text-red-600 dark:text-red-400 font-bold">{{ $stats['failed_jobs'] }} trabajos fallidos</span>
+                        @else
+                            <span class="text-emerald-600 dark:text-emerald-400 font-medium">0 fallos registrados</span>
+                        @endif
+                    </p>
+                </div>
+            </a>
         </div>
 
-        <!-- Stat: Suspendidos -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+        <!-- Paneles de Actividad Reciente -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Columna Izquierda (2/3): Reportes Recientes -->
+            <div class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+                <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Últimos Reportes Recibidos</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Atención ciudadana y control de enlaces caídos (RN-02)</p>
+                    </div>
+                    <a href="{{ route('admin.reports.index') }}" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                        Ver todos
+                    </a>
                 </div>
-                <div class="ml-4">
-                    <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Suspendidos</p>
-                    <p class="text-3xl font-bold text-gray-700 dark:text-white">{{ $stats['suspended'] }}</p>
+
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @forelse($recentReports as $report)
+                        <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition-colors">
+                            <div class="flex items-start space-x-3 min-w-0 mb-3 sm:mb-0">
+                                <div class="p-2 rounded-lg {{ $report->status === 'pending' ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400' : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400' }} flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-bold text-gray-900 dark:text-white truncate">
+                                            {{ $report->artwork ? $report->artwork->title : 'Obra eliminada' }}
+                                        </span>
+                                        <span class="text-xs px-2 py-0.5 rounded-full font-medium {{ $report->status === 'pending' ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300' : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300' }}">
+                                            {{ $report->status === 'pending' ? 'Pendiente' : 'Resuelto' }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ $report->reason }}</span>
+                                        @if($report->user)
+                                            • Reportado por {{ $report->user->name }}
+                                        @endif
+                                        • {{ $report->created_at->diffForHumans() }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 flex-shrink-0 self-end sm:self-center">
+                                <a href="{{ route('admin.reports.show', $report->id) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                    Moderar
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-8 text-center">
+                            <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">¡Bandeja despejada!</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">No hay reportes pendientes de moderación en este momento.</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Estado de la Plataforma</h3>
-        </div>
-        <div class="p-6">
-            <p class="text-gray-600 dark:text-gray-400">
-                Bienvenido al Panel de Administración. Actualmente el sistema cuenta con los roles básicos funcionando (Administrador, Artista y Visitante). 
-                En las próximas etapas se habilitarán las opciones para gestionar usuarios y moderar reportes.
-            </p>
+            <!-- Columna Derecha (1/3): Artistas Registrados Recientes -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+                <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Nuevos Artistas</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Últimas cuentas creadas</p>
+                    </div>
+                    <a href="{{ route('admin.users.index') }}" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                        Ver todos
+                    </a>
+                </div>
+
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @forelse($recentUsers as $user)
+                        <div class="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition-colors">
+                            <div class="flex items-center min-w-0 space-x-3">
+                                <x-user-avatar :user="$user" size="sm" />
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-gray-900 dark:text-white truncate">{{ $user->name }}</p>
+                                    <p class="text-[11px] text-gray-500 dark:text-gray-400 truncate">{{ $user->email }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ $user->artworks_count }} obras</span>
+                                <p class="text-[10px] text-gray-400">{{ $user->created_at->diffForHumans() }}</p>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-xs text-gray-400">
+                            No hay artistas registrados aún.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
         </div>
     </div>
 </x-admin-layout>

@@ -17,6 +17,8 @@ class Artwork extends Model
         'thumbnail_url', 'embed_html', 'status', 'is_featured',
     ];
 
+    protected $appends = ['preview_url', 'high_res_url'];
+
     protected function casts(): array
     {
         return [
@@ -24,10 +26,59 @@ class Artwork extends Model
         ];
     }
 
+    /**
+     * URL optimizada y ligera para las tarjetas de la galería (ahorro drástico de ancho de banda).
+     */
+    public function getPreviewUrlAttribute(): ?string
+    {
+        $url = $this->thumbnail_url ?: $this->external_url;
+        if (!$url) return null;
+
+        // Pinterest CDN: usar versión compacta /474x/ (~25 KB en lugar de originals de varios megabytes)
+        if (str_contains($url, 'pinimg.com')) {
+            return preg_replace('#/(originals|736x|564x)/#', '/474x/', $url);
+        }
+
+        // Unsplash: redimensionar a ancho óptimo de 600px en WebP con compresión balanceada
+        if (str_contains($url, 'unsplash.com')) {
+            $base = strtok($url, '?');
+            return "{$base}?auto=format&fit=crop&w=600&q=75";
+        }
+
+        // YouTube: usar hqdefault para carga instantánea de miniaturas en la cuadrícula
+        if (str_contains($url, 'img.youtube.com') && str_contains($url, 'maxresdefault.jpg')) {
+            return str_replace('maxresdefault.jpg', 'hqdefault.jpg', $url);
+        }
+
+        return $url;
+    }
+
+    /**
+     * URL en máxima resolución para el visor modal interactivo.
+     */
+    public function getHighResUrlAttribute(): ?string
+    {
+        $url = $this->thumbnail_url ?: $this->external_url;
+        if (!$url) return null;
+
+        // Pinterest: asegurar máxima resolución /originals/
+        if (str_contains($url, 'pinimg.com')) {
+            return preg_replace('#/(236x|474x|564x)/#', '/originals/', $url);
+        }
+
+        // Unsplash: versión nítida en 1920px a calidad 90%
+        if (str_contains($url, 'unsplash.com')) {
+            $base = strtok($url, '?');
+            return "{$base}?auto=format&fit=crop&w=1920&q=90";
+        }
+
+        return $url;
+    }
+
     // ── Purga automática a los 30 días (RN-04) ──────────────────────────────
     public function prunable()
     {
-        return static::where('deleted_at', '<=', now()->subDays(30));
+        return static::onlyTrashed()->where('deleted_at', '<=', now()->subDays(30));
     }
 
     // ── Relaciones ───────────────────────────────────────────────────────────

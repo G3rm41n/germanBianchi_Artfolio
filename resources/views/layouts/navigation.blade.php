@@ -27,17 +27,7 @@
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                                @if(Auth::user()->avatar_url)
-                                    <div class="w-8 h-8 rounded-full overflow-hidden mr-2 relative bg-gray-200 dark:bg-gray-700">
-                                        <div class="w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none"
-                                             style="background-image: url('{{ Auth::user()->avatar_url }}'); transform: translate({{ Auth::user()->crop_x }}%, {{ Auth::user()->crop_y }}%) scale({{ Auth::user()->crop_zoom }});">
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="w-8 h-8 rounded-full mr-2 bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
-                                        {{ substr(Auth::user()->name, 0, 1) }}
-                                    </div>
-                                @endif
+                                <x-user-avatar :user="Auth::user()" size="sm" class="mr-2" />
                                 <div>{{ Auth::user()->name }}</div>
 
                                 <div class="ms-1">
@@ -104,17 +94,7 @@
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             @auth
                 <div class="px-4 flex items-center">
-                    @if(Auth::user()->avatar_url)
-                        <div class="w-10 h-10 rounded-full overflow-hidden mr-3 relative bg-gray-200 dark:bg-gray-700 flex-shrink-0">
-                            <div class="w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none"
-                                 style="background-image: url('{{ Auth::user()->avatar_url }}'); transform: translate({{ Auth::user()->crop_x }}%, {{ Auth::user()->crop_y }}%) scale({{ Auth::user()->crop_zoom }});">
-                            </div>
-                        </div>
-                    @else
-                        <div class="w-10 h-10 rounded-full mr-3 bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                            {{ substr(Auth::user()->name, 0, 1) }}
-                        </div>
-                    @endif
+                    <x-user-avatar :user="Auth::user()" size="md" class="mr-3" />
                     <div>
                         <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
                         <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>

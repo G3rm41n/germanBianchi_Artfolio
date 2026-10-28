@@ -1,10 +1,72 @@
 <div x-data="{ 
         isOpen: false, 
         artwork: null,
+        isReportOpen: false,
+        reportReason: 'Enlace caído o inaccesible',
+        reportDetails: '',
+        reportLoading: false,
+        reportSuccess: false,
+        reportError: '',
         
         close() { 
             this.isOpen = false; 
+            this.isReportOpen = false;
+            this.reportSuccess = false;
+            this.reportError = '';
             setTimeout(() => { this.artwork = null; }, 300); // Wait for transition
+        },
+
+        openReport() {
+            this.isReportOpen = true;
+            this.reportSuccess = false;
+            this.reportError = '';
+            this.reportReason = 'Enlace caído o inaccesible';
+            this.reportDetails = '';
+        },
+
+        closeReport() {
+            this.isReportOpen = false;
+            this.reportError = '';
+            this.reportSuccess = false;
+        },
+
+        submitReport() {
+            if (!this.artwork) return;
+            this.reportLoading = true;
+            this.reportError = '';
+            
+            fetch('/obras/' + this.artwork.id + '/report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    reason: this.reportReason,
+                    details: this.reportDetails
+                })
+            })
+            .then(async (res) => {
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.message || 'Error al procesar el reporte.');
+                }
+                return data;
+            })
+            .then((data) => {
+                this.reportLoading = false;
+                this.reportSuccess = true;
+                setTimeout(() => {
+                    this.isReportOpen = false;
+                    this.reportSuccess = false;
+                    this.reportDetails = '';
+                }, 2200);
+            })
+            .catch((err) => {
+                this.reportLoading = false;
+                this.reportError = err.message;
+            });
         }
     }" 
     @open-viewer.window="artwork = $event.detail; isOpen = true; document.body.style.overflow = 'hidden';"
@@ -74,14 +136,14 @@
                             <!-- CASO 2: imagen directa (i.pinimg.com, imgur, extensión de imagen) -->
                             <template x-if="artwork.render_type === 'image' && (artwork.external_url.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) || artwork.external_url.includes('i.pinimg.com') || artwork.external_url.includes('imgur.com'))">
                                 <div class="w-full h-full flex justify-center items-center p-4 bg-gray-900">
-                                    <img :src="artwork.external_url" :alt="artwork.title" x-bind:referrerpolicy="artwork.external_url.includes('pinimg.com') ? 'no-referrer' : ''" class="max-w-full max-h-full object-contain shadow-lg">
+                                    <img :src="artwork.high_res_url || artwork.external_url" :alt="artwork.title" x-bind:referrerpolicy="artwork.external_url.includes('pinimg.com') ? 'no-referrer' : ''" class="max-w-full max-h-full object-contain shadow-lg">
                                 </div>
                             </template>
 
                             <!-- CASO 3: Pinterest página de pin con imagen en alta definición -->
                             <template x-if="artwork.render_type === 'image' && artwork.thumbnail_url && !artwork.external_url.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) && !artwork.external_url.includes('i.pinimg.com')">
                                 <div class="w-full h-full flex flex-col justify-center items-center p-4 bg-gray-950 relative">
-                                    <img :src="artwork.thumbnail_url" :alt="artwork.title" referrerpolicy="no-referrer" class="max-w-full max-h-full object-contain shadow-2xl rounded-lg">
+                                    <img :src="artwork.high_res_url || artwork.thumbnail_url" :alt="artwork.title" referrerpolicy="no-referrer" class="max-w-full max-h-full object-contain shadow-2xl rounded-lg">
                                     <a :href="artwork.external_url" target="_blank" rel="noopener noreferrer" 
                                        class="absolute bottom-4 right-4 inline-flex items-center space-x-1.5 text-xs backdrop-blur-md px-3.5 py-1.5 rounded-full font-medium shadow-lg transition-all duration-300 border border-white/10 group"
                                        :class="artwork.provider === 'deviantart' ? 'bg-[#00e59b]/90 hover:bg-[#00e59b] text-gray-950 font-semibold' : (artwork.provider === 'sketchfab' ? 'bg-[#1caad9] hover:bg-[#1594be] text-white font-medium' : 'bg-black/70 hover:bg-[#e60023] text-white')">
@@ -119,30 +181,48 @@
                             <div class="flex justify-between items-start mb-4">
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="artwork.title"></h2>
                                 
-                                @auth
-                                    <button type="button" @click.stop="
-                                        fetch('/obras/' + artwork.id + '/bookmark', {
-                                            method: 'POST',
-                                            headers: {
-                                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                                'Accept': 'application/json'
-                                            }
-                                        }).then(res => res.json()).then(data => {
-                                            artwork.is_bookmarked = data.is_bookmarked;
-                                            $dispatch('bookmark-updated', { id: artwork.id, status: data.is_bookmarked });
-                                        })
-                                    " class="ml-4 flex-shrink-0 transition-colors focus:outline-none" :class="artwork.is_bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Guardar a Favoritos">
-                                        <svg class="w-8 h-8 transition-all" :class="artwork.is_bookmarked ? 'fill-current scale-110' : 'scale-100'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                        </svg>
-                                    </button>
-                                @else
-                                    <button type="button" @click.stop="$dispatch('open-guest-modal')" class="ml-4 flex-shrink-0 text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Guardar a Favoritos">
-                                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                        </svg>
-                                    </button>
-                                @endauth
+                                <div class="flex items-center space-x-1 ml-4 flex-shrink-0">
+                                    <!-- Botón Reportar Obra (RF-09) -->
+                                    @auth
+                                        <button type="button" @click.stop="openReport()" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Reportar Obra">
+                                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                                            </svg>
+                                        </button>
+                                    @else
+                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'reporte' })" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Reportar Obra">
+                                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                                            </svg>
+                                        </button>
+                                    @endauth
+
+                                    <!-- Botón Favoritos (RF-05) -->
+                                    @auth
+                                        <button type="button" @click.stop="
+                                            fetch('/obras/' + artwork.id + '/bookmark', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                    'Accept': 'application/json'
+                                                }
+                                            }).then(res => res.json()).then(data => {
+                                                artwork.is_bookmarked = data.is_bookmarked;
+                                                window.dispatchEvent(new CustomEvent('bookmark-updated', { detail: { id: artwork.id, status: data.is_bookmarked } }));
+                                            })
+                                        " class="p-1 transition-colors focus:outline-none" :class="artwork.is_bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Guardar a Favoritos">
+                                            <svg class="w-8 h-8 transition-all" :class="artwork.is_bookmarked ? 'fill-current scale-110' : 'scale-100'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                            </svg>
+                                        </button>
+                                    @else
+                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="p-1 text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Guardar a Favoritos">
+                                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                            </svg>
+                                        </button>
+                                    @endauth
+                                </div>
                             </div>
                             
                             <div class="flex items-center mb-6 pb-6 border-b border-gray-200 dark:border-gray-800">
@@ -175,6 +255,98 @@
                             </div>
                         </div>
                     </template>
+                </div>
+
+                <!-- Sub-modal de Reporte de Obra (RF-09) -->
+                <div x-show="isReportOpen" 
+                     x-transition:enter="ease-out duration-200"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-150"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="absolute inset-0 z-30 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
+                     style="display: none;"
+                     @click.stop>
+                    
+                    <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md p-6 overflow-hidden transform transition-all">
+                        <!-- Encabezado del modal -->
+                        <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+                            <div class="flex items-center space-x-2">
+                                <div class="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Reportar Obra</h3>
+                            </div>
+                            <button @click="closeReport()" type="button" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Estado de éxito -->
+                        <template x-if="reportSuccess">
+                            <div class="py-8 text-center">
+                                <div class="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <h4 class="text-base font-semibold text-gray-900 dark:text-white mb-1">¡Reporte Enviado!</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Gracias por tu colaboración. El equipo de moderación revisará la obra a la brevedad.</p>
+                            </div>
+                        </template>
+
+                        <!-- Formulario de reporte -->
+                        <template x-if="!reportSuccess">
+                            <form @submit.prevent="submitReport()" class="mt-4 space-y-4">
+                                <div class="bg-gray-50 dark:bg-gray-900/50 p-2.5 rounded-lg border border-gray-100 dark:border-gray-800 text-xs text-gray-600 dark:text-gray-300">
+                                    <span class="font-semibold text-gray-700 dark:text-gray-200">Obra:</span> <span class="font-medium" x-text="artwork ? artwork.title : ''"></span>
+                                </div>
+
+                                <div>
+                                    <label for="report_reason" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                                        Motivo del Reporte <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="report_reason" x-model="reportReason" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 dark:focus:ring-amber-900/40">
+                                        <option value="Enlace caído o inaccesible">Enlace caído o inaccesible (Opción recomendada)</option>
+                                        <option value="Contenido inapropiado o explícito">Contenido inapropiado o explícito</option>
+                                        <option value="Violación de derechos de autor (Copyright)">Violación de derechos de autor (Copyright)</option>
+                                        <option value="Spam o publicidad engañosa">Spam o publicidad engañosa</option>
+                                        <option value="Otro motivo">Otro motivo</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="report_details" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                                        Detalles Adicionales <span class="text-gray-400 font-normal lowercase">(opcional)</span>
+                                    </label>
+                                    <textarea id="report_details" x-model="reportDetails" rows="3" maxlength="1000" placeholder="Describe brevemente el problema detectado..." class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 dark:focus:ring-amber-900/40 placeholder-gray-400 dark:placeholder-gray-500"></textarea>
+                                </div>
+
+                                <!-- Error alert -->
+                                <div x-show="reportError" class="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-xs text-red-600 dark:text-red-400" x-text="reportError"></div>
+
+                                <div class="flex items-center justify-end space-x-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                                    <button type="button" @click="closeReport()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" :disabled="reportLoading" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <template x-if="reportLoading">
+                                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                            </svg>
+                                        </template>
+                                        <span x-text="reportLoading ? 'Enviando...' : 'Enviar Reporte'"></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </template>
+                    </div>
                 </div>
 
             </div>

@@ -16,7 +16,7 @@ class Collection extends Model
     // ── Purga automática a los 30 días (RN-04) ──────────────────────────────
     public function prunable()
     {
-        return static::where('deleted_at', '<=', now()->subDays(30));
+        return static::onlyTrashed()->where('deleted_at', '<=', now()->subDays(30));
     }
 
     // ── Relaciones ───────────────────────────────────────────────────────────

@@ -26,3 +26,5 @@ class BookmarkController extends Controller
             'message' => $isBookmarked ? 'Añadido a favoritos' : 'Eliminado de favoritos'
         ]);
     }
+}
+

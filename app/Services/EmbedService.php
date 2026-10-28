@@ -473,7 +473,7 @@ class EmbedService
         if (!$embedHtml && preg_match('#open\.spotify\.com/(track|album|playlist|episode|show)/([a-zA-Z0-9]+)#i', $url, $m)) {
             $type = $m[1];
             $id = $m[2];
-            $embedHtml = '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/' . htmlspecialchars($type) . '/' . htmlspecialchars($id) . '" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
+            $embedHtml = '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/' . htmlspecialchars($type) . '/' . htmlspecialchars($id) . '" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups" loading="lazy"></iframe>';
         }
 
         return [
