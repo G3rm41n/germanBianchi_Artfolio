@@ -6,6 +6,15 @@
 
         <title>{{ config('app.name', 'Artfolio') }}</title>
 
+        <!-- Theme Initialization Script -->
+        <script>
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        </script>
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
@@ -23,6 +32,7 @@
                     </div>
 
                     <div class="flex items-center space-x-4">
+                        <x-theme-toggle />
                         @if (Route::has('login'))
                             @auth
                                 <a href="{{ url('/dashboard') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition">Dashboard</a>
