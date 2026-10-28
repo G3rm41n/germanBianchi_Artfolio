@@ -1,41 +1,41 @@
 <x-admin-layout>
     <div class="space-y-6">
-        <!-- Encabezado con Botón de Purga Global -->
+        <!-- Header with Global Prune Button -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-200 dark:border-gray-800 gap-4">
             <div>
-                <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Papelera Global del Sistema</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Auditoría y control de todas las obras y colecciones eliminadas en la plataforma (RF-11, RN-03, RN-04).</p>
+                <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Global Trash Bin</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Audit and manage soft-deleted artworks and collections across the platform.</p>
             </div>
             
-            <!-- Botón Forzar Purga de 30 Días -->
-            <form method="POST" action="{{ route('admin.trash.prune') }}" onsubmit="return confirm('¿Ejecutar la purga de 30 días ahora?\nSe eliminarán definitivamente todos los registros con más de 30 días en papelera (model:prune).');">
+            <!-- Force 30-Day Purge Button -->
+            <form method="POST" action="{{ route('admin.trash.prune') }}" onsubmit="return confirm('Run 30-day purge now?\nAll items soft-deleted for more than 30 days will be permanently deleted.');">
                 @csrf
                 <button type="submit" class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white shadow-sm transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    Ejecutar Purga de 30 Días (RN-04)
+                    Run 30-Day Purge
                 </button>
             </form>
         </div>
 
-        <!-- Pestañas y Buscador -->
+        <!-- Tabs and Search -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <!-- Pestañas -->
+            <!-- Tabs -->
             <div class="flex space-x-1 bg-gray-100 dark:bg-gray-800/80 p-1 rounded-xl">
                 <a href="{{ route('admin.trash.index', ['tab' => 'artworks', 'search' => request('search')]) }}" 
                    class="px-4 py-2 rounded-lg text-xs font-semibold transition-all {{ $tab === 'artworks' ? 'bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
-                    Obras Eliminadas ({{ $counts['artworks'] }})
+                    Deleted Artworks ({{ $counts['artworks'] }})
                 </a>
                 <a href="{{ route('admin.trash.index', ['tab' => 'collections', 'search' => request('search')]) }}" 
                    class="px-4 py-2 rounded-lg text-xs font-semibold transition-all {{ $tab === 'collections' ? 'bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }}">
-                    Colecciones Eliminadas ({{ $counts['collections'] }})
+                    Deleted Collections ({{ $counts['collections'] }})
                 </a>
             </div>
 
-            <!-- Buscador -->
+            <!-- Search Form -->
             <form method="GET" action="{{ route('admin.trash.index') }}" class="flex gap-2">
                 <input type="hidden" name="tab" value="{{ $tab }}">
                 <div class="relative">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar por título o artista..." class="text-xs rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 pl-8 pr-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full sm:w-64">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by title or artist..." class="text-xs rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 pl-8 pr-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full sm:w-64">
                     <svg class="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -43,25 +43,25 @@
 
                 @if(request('search'))
                     <a href="{{ route('admin.trash.index', ['tab' => $tab]) }}" class="px-3 py-2 rounded-xl text-xs font-semibold bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center">
-                        Limpiar
+                        Clear
                     </a>
                 @endif
             </form>
         </div>
 
-        <!-- Tabla según Pestaña -->
+        <!-- Table based on Tab -->
         <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
             @if($tab === 'artworks')
-                <!-- OBRAS ELIMINADAS -->
+                <!-- DELETED ARTWORKS -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800 text-left text-xs">
                         <thead class="bg-gray-50/75 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
                             <tr>
-                                <th scope="col" class="py-3.5 pl-6 pr-3">Obra</th>
-                                <th scope="col" class="px-3 py-3.5">Propietario</th>
-                                <th scope="col" class="px-3 py-3.5">Eliminada</th>
-                                <th scope="col" class="px-3 py-3.5">Gracia de Retención (RN-04)</th>
-                                <th scope="col" class="relative py-3.5 pl-3 pr-6 text-right">Acciones</th>
+                                <th scope="col" class="py-3.5 pl-6 pr-3">Artwork</th>
+                                <th scope="col" class="px-3 py-3.5">Owner</th>
+                                <th scope="col" class="px-3 py-3.5">Deleted At</th>
+                                <th scope="col" class="px-3 py-3.5">Retention Grace Period</th>
+                                <th scope="col" class="relative py-3.5 pl-3 pr-6 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-300">
@@ -95,36 +95,36 @@
                                             <div class="font-semibold text-gray-900 dark:text-white">{{ $art->user->name }}</div>
                                             <div class="text-[11px] text-gray-400">{{ $art->user->email }}</div>
                                         @else
-                                            <span class="text-gray-400 italic">Desconocido</span>
+                                            <span class="text-gray-400 italic">Unknown</span>
                                         @endif
                                     </td>
 
                                     <td class="px-3 py-4 whitespace-nowrap text-gray-400 text-[11px]">
-                                        {{ $art->deleted_at->format('d/m/Y H:i') }}<br>
+                                        {{ $art->deleted_at->format('M d, Y H:i') }}<br>
                                         <span class="text-gray-500">{{ $art->deleted_at->diffForHumans() }}</span>
                                     </td>
 
                                     <td class="px-3 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $diasRestantes <= 5 ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400' : ($diasRestantes <= 14 ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400') }}">
-                                            {{ $diasRestantes }} días restantes
+                                            {{ $diasRestantes }} days remaining
                                         </span>
                                     </td>
 
                                     <td class="py-4 pl-3 pr-6 text-right whitespace-nowrap">
                                         <div class="inline-flex items-center space-x-2">
-                                            <!-- Restaurar (RN-03) -->
+                                            <!-- Restore -->
                                             <form method="POST" action="{{ route('admin.trash.artworks.restore', $art->id) }}">
                                                 @csrf
                                                 <button type="submit" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-colors">
-                                                    Restaurar
+                                                    Restore
                                                 </button>
                                             </form>
 
-                                            <!-- Forzar Eliminación -->
-                                            <form method="POST" action="{{ route('admin.trash.artworks.destroy', $art->id) }}" onsubmit="return confirm('¿Eliminar DEFINITIVAMENTE la obra &quot;{{ $art->title }}&quot;?\nEsta acción es irreversible.');">
+                                            <!-- Permanently Delete -->
+                                            <form method="POST" action="{{ route('admin.trash.artworks.destroy', $art->id) }}" onsubmit="return confirm('Permanently delete artwork &quot;{{ $art->title }}&quot;?\nThis action cannot be undone.');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors" title="Eliminar definitivamente">
+                                                <button type="submit" class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors" title="Permanently delete">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 </button>
                                             </form>
@@ -134,7 +134,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="py-12 text-center text-gray-500 dark:text-gray-400">
-                                        No hay obras en la papelera.
+                                        No artworks found in trash.
                                     </td>
                                 </tr>
                             @endforelse
@@ -148,16 +148,16 @@
                     </div>
                 @endif
             @else
-                <!-- COLECCIONES ELIMINADAS -->
+                <!-- DELETED COLLECTIONS -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800 text-left text-xs">
                         <thead class="bg-gray-50/75 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
                             <tr>
-                                <th scope="col" class="py-3.5 pl-6 pr-3">Colección</th>
-                                <th scope="col" class="px-3 py-3.5">Propietario</th>
-                                <th scope="col" class="px-3 py-3.5">Eliminada</th>
-                                <th scope="col" class="px-3 py-3.5">Gracia de Retención (RN-04)</th>
-                                <th scope="col" class="relative py-3.5 pl-3 pr-6 text-right">Acciones</th>
+                                <th scope="col" class="py-3.5 pl-6 pr-3">Collection</th>
+                                <th scope="col" class="px-3 py-3.5">Owner</th>
+                                <th scope="col" class="px-3 py-3.5">Deleted At</th>
+                                <th scope="col" class="px-3 py-3.5">Retention Grace Period</th>
+                                <th scope="col" class="relative py-3.5 pl-3 pr-6 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-300">
@@ -176,7 +176,7 @@
                                                     {{ $col->name }}
                                                 </span>
                                                 <span class="text-xs text-gray-400 block truncate">
-                                                    {{ $col->description ?: 'Sin descripción' }}
+                                                    {{ $col->description ?: 'No description' }}
                                                 </span>
                                             </div>
                                         </div>
@@ -187,36 +187,36 @@
                                             <div class="font-semibold text-gray-900 dark:text-white">{{ $col->user->name }}</div>
                                             <div class="text-[11px] text-gray-400">{{ $col->user->email }}</div>
                                         @else
-                                            <span class="text-gray-400 italic">Desconocido</span>
+                                            <span class="text-gray-400 italic">Unknown</span>
                                         @endif
                                     </td>
 
                                     <td class="px-3 py-4 whitespace-nowrap text-gray-400 text-[11px]">
-                                        {{ $col->deleted_at->format('d/m/Y H:i') }}<br>
+                                        {{ $col->deleted_at->format('M d, Y H:i') }}<br>
                                         <span class="text-gray-500">{{ $col->deleted_at->diffForHumans() }}</span>
                                     </td>
 
                                     <td class="px-3 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $diasRestantes <= 5 ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400' : ($diasRestantes <= 14 ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400') }}">
-                                            {{ $diasRestantes }} días restantes
+                                            {{ $diasRestantes }} days remaining
                                         </span>
                                     </td>
 
                                     <td class="py-4 pl-3 pr-6 text-right whitespace-nowrap">
                                         <div class="inline-flex items-center space-x-2">
-                                            <!-- Restaurar -->
+                                            <!-- Restore -->
                                             <form method="POST" action="{{ route('admin.trash.collections.restore', $col->id) }}">
                                                 @csrf
                                                 <button type="submit" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-colors">
-                                                    Restaurar
+                                                    Restore
                                                 </button>
                                             </form>
 
-                                            <!-- Forzar Eliminación -->
-                                            <form method="POST" action="{{ route('admin.trash.collections.destroy', $col->id) }}" onsubmit="return confirm('¿Eliminar DEFINITIVAMENTE la colección &quot;{{ $col->name }}&quot;?\nEsta acción es irreversible.');">
+                                            <!-- Permanently Delete -->
+                                            <form method="POST" action="{{ route('admin.trash.collections.destroy', $col->id) }}" onsubmit="return confirm('Permanently delete collection &quot;{{ $col->name }}&quot;?\nThis action cannot be undone.');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors" title="Eliminar definitivamente">
+                                                <button type="submit" class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors" title="Permanently delete">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 </button>
                                             </form>
@@ -226,7 +226,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="py-12 text-center text-gray-500 dark:text-gray-400">
-                                        No hay colecciones en la papelera.
+                                        No collections found in trash.
                                     </td>
                                 </tr>
                             @endforelse

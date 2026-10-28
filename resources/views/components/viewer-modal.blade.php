@@ -2,7 +2,7 @@
         isOpen: false, 
         artwork: null,
         isReportOpen: false,
-        reportReason: 'Enlace caído o inaccesible',
+        reportReason: 'Broken or inaccessible link',
         reportDetails: '',
         reportLoading: false,
         reportSuccess: false,
@@ -20,7 +20,7 @@
             this.isReportOpen = true;
             this.reportSuccess = false;
             this.reportError = '';
-            this.reportReason = 'Enlace caído o inaccesible';
+            this.reportReason = 'Broken or inaccessible link';
             this.reportDetails = '';
         },
 
@@ -50,7 +50,7 @@
             .then(async (res) => {
                 const data = await res.json();
                 if (!res.ok) {
-                    throw new Error(data.message || 'Error al procesar el reporte.');
+                    throw new Error(data.message || 'Error processing report.');
                 }
                 return data;
             })
@@ -117,49 +117,49 @@
                                         <div x-html="artwork.embed_html" class="w-full h-full flex items-center justify-center [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:rounded-xl" style="line-height:0"></div>
                                     </div>
 
-                                    <!-- Botón de Atribución y Apertura Externa -->
+                                    <!-- Attribution / External link -->
                                     <a :href="artwork.external_url" target="_blank" rel="noopener noreferrer" 
                                        class="absolute bottom-4 right-4 inline-flex items-center space-x-1.5 text-xs backdrop-blur-md px-3.5 py-1.5 rounded-full font-medium shadow-lg transition-all duration-300 border border-white/10 group z-10"
                                        :class="artwork.provider === 'youtube' ? 'bg-[#ff0000]/90 hover:bg-[#cc0000] text-white font-medium' : 
                                               (artwork.provider === 'spotify' ? 'bg-[#1DB954]/90 hover:bg-[#1ed760] text-black font-semibold' : 
                                               (artwork.provider === 'google_docs' ? 'bg-[#4285F4]/90 hover:bg-[#3367d6] text-white font-medium' : 
                                               (artwork.provider === 'sketchfab' ? 'bg-[#1caad9] hover:bg-[#1594be] text-white font-medium' : 'bg-black/70 hover:bg-indigo-600 text-white')))">
-                                        <span x-text="artwork.provider === 'youtube' ? 'Ver en YouTube' : 
-                                                     (artwork.provider === 'spotify' ? 'Escuchar en Spotify' : 
-                                                     (artwork.provider === 'google_docs' ? 'Abrir en Google Docs' : 
-                                                     (artwork.provider === 'sketchfab' ? 'Ver en Sketchfab' : 'Abrir original')))"></span>
+                                        <span x-text="artwork.provider === 'youtube' ? 'Watch on YouTube' : 
+                                                     (artwork.provider === 'spotify' ? 'Listen on Spotify' : 
+                                                     (artwork.provider === 'google_docs' ? 'Open in Google Docs' : 
+                                                     (artwork.provider === 'sketchfab' ? 'View on Sketchfab' : 'Open Original')))"></span>
                                         <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                     </a>
                                 </div>
                             </template>
 
-                            <!-- CASO 2: imagen directa (i.pinimg.com, imgur, extensión de imagen) -->
+                            <!-- CASO 2: imagen directa -->
                             <template x-if="artwork.render_type === 'image' && (artwork.external_url.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) || artwork.external_url.includes('i.pinimg.com') || artwork.external_url.includes('imgur.com'))">
                                 <div class="w-full h-full flex justify-center items-center p-4 bg-gray-900">
                                     <img :src="artwork.high_res_url || artwork.external_url" :alt="artwork.title" x-bind:referrerpolicy="artwork.external_url.includes('pinimg.com') ? 'no-referrer' : ''" class="max-w-full max-h-full object-contain shadow-lg">
                                 </div>
                             </template>
 
-                            <!-- CASO 3: Pinterest página de pin con imagen en alta definición -->
+                            <!-- CASO 3: Pinterest / DeviantArt -->
                             <template x-if="artwork.render_type === 'image' && artwork.thumbnail_url && !artwork.external_url.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) && !artwork.external_url.includes('i.pinimg.com')">
                                 <div class="w-full h-full flex flex-col justify-center items-center p-4 bg-gray-950 relative">
                                     <img :src="artwork.high_res_url || artwork.thumbnail_url" :alt="artwork.title" referrerpolicy="no-referrer" class="max-w-full max-h-full object-contain shadow-2xl rounded-lg">
                                     <a :href="artwork.external_url" target="_blank" rel="noopener noreferrer" 
                                        class="absolute bottom-4 right-4 inline-flex items-center space-x-1.5 text-xs backdrop-blur-md px-3.5 py-1.5 rounded-full font-medium shadow-lg transition-all duration-300 border border-white/10 group"
                                        :class="artwork.provider === 'deviantart' ? 'bg-[#00e59b]/90 hover:bg-[#00e59b] text-gray-950 font-semibold' : (artwork.provider === 'sketchfab' ? 'bg-[#1caad9] hover:bg-[#1594be] text-white font-medium' : 'bg-black/70 hover:bg-[#e60023] text-white')">
-                                        <span x-text="artwork.provider === 'deviantart' ? 'Ver en DeviantArt' : (artwork.provider === 'sketchfab' ? 'Ver modelo 3D en Sketchfab' : (artwork.provider === 'pinterest' ? 'Ver pin en Pinterest' : 'Ver original'))"></span>
+                                        <span x-text="artwork.provider === 'deviantart' ? 'View on DeviantArt' : (artwork.provider === 'sketchfab' ? 'View 3D Model on Sketchfab' : (artwork.provider === 'pinterest' ? 'View Pin on Pinterest' : 'View Original'))"></span>
                                         <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                     </a>
                                 </div>
                             </template>
 
-                            <!-- CASO 4: Fallback — sin embed ni imagen -->
+                            <!-- CASO 4: Fallback -->
                             <template x-if="!artwork.embed_html && !artwork.thumbnail_url && !(artwork.external_url.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) || artwork.external_url.includes('i.pinimg.com') || artwork.external_url.includes('imgur.com'))">
                                 <div class="w-full h-full flex flex-col items-center justify-center bg-gray-900 p-8 text-center">
                                     <svg class="w-20 h-20 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                    <p class="text-gray-400 mb-4">Este recurso no puede incrustarse directamente.</p>
+                                    <p class="text-gray-400 mb-4">This resource cannot be embedded directly.</p>
                                     <a :href="artwork.external_url" target="_blank" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
-                                        Abrir en nueva pestaña
+                                        Open in new tab
                                     </a>
                                 </div>
                             </template>
@@ -167,9 +167,9 @@
                     </template>
                 </div>
 
-                <!-- Barra lateral de información (Lado Derecho) -->
+                <!-- Info Sidebar (Right Side) -->
                 <div class="w-full sm:w-1/3 flex flex-col h-auto sm:h-auto overflow-y-auto bg-white dark:bg-gray-900 p-6 sm:p-8">
-                    <!-- Botón Cerrar (Mobile top, Desktop right) -->
+                    <!-- Close button -->
                     <button @click="close(); document.body.style.overflow = 'auto';" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors bg-white dark:bg-gray-800 rounded-full p-2 shadow-sm z-10 border border-gray-100 dark:border-gray-700">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -182,22 +182,22 @@
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="artwork.title"></h2>
                                 
                                 <div class="flex items-center space-x-1 ml-4 flex-shrink-0">
-                                    <!-- Botón Reportar Obra (RF-09) -->
+                                    <!-- Report Artwork Button -->
                                     @auth
-                                        <button type="button" @click.stop="openReport()" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Reportar Obra">
+                                        <button type="button" @click.stop="openReport()" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Report Artwork">
                                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                                             </svg>
                                         </button>
                                     @else
-                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'reporte' })" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Reportar Obra">
+                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'reporte' })" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Report Artwork">
                                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                                             </svg>
                                         </button>
                                     @endauth
 
-                                    <!-- Botón Favoritos (RF-05) -->
+                                    <!-- Favorite Button -->
                                     @auth
                                         <button type="button" @click.stop="
                                             fetch('/obras/' + artwork.id + '/bookmark', {
@@ -238,26 +238,26 @@
                                     <div class="w-12 h-12 rounded-full mr-4 bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl flex-shrink-0" x-text="artwork.author_name ? artwork.author_name.substring(0, 1) : ''"></div>
                                 </template>
                                 <div>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Publicado por</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Published by</p>
                                     <a :href="artwork.author_url" class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 hover:underline" x-text="artwork.author_name"></a>
                                 </div>
                             </div>
                             
                             <div class="flex-grow">
-                                <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-2">Descripción</h4>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm whitespace-pre-line" x-text="artwork.description || 'Sin descripción.'"></p>
+                                <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-2">Description</h4>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm whitespace-pre-line" x-text="artwork.description || 'No description provided.'"></p>
                             </div>
                             
                             <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
                                 <a :href="artwork.author_url" class="w-full flex justify-center items-center px-4 py-3 border border-indigo-600 rounded-md shadow-sm text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-transparent hover:bg-indigo-50 dark:hover:bg-gray-800 focus:outline-none transition-colors">
-                                    Ver portafolio completo
+                                    View Full Portfolio
                                 </a>
                             </div>
                         </div>
                     </template>
                 </div>
 
-                <!-- Sub-modal de Reporte de Obra (RF-09) -->
+                <!-- Artwork Report Sub-modal -->
                 <div x-show="isReportOpen" 
                      x-transition:enter="ease-out duration-200"
                      x-transition:enter-start="opacity-0"
@@ -270,7 +270,7 @@
                      @click.stop>
                     
                     <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md p-6 overflow-hidden transform transition-all">
-                        <!-- Encabezado del modal -->
+                        <!-- Modal header -->
                         <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
                             <div class="flex items-center space-x-2">
                                 <div class="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
@@ -278,7 +278,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Reportar Obra</h3>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Report Artwork</h3>
                             </div>
                             <button @click="closeReport()" type="button" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -287,7 +287,7 @@
                             </button>
                         </div>
 
-                        <!-- Estado de éxito -->
+                        <!-- Success state -->
                         <template x-if="reportSuccess">
                             <div class="py-8 text-center">
                                 <div class="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -295,36 +295,36 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
                                 </div>
-                                <h4 class="text-base font-semibold text-gray-900 dark:text-white mb-1">¡Reporte Enviado!</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Gracias por tu colaboración. El equipo de moderación revisará la obra a la brevedad.</p>
+                                <h4 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Report Submitted!</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Thank you for your feedback. Our moderation team will review this artwork shortly.</p>
                             </div>
                         </template>
 
-                        <!-- Formulario de reporte -->
+                        <!-- Report form -->
                         <template x-if="!reportSuccess">
                             <form @submit.prevent="submitReport()" class="mt-4 space-y-4">
                                 <div class="bg-gray-50 dark:bg-gray-900/50 p-2.5 rounded-lg border border-gray-100 dark:border-gray-800 text-xs text-gray-600 dark:text-gray-300">
-                                    <span class="font-semibold text-gray-700 dark:text-gray-200">Obra:</span> <span class="font-medium" x-text="artwork ? artwork.title : ''"></span>
+                                    <span class="font-semibold text-gray-700 dark:text-gray-200">Artwork:</span> <span class="font-medium" x-text="artwork ? artwork.title : ''"></span>
                                 </div>
 
                                 <div>
                                     <label for="report_reason" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
-                                        Motivo del Reporte <span class="text-red-500">*</span>
+                                        Reason for Report <span class="text-red-500">*</span>
                                     </label>
                                     <select id="report_reason" x-model="reportReason" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 dark:focus:ring-amber-900/40">
-                                        <option value="Enlace caído o inaccesible">Enlace caído o inaccesible (Opción recomendada)</option>
-                                        <option value="Contenido inapropiado o explícito">Contenido inapropiado o explícito</option>
-                                        <option value="Violación de derechos de autor (Copyright)">Violación de derechos de autor (Copyright)</option>
-                                        <option value="Spam o publicidad engañosa">Spam o publicidad engañosa</option>
-                                        <option value="Otro motivo">Otro motivo</option>
+                                        <option value="Broken or inaccessible link">Broken or inaccessible link (Recommended)</option>
+                                        <option value="Inappropriate or explicit content">Inappropriate or explicit content</option>
+                                        <option value="Copyright infringement">Copyright infringement</option>
+                                        <option value="Spam or misleading content">Spam or misleading content</option>
+                                        <option value="Other reason">Other reason</option>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label for="report_details" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
-                                        Detalles Adicionales <span class="text-gray-400 font-normal lowercase">(opcional)</span>
+                                        Additional Details <span class="text-gray-400 font-normal lowercase">(optional)</span>
                                     </label>
-                                    <textarea id="report_details" x-model="reportDetails" rows="3" maxlength="1000" placeholder="Describe brevemente el problema detectado..." class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 dark:focus:ring-amber-900/40 placeholder-gray-400 dark:placeholder-gray-500"></textarea>
+                                    <textarea id="report_details" x-model="reportDetails" rows="3" maxlength="1000" placeholder="Briefly describe the issue..." class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 dark:focus:ring-amber-900/40 placeholder-gray-400 dark:placeholder-gray-500"></textarea>
                                 </div>
 
                                 <!-- Error alert -->
@@ -332,7 +332,7 @@
 
                                 <div class="flex items-center justify-end space-x-2 pt-2 border-t border-gray-100 dark:border-gray-700">
                                     <button type="button" @click="closeReport()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                                        Cancelar
+                                        Cancel
                                     </button>
                                     <button type="submit" :disabled="reportLoading" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                         <template x-if="reportLoading">
@@ -341,7 +341,7 @@
                                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                                             </svg>
                                         </template>
-                                        <span x-text="reportLoading ? 'Enviando...' : 'Enviar Reporte'"></span>
+                                        <span x-text="reportLoading ? 'Submitting...' : 'Submit Report'"></span>
                                     </button>
                                 </div>
                             </form>

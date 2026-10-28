@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Artfolio') }} - Panel de Administración</title>
+        <title>{{ config('app.name', 'Artfolio') }} - Admin Panel</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
                  class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm sm:hidden"
                  style="display: none;"></div>
 
-            <!-- Sidebar Lateral Admin -->
+            <!-- Admin Sidebar -->
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
                    class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-transform duration-300 ease-in-out sm:static sm:translate-x-0 shadow-lg sm:shadow-none">
                 
@@ -44,10 +44,9 @@
                     </span>
                 </div>
                 
-                <!-- Enlaces de Navegación -->
+                <!-- Navigation Links -->
                 @php
                     $pendingReportsCount = \App\Models\Report::where('status', 'pending')->count();
-                    $failedJobsCount = \Illuminate\Support\Facades\DB::table('failed_jobs')->count();
                 @endphp
                 <nav class="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
                     <!-- Dashboard -->
@@ -61,14 +60,14 @@
                         </div>
                     </a>
 
-                    <!-- Moderación de Reportes (RF-09, RN-02) -->
+                    <!-- Reports Moderation -->
                     <a href="{{ route('admin.reports.index') }}" 
                        class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.reports.*') ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.reports.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
                             </svg>
-                            Reportes
+                            Reports
                         </div>
                         @if($pendingReportsCount > 0)
                             <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-amber-500 rounded-full animate-pulse">
@@ -77,59 +76,43 @@
                         @endif
                     </a>
 
-                    <!-- Gestión de Usuarios y Artistas (RF-11) -->
+                    <!-- Users & Artists Management -->
                     <a href="{{ route('admin.users.index') }}" 
                        class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.users.*') ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.users.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                             </svg>
-                            Usuarios y Artistas
+                            Users & Artists
                         </div>
                     </a>
 
-                    <!-- Papelera Global (RF-11, RN-03) -->
+                    <!-- Global Trash -->
                     <a href="{{ route('admin.trash.index') }}" 
                        class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.trash.*') ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.trash.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                             </svg>
-                            Papelera Global
+                            Global Trash
                         </div>
-                    </a>
-
-                    <!-- Monitor de Colas y Fallos (RNF-01) -->
-                    <a href="{{ route('admin.queues.index') }}" 
-                       class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.queues.*') ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.queues.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                            </svg>
-                            Colas y Sistema
-                        </div>
-                        @if($failedJobsCount > 0)
-                            <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                                {{ $failedJobsCount }}
-                            </span>
-                        @endif
                     </a>
 
                     <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-800">
-                        <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Accesos Rápidos</p>
+                        <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Quick Links</p>
                         
                         <a href="{{ route('home') }}" class="flex items-center px-3.5 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                             </svg>
-                            Galería Pública
+                            Public Gallery
                         </a>
 
                         <a href="{{ route('dashboard') }}" class="flex items-center px-3.5 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            Panel de Artista
+                            Artist Dashboard
                         </a>
                     </div>
                 </nav>
@@ -146,7 +129,7 @@
                     
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Cerrar Sesión">
+                        <button type="submit" class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Log Out">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                             </svg>
@@ -167,14 +150,14 @@
                             </svg>
                         </button>
                         <h1 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                            @yield('title', 'Panel de Administración')
+                            @yield('title', 'Admin Panel')
                         </h1>
                     </div>
                     
                     <div class="flex items-center space-x-3">
                         <a href="{{ route('home') }}" class="hidden sm:inline-flex items-center text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            Ver Portal
+                            View Site
                         </a>
                     </div>
                 </header>

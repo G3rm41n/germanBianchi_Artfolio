@@ -13,7 +13,7 @@ class AdminSeederTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * RF-12: El seeder aprovisiona correctamente al usuario administrador desde variables de entorno.
+     * Admin seeder provisions admin user from configuration.
      */
     public function test_admin_seeder_provisions_admin_user_from_environment(): void
     {
@@ -46,7 +46,7 @@ class AdminSeederTest extends TestCase
     }
 
     /**
-     * RF-12: La ejecución múltiple del seeder es idempotente y no genera registros duplicados.
+     * Multiple executions of admin seeder are idempotent.
      */
     public function test_admin_seeder_is_idempotent(): void
     {

@@ -8,10 +8,10 @@
         
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
-                Descubre arte <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">increíble</span>
+                Discover incredible <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">artworks</span>
             </h1>
             <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-300">
-                Explora el portafolio de artistas talentosos alrededor del mundo. Animación, modelos 3D, ilustraciones y música en un solo lugar.
+                Explore portfolios from talented creators around the world. Animation, 3D models, illustrations, and music in one place.
             </p>
         </div>
     </div>
@@ -20,7 +20,7 @@
     <div class="py-12 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <!-- Buscador y Filtros -->
+            <!-- Search & Filters -->
             <div class="mb-10">
                 <form action="{{ route('home') }}" method="GET" class="flex flex-col lg:flex-row gap-4 justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                     
@@ -30,7 +30,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Buscar arte o artistas..." class="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-600 rounded-xl leading-5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
+                        <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search artworks or artists..." class="block w-full pl-10 pr-3 py-3 border border-gray-200 dark:border-gray-600 rounded-xl leading-5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
                         @if(isset($category) && $category !== '')
                             <input type="hidden" name="category" value="{{ $category }}">
                         @endif
@@ -40,12 +40,12 @@
                         <div class="flex space-x-2">
                             @php
                                 $categories = [
-                                    '' => 'Todos',
-                                    'image' => 'Ilustración',
-                                    'video' => 'Animación',
-                                    '3d' => 'Modelado 3D',
-                                    'audio' => 'Música',
-                                    'doc' => 'Documento'
+                                    '' => 'All',
+                                    'image' => '2D Digital',
+                                    'video' => 'Animation',
+                                    '3d' => '3D Models',
+                                    'audio' => 'Music & Audio',
+                                    'doc' => 'Documents'
                                 ];
                             @endphp
                             
@@ -57,7 +57,6 @@
                             @endforeach
                         </div>
                     </div>
-                    <!-- Submit escondido para el input -->
                     <button type="submit" class="hidden"></button>
                 </form>
             </div>
@@ -65,11 +64,11 @@
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
                     @if(!empty($search))
-                        Resultados para "{{ $search }}"
+                        Results for "{{ $search }}"
                     @elseif(!empty($category))
-                        Explorando {{ $categories[$category] ?? 'Categoría' }}
+                        Exploring {{ $categories[$category] ?? 'Category' }}
                     @else
-                        Obras Recientes
+                        Recent Artworks
                     @endif
                 </h2>
             </div>
@@ -82,13 +81,13 @@
                         <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">La galería está vacía</h3>
-                        <p class="mt-1 text-gray-500 dark:text-gray-400">Aún no hay obras publicadas en la plataforma.</p>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">The gallery is empty</h3>
+                        <p class="mt-1 text-gray-500 dark:text-gray-400">No artworks found matching your criteria.</p>
                     </div>
                 @endforelse
             </div>
 
-            <!-- Paginación -->
+            <!-- Pagination -->
             <div class="mt-10">
                 {{ $artworks->links() }}
             </div>

@@ -1,22 +1,22 @@
 <x-admin-layout>
     <div class="space-y-6">
-        <!-- Encabezado de Bienvenida -->
+        <!-- Welcome Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
             <div>
-                <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Panel de Control General</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Supervisión en tiempo real de artistas, publicaciones, reportes y salud del sistema.</p>
+                <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Admin Overview</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Real-time overview of artists, publications, moderation reports, and recycle bin.</p>
             </div>
             <div class="mt-4 sm:mt-0 flex items-center space-x-2">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                     <span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Sistema Operativo
+                    System Operational
                 </span>
             </div>
         </div>
 
-        <!-- Tarjetas de Métricas (KPIs) -->
+        <!-- Metric Cards (KPIs) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <!-- KPI 1: Artistas -->
+            <!-- KPI 1: Artists -->
             <a href="{{ route('admin.users.index') }}" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
                 <div class="flex items-center justify-between">
                     <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
@@ -25,23 +25,23 @@
                         </svg>
                     </div>
                     <span class="text-xs font-medium text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 flex items-center">
-                        Gestionar <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        Manage <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </span>
                 </div>
                 <div class="mt-4">
-                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Artistas Registrados</p>
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Registered Artists</p>
                     <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ number_format($stats['total_users']) }}</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         @if($stats['suspended_users'] > 0)
-                            <span class="text-amber-600 dark:text-amber-400 font-semibold">{{ $stats['suspended_users'] }} suspendidos</span>
+                            <span class="text-amber-600 dark:text-amber-400 font-semibold">{{ $stats['suspended_users'] }} suspended</span>
                         @else
-                            <span class="text-emerald-600 dark:text-emerald-400 font-medium">Todos activos</span>
+                            <span class="text-emerald-600 dark:text-emerald-400 font-medium">All active</span>
                         @endif
                     </p>
                 </div>
             </a>
 
-            <!-- KPI 2: Obras Publicadas -->
+            <!-- KPI 2: Public Artworks -->
             <a href="{{ route('home') }}" target="_blank" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
                 <div class="flex items-center justify-between">
                     <div class="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 group-hover:scale-105 transition-transform">
@@ -50,19 +50,19 @@
                         </svg>
                     </div>
                     <span class="text-xs font-medium text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex items-center">
-                        Ver Galería <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        View Gallery <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </span>
                 </div>
                 <div class="mt-4">
-                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Obras Públicas</p>
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Public Artworks</p>
                     <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ number_format($stats['published_artworks']) }}</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span class="text-gray-600 dark:text-gray-300 font-medium">{{ $stats['hidden_artworks'] }} ocultas</span> • <span class="text-gray-400">{{ $stats['trashed_artworks'] }} en papelera</span>
+                        <span class="text-gray-600 dark:text-gray-300 font-medium">{{ $stats['hidden_artworks'] }} hidden</span> • <span class="text-gray-400">{{ $stats['trashed_artworks'] }} in trash</span>
                     </p>
                 </div>
             </a>
 
-            <!-- KPI 3: Reportes Pendientes -->
+            <!-- KPI 3: Pending Reports -->
             <a href="{{ route('admin.reports.index') }}" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border {{ $stats['pending_reports'] > 0 ? 'border-amber-300 dark:border-amber-800 bg-amber-50/30 dark:bg-amber-950/20' : 'border-gray-200 dark:border-gray-800' }} shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
                     <div class="p-3 rounded-xl {{ $stats['pending_reports'] > 0 ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400' }} group-hover:scale-105 transition-transform">
@@ -71,57 +71,53 @@
                         </svg>
                     </div>
                     <span class="text-xs font-medium {{ $stats['pending_reports'] > 0 ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-gray-400' }} flex items-center">
-                        Bandeja <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        Inbox <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </span>
                 </div>
                 <div class="mt-4">
-                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reportes Pendientes</p>
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pending Reports</p>
                     <p class="text-2xl font-black {{ $stats['pending_reports'] > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-900 dark:text-white' }} mt-1">
                         {{ number_format($stats['pending_reports']) }}
                     </p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {{ $stats['resolved_reports'] }} reportes resueltos
+                        {{ $stats['resolved_reports'] }} resolved reports
                     </p>
                 </div>
             </a>
 
-            <!-- KPI 4: Monitor de Colas -->
-            <a href="{{ route('admin.queues.index') }}" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border {{ $stats['failed_jobs'] > 0 ? 'border-red-300 dark:border-red-800 bg-red-50/30 dark:bg-red-950/20' : 'border-gray-200 dark:border-gray-800' }} shadow-sm hover:shadow-md transition-all">
+            <!-- KPI 4: Recycle Bin -->
+            <a href="{{ route('admin.trash.index') }}" class="group bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
-                    <div class="p-3 rounded-xl {{ $stats['failed_jobs'] > 0 ? 'bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-400' : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' }} group-hover:scale-105 transition-transform">
+                    <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 group-hover:scale-105 transition-transform">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
                     </div>
-                    <span class="text-xs font-medium {{ $stats['failed_jobs'] > 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-400' }} flex items-center">
-                        Inspeccionar <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    <span class="text-xs font-medium text-gray-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 flex items-center">
+                        Inspect <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </span>
                 </div>
                 <div class="mt-4">
-                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado de Colas</p>
-                    <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ number_format($stats['queued_jobs']) }} <span class="text-xs font-normal text-gray-400">en cola</span></p>
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Recycle Bin</p>
+                    <p class="text-2xl font-black text-gray-900 dark:text-white mt-1">{{ number_format($stats['trashed_artworks'] + $stats['trashed_collections']) }}</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        @if($stats['failed_jobs'] > 0)
-                            <span class="text-red-600 dark:text-red-400 font-bold">{{ $stats['failed_jobs'] }} trabajos fallidos</span>
-                        @else
-                            <span class="text-emerald-600 dark:text-emerald-400 font-medium">0 fallos registrados</span>
-                        @endif
+                        {{ $stats['trashed_artworks'] }} artworks • {{ $stats['trashed_collections'] }} collections
                     </p>
                 </div>
             </a>
         </div>
 
-        <!-- Paneles de Actividad Reciente -->
+        <!-- Recent Activity Panels -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Columna Izquierda (2/3): Reportes Recientes -->
+            <!-- Left Column (2/3): Recent Reports -->
             <div class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
                 <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                     <div>
-                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Últimos Reportes Recibidos</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Atención ciudadana y control de enlaces caídos (RN-02)</p>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Latest Reports Received</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Moderation feed and link maintenance</p>
                     </div>
                     <a href="{{ route('admin.reports.index') }}" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
-                        Ver todos
+                        View all
                     </a>
                 </div>
 
@@ -137,16 +133,16 @@
                                 <div class="min-w-0">
                                     <div class="flex items-center space-x-2">
                                         <span class="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                            {{ $report->artwork ? $report->artwork->title : 'Obra eliminada' }}
+                                            {{ $report->artwork ? $report->artwork->title : 'Deleted artwork' }}
                                         </span>
                                         <span class="text-xs px-2 py-0.5 rounded-full font-medium {{ $report->status === 'pending' ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300' : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300' }}">
-                                            {{ $report->status === 'pending' ? 'Pendiente' : 'Resuelto' }}
+                                            {{ $report->status === 'pending' ? 'Pending' : 'Resolved' }}
                                         </span>
                                     </div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                                         <span class="font-medium text-gray-700 dark:text-gray-300">{{ $report->reason }}</span>
                                         @if($report->user)
-                                            • Reportado por {{ $report->user->name }}
+                                            • Reported by {{ $report->user->name }}
                                         @endif
                                         • {{ $report->created_at->diffForHumans() }}
                                     </p>
@@ -154,7 +150,7 @@
                             </div>
                             <div class="flex items-center space-x-2 flex-shrink-0 self-end sm:self-center">
                                 <a href="{{ route('admin.reports.show', $report->id) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                                    Moderar
+                                    Review
                                 </a>
                             </div>
                         </div>
@@ -163,22 +159,22 @@
                             <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             </div>
-                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">¡Bandeja despejada!</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">No hay reportes pendientes de moderación en este momento.</p>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Inbox is clean!</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">There are no pending reports to review right now.</p>
                         </div>
                     @endforelse
                 </div>
             </div>
 
-            <!-- Columna Derecha (1/3): Artistas Registrados Recientes -->
+            <!-- Right Column (1/3): Recent Artists -->
             <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
                 <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                     <div>
-                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Nuevos Artistas</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Últimas cuentas creadas</p>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">New Artists</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Latest accounts registered</p>
                     </div>
                     <a href="{{ route('admin.users.index') }}" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
-                        Ver todos
+                        View all
                     </a>
                 </div>
 
@@ -193,13 +189,13 @@
                                 </div>
                             </div>
                             <div class="text-right flex-shrink-0">
-                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ $user->artworks_count }} obras</span>
+                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ $user->artworks_count }} artworks</span>
                                 <p class="text-[10px] text-gray-400">{{ $user->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
                     @empty
                         <div class="p-6 text-center text-xs text-gray-400">
-                            No hay artistas registrados aún.
+                            No registered artists yet.
                         </div>
                     @endforelse
                 </div>

@@ -13,7 +13,7 @@ use Illuminate\View\View;
 class TrashController extends Controller
 {
     /**
-     * Auditoría y visualización de la papelera global (RF-11).
+     * Display global trash items (artworks and collections).
      */
     public function index(Request $request): View
     {
@@ -49,13 +49,13 @@ class TrashController extends Controller
     }
 
     /**
-     * Restaura una obra eliminada aplicando la regla RN-03.
+     * Restore a deleted artwork from trash.
      */
     public function restoreArtwork(int|string $id): RedirectResponse
     {
         $artwork = Artwork::onlyTrashed()->findOrFail($id);
 
-        // Regla RN-03: Desvincular de colecciones que estén eliminadas o no existan
+        // Detach collections that are still in trash
         $associatedCollections = $artwork->collections()->withTrashed()->get();
         foreach ($associatedCollections as $col) {
             if ($col->trashed()) {
@@ -65,11 +65,11 @@ class TrashController extends Controller
 
         $artwork->restore();
 
-        return back()->with('success', "La obra \"{$artwork->title}\" ha sido restaurada con éxito.");
+        return back()->with('success', "Artwork \"{$artwork->title}\" restored successfully.");
     }
 
     /**
-     * Eliminación permanente e irreversible de una obra.
+     * Permanently delete an artwork.
      */
     public function destroyArtwork(int|string $id): RedirectResponse
     {
@@ -78,22 +78,22 @@ class TrashController extends Controller
 
         $artwork->forceDelete();
 
-        return back()->with('success', "La obra \"{$title}\" ha sido eliminada permanentemente del sistema.");
+        return back()->with('success', "Artwork \"{$title}\" permanently deleted.");
     }
 
     /**
-     * Restaura una colección eliminada.
+     * Restore a deleted collection.
      */
     public function restoreCollection(int|string $id): RedirectResponse
     {
         $collection = Collection::onlyTrashed()->findOrFail($id);
         $collection->restore();
 
-        return back()->with('success', "La colección \"{$collection->name}\" ha sido restaurada con éxito.");
+        return back()->with('success', "Collection \"{$collection->name}\" restored successfully.");
     }
 
     /**
-     * Eliminación permanente de una colección.
+     * Permanently delete a collection.
      */
     public function destroyCollection(int|string $id): RedirectResponse
     {
@@ -102,16 +102,16 @@ class TrashController extends Controller
 
         $collection->forceDelete();
 
-        return back()->with('success', "La colección \"{$name}\" ha sido eliminada definitivamente.");
+        return back()->with('success', "Collection \"{$name}\" permanently deleted.");
     }
 
     /**
-     * Forzar la ejecución inmediata del comando de purga de 30 días (model:prune / RN-04).
+     * Run model prune command to clean items older than 30 days.
      */
     public function pruneNow(): RedirectResponse
     {
         Artisan::call('model:prune');
 
-        return back()->with('success', 'Se ha ejecutado la purga global de obras y colecciones con más de 30 días en la papelera.');
+        return back()->with('success', 'Global 30-day trash purge executed successfully.');
     }
 }

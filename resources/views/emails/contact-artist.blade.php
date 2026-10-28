@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Mensaje en Artfolio</title>
+    <title>New Message on Artfolio</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -114,44 +114,44 @@
         <!-- Header -->
         <div class="header">
             <h1>Artfolio</h1>
-            <p>Plataforma de Exhibición y Contacto Multimedia</p>
+            <p>Multimedia Showcase & Contact Platform</p>
         </div>
 
         <!-- Body -->
         <div class="body">
             <div class="greeting">
-                ¡Hola, {{ $recipientName }}!
+                Hello, {{ $recipientName }}!
             </div>
             <p style="margin: 0 0 16px 0; font-size: 14px; color: #475569;">
-                Has recibido una nueva consulta de un usuario interesado en tu trabajo a través de tu portafolio público.
+                You have received a new inquiry from a user interested in your work through your public portfolio.
             </p>
 
             <!-- Sender Meta -->
             <div class="meta-box">
                 <div class="meta-row">
-                    <span class="meta-label">Remitente:</span>
+                    <span class="meta-label">From:</span>
                     <span class="meta-value">{{ $senderName }}</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-label">Correo:</span>
+                    <span class="meta-label">Email:</span>
                     <span class="meta-value">{{ $senderEmail }}</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-label">Motivo:</span>
+                    <span class="meta-label">Subject:</span>
                     <span class="meta-value" style="color: #4f46e5; font-weight: 700;">{{ $subjectText }}</span>
                 </div>
             </div>
 
             <!-- Message Content -->
             <div style="font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
-                Mensaje recibido:
+                Message received:
             </div>
             <div class="message-box">{!! nl2br(e($messageText)) !!}</div>
 
             <!-- Reply action -->
             <div class="actions">
                 <a href="mailto:{{ $senderEmail }}?subject=Re: {{ rawurlencode($subjectText) }}" class="btn-reply">
-                    Responder a {{ $senderName }}
+                    Reply to {{ $senderName }}
                 </a>
             </div>
         </div>
@@ -159,10 +159,10 @@
         <!-- Footer -->
         <div class="footer">
             <p style="margin: 0 0 4px 0;">
-                Este correo fue despachado de forma segura mediante el sistema anti-suplantación de <strong>Artfolio</strong>.
+                This email was securely delivered through <strong>Artfolio</strong>.
             </p>
             <p style="margin: 0;">
-                Tu dirección de correo permanece privada y protegida en la plataforma.
+                Your email address remains private and protected on the platform.
             </p>
         </div>
     </div>

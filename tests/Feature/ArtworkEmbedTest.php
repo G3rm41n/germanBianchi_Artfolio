@@ -22,7 +22,7 @@ class ArtworkEmbedTest extends TestCase
     }
 
     /**
-     * RF-02 / RN-01: Dominios de la lista blanca son aceptados y clasificados por proveedor.
+     * Whitelisted domains are accepted and categorized by provider.
      */
     public function test_whitelisted_providers_are_accepted(): void
     {
@@ -53,7 +53,7 @@ class ArtworkEmbedTest extends TestCase
     }
 
     /**
-     * RN-01: Dominios fuera de la lista blanca son estrictamente rechazados.
+     * Domains outside the whitelist are rejected.
      */
     public function test_unauthorized_external_domains_are_rejected(): void
     {
@@ -72,7 +72,7 @@ class ArtworkEmbedTest extends TestCase
     }
 
     /**
-     * RNF-02: Mitigación anti-SSRF (bloqueo de IPs directas, localhost, loopbacks y metadatos).
+     * SSRF attack mitigation (internal IPs, localhost, metadata endpoints).
      */
     public function test_ssrf_attacks_and_internal_ips_are_strictly_rejected(): void
     {
@@ -92,7 +92,7 @@ class ArtworkEmbedTest extends TestCase
     }
 
     /**
-     * RF-02: Endpoint de publicación rechaza URLs no autorizadas y valida exitosamente URLs permitidas.
+     * Artwork store endpoint validates external URLs.
      */
     public function test_artwork_store_endpoint_enforces_whitelist(): void
     {

@@ -38,7 +38,7 @@ class CollectionController extends Controller
 
         Auth::user()->collections()->create($validated);
 
-        return redirect()->route('collections.index')->with('success', 'Colección creada con éxito.');
+        return redirect()->route('collections.index')->with('success', 'Collection created successfully.');
     }
 
     /**
@@ -47,7 +47,7 @@ class CollectionController extends Controller
     public function edit(Collection $collection)
     {
         if ($collection->user_id !== Auth::id()) {
-            abort(403, 'No autorizado.');
+            abort(403, 'Unauthorized.');
         }
 
         return view('collections.form', compact('collection'));
@@ -59,7 +59,7 @@ class CollectionController extends Controller
     public function update(Request $request, Collection $collection)
     {
         if ($collection->user_id !== Auth::id()) {
-            abort(403, 'No autorizado.');
+            abort(403, 'Unauthorized.');
         }
 
         $validated = $request->validate([
@@ -69,7 +69,7 @@ class CollectionController extends Controller
 
         $collection->update($validated);
 
-        return redirect()->route('collections.index')->with('success', 'Colección actualizada con éxito.');
+        return redirect()->route('collections.index')->with('success', 'Collection updated successfully.');
     }
 
     /**
@@ -78,11 +78,11 @@ class CollectionController extends Controller
     public function destroy(Collection $collection)
     {
         if ($collection->user_id !== Auth::id()) {
-            abort(403, 'No autorizado.');
+            abort(403, 'Unauthorized.');
         }
 
         $collection->delete();
 
-        return redirect()->route('collections.index')->with('success', 'Colección eliminada con éxito.');
+        return redirect()->route('collections.index')->with('success', 'Collection moved to trash.');
     }
 }

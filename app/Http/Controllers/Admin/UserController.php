@@ -11,19 +11,19 @@ use Illuminate\View\View;
 class UserController extends Controller
 {
     /**
-     * Listado y gestión de usuarios y artistas registrados (RF-11).
+     * List and manage registered users and artists.
      */
     public function index(Request $request): View
     {
         $query = User::withCount(['artworks', 'collections'])->latest();
 
-        // Filtro por estado
+        // Status filter
         $status = $request->get('status', 'all');
         if (in_array($status, ['active', 'suspended'])) {
             $query->where('status', $status);
         }
 
-        // Filtro por rol
+        // Role filter
         $role = $request->get('role');
         if ($role === 'admin') {
             $query->where('is_admin', true);
@@ -31,7 +31,7 @@ class UserController extends Controller
             $query->where('is_admin', false);
         }
 
-        // Buscador
+        // Search
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -53,23 +53,23 @@ class UserController extends Controller
     }
 
     /**
-     * Suspende temporalmente a un artista o usuario.
+     * Temporarily suspend a user.
      */
     public function suspend(int|string $id): RedirectResponse
     {
         $user = User::findOrFail($id);
 
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'No puedes suspender tu propia cuenta de administrador.');
+            return back()->with('error', 'You cannot suspend your own admin account.');
         }
 
         $user->update(['status' => 'suspended']);
 
-        return back()->with('success', "El usuario \"{$user->name}\" ha sido suspendido.");
+        return back()->with('success', "User \"{$user->name}\" has been suspended.");
     }
 
     /**
-     * Reactiva la cuenta de un usuario suspendido.
+     * Reactivate a suspended user account.
      */
     public function activate(int|string $id): RedirectResponse
     {
@@ -77,22 +77,22 @@ class UserController extends Controller
 
         $user->update(['status' => 'active']);
 
-        return back()->with('success', "La cuenta de \"{$user->name}\" ha sido reactivada.");
+        return back()->with('success', "User \"{$user->name}\" has been reactivated.");
     }
 
     /**
-     * Eliminación suave (Soft Delete) de la cuenta de un usuario.
+     * Delete user account (soft delete).
      */
     public function destroy(int|string $id): RedirectResponse
     {
         $user = User::findOrFail($id);
 
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'No puedes eliminar tu propia cuenta de administrador.');
+            return back()->with('error', 'You cannot delete your own admin account.');
         }
 
         $user->delete();
 
-        return back()->with('success', "La cuenta de \"{$user->name}\" ha sido eliminada.");
+        return back()->with('success', "User \"{$user->name}\" has been deleted.");
     }
 }

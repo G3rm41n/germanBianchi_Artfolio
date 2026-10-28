@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     /**
-     * Almacena un nuevo reporte de obra enviado por un usuario autenticado (RF-09).
+     * Store a new report submitted by an authenticated user.
      */
     public function store(Request $request, int|string $id): JsonResponse
     {
@@ -23,7 +23,7 @@ class ReportController extends Controller
 
         $userId = auth()->id();
 
-        // Prevención estricta de reportes duplicados pendientes (RF-09 / DB unique constraint)
+        // Prevent duplicate pending reports from the same user
         $existing = Report::where('user_id', $userId)
             ->where('artwork_id', $artwork->id)
             ->where('status', 'pending')
@@ -31,7 +31,7 @@ class ReportController extends Controller
 
         if ($existing) {
             return response()->json([
-                'message' => 'Ya has enviado un reporte para esta obra que se encuentra pendiente de revisión.',
+                'message' => 'You already have a pending report for this artwork.',
             ], 422);
         }
 
@@ -44,7 +44,7 @@ class ReportController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Reporte enviado con éxito. Nuestro equipo de moderación revisará la obra a la brevedad.',
+            'message' => 'Report submitted successfully. Our team will review this artwork shortly.',
             'report'  => $report,
         ], 201);
     }

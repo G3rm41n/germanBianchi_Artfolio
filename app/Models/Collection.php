@@ -13,13 +13,13 @@ class Collection extends Model
 
     protected $fillable = ['user_id', 'name', 'description'];
 
-    // ── Purga automática a los 30 días (RN-04) ──────────────────────────────
+    // Auto-prune soft deleted collections after 30 days
     public function prunable()
     {
         return static::onlyTrashed()->where('deleted_at', '<=', now()->subDays(30));
     }
 
-    // ── Relaciones ───────────────────────────────────────────────────────────
+    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);

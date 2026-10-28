@@ -40,11 +40,11 @@ class ArtworkRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'external_url.required' => 'Debes proporcionar un enlace a tu obra.',
-            'external_url.url' => 'El enlace proporcionado no tiene un formato válido.',
-            'title.required' => 'El título de la obra es obligatorio.',
-            'category.required' => 'Debes seleccionar una categoría para tu obra.',
-            'category.in' => 'La categoría seleccionada no es válida.',
+            'external_url.required' => 'You must provide a URL for your artwork.',
+            'external_url.url' => 'The provided URL is not valid.',
+            'title.required' => 'The artwork title is required.',
+            'category.required' => 'Please select a category for your artwork.',
+            'category.in' => 'The selected category is invalid.',
         ];
     }
 }

@@ -53,7 +53,7 @@ class EmbedService
             $host = substr($host, 4);
         }
 
-        // 1. Validar contra la Lista Blanca (RN-01)
+        // 1. Check allowed domains list
         $isPinterestHost = $host === 'pin.it' || $host === 'pinterest.com' || str_ends_with($host, '.pinterest.com') || str_ends_with($host, '.pinimg.com');
         $isDeviantArtHost = $host === 'deviantart.com' || str_ends_with($host, '.deviantart.com') || $host === 'sta.sh';
         $isSpotifyHost = $host === 'spotify.com' || str_ends_with($host, '.spotify.com');

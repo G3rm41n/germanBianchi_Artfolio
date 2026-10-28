@@ -17,7 +17,7 @@
         @csrf
         @method('patch')
 
-        <!-- Avatar Drag-to-Crop (RF-01) -->
+        <!-- Avatar Drag-to-Crop -->
         <div x-data="{
             avatarUrl: '{{ old('avatar_url', $user->avatar_url) }}',
             cropX: {{ old('crop_x', $user->crop_x ?? 0) }},
@@ -93,19 +93,19 @@
         class="bg-gray-50/50 dark:bg-gray-900/40 p-5 rounded-2xl border border-gray-200/80 dark:border-gray-700/80">
             
             <div class="flex items-center justify-between mb-3">
-                <x-input-label for="avatar_url" value="Foto de Perfil / Avatar (Enlace Externo)" class="font-bold text-gray-900 dark:text-white" />
+                <x-input-label for="avatar_url" value="Profile Picture / Avatar (External URL)" class="font-bold text-gray-900 dark:text-white" />
                 <button type="button" @click="resetCrop()" x-show="avatarUrl && !imageError" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
-                    Restablecer Encuadre
+                    Reset Crop
                 </button>
             </div>
             
             <div class="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-                <!-- Visor Circular Interactivo (Drag & Wheel) -->
+                <!-- Interactive Circular Viewer (Drag & Wheel) -->
                 <div class="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 shadow-md flex-shrink-0 cursor-move border-4 border-white dark:border-gray-700 select-none group"
                      @mousedown.prevent="onMouseDown" 
                      @touchstart.prevent="onMouseDown" 
                      @wheel.prevent="onWheel"
-                     title="Haz clic y arrastra para mover la imagen. Usa la rueda del ratón para zoom.">
+                     title="Click and drag to position. Use mouse wheel or slider to zoom.">
                      
                      <template x-if="avatarUrl && !imageError">
                          <div class="w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none"
@@ -119,7 +119,7 @@
                         </div>
                      </template>
 
-                     <!-- Overlay sutil con instrucciones -->
+                     <!-- Subtle overlay -->
                      <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none" x-show="avatarUrl && !imageError">
                         <svg class="w-6 h-6 text-white drop-shadow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                      </div>
@@ -128,14 +128,14 @@
                 <div class="flex-grow w-full space-y-4">
                     <!-- URL Input -->
                     <div>
-                        <input type="url" id="avatar_url" name="avatar_url" x-model.lazy="avatarUrl" placeholder="https://ejemplo.com/mifoto.jpg" class="block w-full text-sm rounded-xl shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500" />
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Introduce una URL directa de imagen (PNG, JPG, WebP) alojada en la web.</p>
+                        <input type="url" id="avatar_url" name="avatar_url" x-model.lazy="avatarUrl" placeholder="https://example.com/mypicture.jpg" class="block w-full text-sm rounded-xl shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500" />
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Enter a direct image URL (PNG, JPG, WebP) hosted online.</p>
                     </div>
                     
-                    <!-- Zoom Slider con Botones y Display Numérico -->
+                    <!-- Zoom Slider with buttons and display -->
                     <div x-show="avatarUrl" class="space-y-1.5 pt-1">
                         <div class="flex items-center justify-between text-xs font-semibold text-gray-600 dark:text-gray-300">
-                            <span>Zoom del Encuadre</span>
+                            <span>Crop Zoom</span>
                             <span class="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 font-mono text-[11px]" x-text="Number(cropZoom).toFixed(2) + 'x'"></span>
                         </div>
                         <div class="flex items-center space-x-2">
@@ -189,25 +189,25 @@
             @endif
         </div>
 
-        <!-- Estado de Comisiones / Encargos -->
+        <!-- Commission Status -->
         <div>
-            <x-input-label for="commission_status" value="Disponibilidad para Comisiones / Encargos" />
+            <x-input-label for="commission_status" value="Commission Availability" />
             <select id="commission_status" name="commission_status" class="mt-1 block w-full rounded-xl shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 text-sm">
-                <option value="open" {{ old('commission_status', $user->commission_status) === 'open' ? 'selected' : '' }}>🟢 Abierto a Comisiones (Disponible)</option>
-                <option value="consult" {{ old('commission_status', $user->commission_status) === 'consult' ? 'selected' : '' }}>🔵 A Consultar (Bajo Demanda)</option>
-                <option value="closed" {{ old('commission_status', $user->commission_status) === 'closed' ? 'selected' : '' }}>⚪ Comisiones Cerradas (No Disponible)</option>
+                <option value="open" {{ old('commission_status', $user->commission_status) === 'open' ? 'selected' : '' }}>🟢 Open for Commissions (Available)</option>
+                <option value="consult" {{ old('commission_status', $user->commission_status) === 'consult' ? 'selected' : '' }}>🔵 Upon Request (Contact Me)</option>
+                <option value="closed" {{ old('commission_status', $user->commission_status) === 'closed' ? 'selected' : '' }}>⚪ Closed for Commissions (Not Available)</option>
             </select>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Este indicador aparecerá en tu portafolio público para orientar a posibles clientes.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">This indicator will appear on your public portfolio to inform potential clients.</p>
             <x-input-error class="mt-2" :messages="$errors->get('commission_status')" />
         </div>
 
-        <!-- Biografía Artística (bio) -->
+        <!-- Artist Bio -->
         <div x-data="{ bioText: '{{ addslashes(old('bio', $user->bio ?? '')) }}' }">
             <div class="flex items-center justify-between">
-                <x-input-label for="bio" value="Biografía Artística" />
-                <span class="text-xs text-gray-400 font-mono" x-text="(1000 - (bioText ? bioText.length : 0)) + ' caracteres restantes'"></span>
+                <x-input-label for="bio" value="Artist Bio" />
+                <span class="text-xs text-gray-400 font-mono" x-text="(1000 - (bioText ? bioText.length : 0)) + ' characters remaining'"></span>
             </div>
-            <textarea id="bio" name="bio" rows="4" maxlength="1000" x-model="bioText" placeholder="Describe tu trayectoria, herramientas favoritas (Blender, Photoshop, Procreate...), estilo visual o intereses artísticos..." class="mt-1 block w-full text-sm rounded-xl shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 placeholder-gray-400"></textarea>
+            <textarea id="bio" name="bio" rows="4" maxlength="1000" x-model="bioText" placeholder="Describe your background, favorite tools (Blender, Photoshop, Procreate...), visual style, or artistic interests..." class="mt-1 block w-full text-sm rounded-xl shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 placeholder-gray-400"></textarea>
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
 

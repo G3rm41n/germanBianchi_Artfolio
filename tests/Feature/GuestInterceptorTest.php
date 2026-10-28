@@ -12,48 +12,48 @@ class GuestInterceptorTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * RF-08: Intentar marcar favoritos como visitante no autenticado es interceptado / redirige a login.
+     * Guests cannot bookmark artworks and receive 401.
      */
     public function test_guest_cannot_bookmark_artwork(): void
     {
         $artwork = Artwork::factory()->create();
 
         $response = $this->postJson("/obras/{$artwork->id}/bookmark");
-        $response->assertStatus(401); // No autenticado para JSON
+        $response->assertStatus(401); // Unauthorized for JSON
     }
 
     /**
-     * RF-08 / RN-05: Intentar contactar a un artista como visitante no autenticado es interceptado.
+     * Guests cannot send contact messages to artists.
      */
     public function test_guest_cannot_send_contact_message(): void
     {
         $artist = User::factory()->create();
 
         $response = $this->postJson("/artista/{$artist->slug}/contact", [
-            'subject' => 'Consulta de comisión',
-            'message' => 'Hola, quisiera encargar una ilustración personalizada.',
+            'subject' => 'Commission inquiry',
+            'message' => 'Hello, I would like to request a custom illustration.',
         ]);
 
         $response->assertStatus(401);
     }
 
     /**
-     * RF-08 / RF-09: Intentar reportar una obra como visitante no autenticado es interceptado.
+     * Guests cannot report artworks.
      */
     public function test_guest_cannot_report_artwork(): void
     {
         $artwork = Artwork::factory()->create();
 
         $response = $this->postJson("/obras/{$artwork->id}/report", [
-            'reason' => 'Enlace caído o inaccesible',
-            'details' => 'No carga el video.',
+            'reason' => 'Broken or inaccessible link',
+            'details' => 'Video fails to load.',
         ]);
 
         $response->assertStatus(401);
     }
 
     /**
-     * RF-08: Las vistas públicas integran el componente x-guest-modal para visitantes.
+     * Public views include the guest modal component.
      */
     public function test_public_views_contain_guest_modal_component(): void
     {

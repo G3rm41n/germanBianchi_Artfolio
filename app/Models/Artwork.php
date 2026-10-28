@@ -75,13 +75,13 @@ class Artwork extends Model
         return $url;
     }
 
-    // ── Purga automática a los 30 días (RN-04) ──────────────────────────────
+    // Auto-prune soft deleted artworks after 30 days
     public function prunable()
     {
         return static::onlyTrashed()->where('deleted_at', '<=', now()->subDays(30));
     }
 
-    // ── Relaciones ───────────────────────────────────────────────────────────
+    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -102,24 +102,21 @@ class Artwork extends Model
         return $this->hasMany(Report::class);
     }
 
-    // ── Scopes ───────────────────────────────────────────────────────────────
+    // Query Scopes
 
-    /** Filtra solo obras publicadas */
+    /** Filter published artworks */
     public function scopePublished($query)
     {
         return $query->where('status', 'published');
     }
 
-    /** Filtra por categoría */
+    /** Filter by category */
     public function scopeByCategory($query, string $category)
     {
         return $query->where('category', $category);
     }
 
-    /**
-     * Buscador de texto libre multi-campo (RF-07)
-     * Busca en: título, descripción y nombre del artista
-     */
+    /** Search by title, description, or artist name */
     public function scopeSearch($query, ?string $term)
     {
         if (!$term) return $query;

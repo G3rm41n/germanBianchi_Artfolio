@@ -46,7 +46,7 @@ class ArtworkController extends Controller
 
         if (!$embedData) {
             return back()->withInput()->withErrors([
-                'external_url' => 'La URL proporcionada no pertenece a nuestra lista blanca de sitios permitidos, o el enlace no es válido.'
+                'external_url' => 'The provided URL does not belong to supported platforms or is invalid.'
             ]);
         }
 
@@ -68,7 +68,7 @@ class ArtworkController extends Controller
             $artwork->collections()->sync($validCollections);
         }
 
-        return redirect()->route('artworks.index')->with('success', 'Obra añadida exitosamente.');
+        return redirect()->route('artworks.index')->with('success', 'Artwork created successfully.');
     }
 
     /**
@@ -76,7 +76,7 @@ class ArtworkController extends Controller
      */
     public function edit(Artwork $artwork)
     {
-        abort_if($artwork->user_id !== Auth::id(), 403, 'No tienes permiso para editar esta obra.');
+        abort_if($artwork->user_id !== Auth::id(), 403, 'You do not have permission to edit this artwork.');
         
         $collections = Auth::user()->collections()->get();
         $artworkCollections = $artwork->collections()->pluck('collections.id')->toArray();
@@ -89,16 +89,16 @@ class ArtworkController extends Controller
      */
     public function update(ArtworkRequest $request, Artwork $artwork)
     {
-        abort_if($artwork->user_id !== Auth::id(), 403, 'No tienes permiso para editar esta obra.');
+        abort_if($artwork->user_id !== Auth::id(), 403, 'You do not have permission to edit this artwork.');
 
         $url = $request->input('external_url');
         
-        // Si la URL cambió o queremos forzar el reprocesamiento
+        // Reprocess external URL
         $embedData = $this->embedService->processUrl($url);
 
         if (!$embedData) {
             return back()->withInput()->withErrors([
-                'external_url' => 'La URL proporcionada no pertenece a nuestra lista blanca de sitios permitidos, o el enlace no es válido.'
+                'external_url' => 'The provided URL does not belong to supported platforms or is invalid.'
             ]);
         }
 
@@ -118,7 +118,7 @@ class ArtworkController extends Controller
         $validCollections = Auth::user()->collections()->whereIn('id', $request->input('collections', []))->pluck('id');
         $artwork->collections()->sync($validCollections);
 
-        return redirect()->route('artworks.index')->with('success', 'Obra actualizada correctamente.');
+        return redirect()->route('artworks.index')->with('success', 'Artwork updated successfully.');
     }
 
     /**
@@ -126,15 +126,15 @@ class ArtworkController extends Controller
      */
     public function destroy(Artwork $artwork)
     {
-        abort_if($artwork->user_id !== Auth::id(), 403, 'No tienes permiso para eliminar esta obra.');
+        abort_if($artwork->user_id !== Auth::id(), 403, 'You do not have permission to delete this artwork.');
 
         $artwork->delete(); // Soft delete
 
-        return redirect()->route('artworks.index')->with('success', 'La obra ha sido enviada a la papelera.');
+        return redirect()->route('artworks.index')->with('success', 'Artwork moved to trash.');
     }
 
     /**
-     * Devuelve los metadatos y la imagen de previsualización para una URL externa.
+     * Returns preview metadata for an external URL.
      */
     public function previewUrl(Request $request)
     {
@@ -143,7 +143,7 @@ class ArtworkController extends Controller
         if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Por favor introduce una URL válida.',
+                'message' => 'Please enter a valid URL.',
             ], 422);
         }
 
@@ -152,7 +152,7 @@ class ArtworkController extends Controller
         if (!$embedData) {
             return response()->json([
                 'success' => false,
-                'message' => 'El dominio de la URL no pertenece a los sitios permitidos o no se pudo resolver.',
+                'message' => 'The URL domain is not supported or could not be resolved.',
             ], 422);
         }
 

@@ -2,62 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendContactEmail;
+use App\Mail\ContactArtist;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
     /**
-     * Enviar mensaje de contacto seguro hacia un artista (RF-06, RN-05, RNF-01).
+     * Send a contact message directly to the artist.
      */
     public function send(Request $request, string $slug)
     {
         $sender = Auth::user();
         $artist = User::where('slug', $slug)->firstOrFail();
 
-        // ── RN-05: Regla Anti-Auto-Contacto ──────────────────────────────────
+        // Prevent users from contacting themselves
         if ($sender->id === $artist->id) {
+            $msg = 'You cannot send a contact message to yourself.';
             if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No puedes enviarte un mensaje de contacto a ti mismo.',
-                ], 403);
+                return response()->json(['success' => false, 'message' => $msg], 403);
             }
-
-            return redirect()->back()->with('error', 'No puedes enviarte un mensaje de contacto a ti mismo.');
+            return redirect()->back()->with('error', $msg);
         }
 
-        // ── Validación de entrada ───────────────────────────────────────────
+        // Validate contact message input
         $validated = $request->validate([
             'subject' => ['required', 'string', 'max:150'],
             'message' => ['required', 'string', 'min:10', 'max:2500'],
-        ], [
-            'subject.required' => 'Debes indicar el motivo o asunto del contacto.',
-            'subject.max' => 'El motivo no puede superar los 150 caracteres.',
-            'message.required' => 'Debes escribir un mensaje para el artista.',
-            'message.min' => 'El mensaje debe tener al menos 10 caracteres.',
-            'message.max' => 'El mensaje no puede superar los 2500 caracteres.',
         ]);
 
-        // ── Despacho Asíncrono a la Cola de BD (RNF-01: respuesta < 100 ms) ──
-        SendContactEmail::dispatch(
+        // Send email to artist
+        Mail::to($artist->email)->send(new ContactArtist(
             $sender->name,
             $sender->email,
-            $artist->email,
             $artist->name,
             $validated['subject'],
             $validated['message']
-        );
+        ));
+
+        $successMsg = 'Your message has been sent to the artist successfully!';
 
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => '¡Tu mensaje ha sido enviado exitosamente al artista!',
+                'message' => $successMsg,
             ]);
         }
 
-        return redirect()->back()->with('success', '¡Tu mensaje ha sido enviado exitosamente al artista!');
+        return redirect()->back()->with('success', $successMsg);
     }
 }
+

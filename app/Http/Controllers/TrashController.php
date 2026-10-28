@@ -22,7 +22,7 @@ class TrashController extends Controller
     }
 
     /**
-     * Restaurar una obra de la papelera con regla RN-03.
+     * Restore an artwork from trash.
      */
     public function restore($id)
     {
@@ -30,14 +30,13 @@ class TrashController extends Controller
     }
 
     /**
-     * Restaurar una obra de la papelera.
-     * RN-03: Si la colección asociada fue eliminada o no existe, se desvincula.
+     * Restore an artwork from trash.
+     * Detach from collections if the collection was also deleted.
      */
     public function restoreArtwork($id)
     {
         $artwork = Auth::user()->artworks()->onlyTrashed()->findOrFail($id);
 
-        // RN-03: Desvincular de colecciones que se encuentren en papelera o hayan sido eliminadas
         $trashedCollectionIds = $artwork->collections()->withTrashed()
             ->whereNotNull('collections.deleted_at')
             ->pluck('collections.id')
@@ -50,14 +49,14 @@ class TrashController extends Controller
         $artwork->restore();
 
         $message = !empty($trashedCollectionIds)
-            ? 'Obra restaurada en el catálogo general (desvinculada de su colección eliminada).'
-            : 'Obra restaurada correctamente.';
+            ? 'Artwork restored to general catalog (detached from deleted collection).'
+            : 'Artwork restored successfully.';
 
         return redirect()->back()->with('success', $message);
     }
 
     /**
-     * Eliminar definitivamente una obra.
+     * Delete an artwork permanently.
      */
     public function destroy($id)
     {
@@ -65,7 +64,7 @@ class TrashController extends Controller
     }
 
     /**
-     * Eliminar permanentemente una obra.
+     * Permanently delete an artwork.
      */
     public function destroyArtwork($id)
     {
@@ -73,22 +72,22 @@ class TrashController extends Controller
         $artwork->collections()->detach();
         $artwork->forceDelete();
 
-        return redirect()->back()->with('success', 'Obra eliminada permanentemente.');
+        return redirect()->back()->with('success', 'Artwork permanently deleted.');
     }
 
     /**
-     * Restaurar una colección de la papelera.
+     * Restore a collection from trash.
      */
     public function restoreCollection($id)
     {
         $collection = Auth::user()->collections()->onlyTrashed()->findOrFail($id);
         $collection->restore();
 
-        return redirect()->back()->with('success', 'Colección restaurada correctamente.');
+        return redirect()->back()->with('success', 'Collection restored successfully.');
     }
 
     /**
-     * Eliminar permanentemente una colección.
+     * Permanently delete a collection.
      */
     public function destroyCollection($id)
     {
@@ -96,30 +95,28 @@ class TrashController extends Controller
         $collection->artworks()->detach();
         $collection->forceDelete();
 
-        return redirect()->back()->with('success', 'Colección eliminada permanentemente.');
+        return redirect()->back()->with('success', 'Collection permanently deleted.');
     }
 
     /**
-     * Vaciar por completo la papelera del usuario (obras y colecciones).
+     * Empty user trash completely.
      */
     public function emptyTrash()
     {
         $user = Auth::user();
 
-        // Eliminar definitivamente obras
         $trashedArtworks = $user->artworks()->onlyTrashed()->get();
         foreach ($trashedArtworks as $art) {
             $art->collections()->detach();
             $art->forceDelete();
         }
 
-        // Eliminar definitivamente colecciones
         $trashedCollections = $user->collections()->onlyTrashed()->get();
         foreach ($trashedCollections as $col) {
             $col->artworks()->detach();
             $col->forceDelete();
         }
 
-        return redirect()->back()->with('success', 'La papelera ha sido vaciada por completo.');
+        return redirect()->back()->with('success', 'Trash emptied successfully.');
     }
 }

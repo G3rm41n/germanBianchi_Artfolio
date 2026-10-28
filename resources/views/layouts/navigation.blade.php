@@ -13,11 +13,16 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                        {{ __('Galería') }}
+                        {{ __('Gallery') }}
                     </x-nav-link>
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @if(Auth::check() && Auth::user()->is_admin)
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                            {{ __('Admin Panel') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -39,17 +44,22 @@
                         </x-slot>
 
                         <x-slot name="content">
+                            @if(Auth::user()->is_admin)
+                                <x-dropdown-link :href="route('admin.dashboard')">
+                                    {{ __('Admin Panel') }}
+                                </x-dropdown-link>
+                            @endif
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Profile') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="route('collections.index')">
-                                {{ __('Mis Colecciones') }}
+                                {{ __('My Collections') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="route('bookmarks.index')">
-                                {{ __('Mis Favoritos') }}
+                                {{ __('My Favorites') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="route('trash.index')">
-                                {{ __('Papelera') }}
+                                {{ __('Trash') }}
                             </x-dropdown-link>
 
                             <!-- Authentication -->
@@ -85,9 +95,17 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                {{ __('Gallery') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @if(Auth::check() && Auth::user()->is_admin)
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                    {{ __('Admin Panel') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
@@ -106,13 +124,13 @@
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('collections.index')">
-                        {{ __('Mis Colecciones') }}
+                        {{ __('My Collections') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('bookmarks.index')">
-                        {{ __('Mis Favoritos') }}
+                        {{ __('My Favorites') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('trash.index')">
-                        {{ __('Papelera') }}
+                        {{ __('Trash') }}
                     </x-responsive-nav-link>
 
                     <!-- Authentication -->

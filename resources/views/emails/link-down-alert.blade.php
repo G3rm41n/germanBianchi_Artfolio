@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enlace no disponible en Artfolio</title>
+    <title>Link Unavailable on Artfolio</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -114,49 +114,49 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Artfolio Moderación</h1>
-            <p>Notificación sobre la disponibilidad de tu publicación</p>
+            <h1>Artfolio Moderation</h1>
+            <p>Notification regarding the availability of your publication</p>
         </div>
 
         <!-- Body -->
         <div class="body">
             <div class="greeting">
-                ¡Hola, {{ $artist->name }}!
+                Hello, {{ $artist->name }}!
             </div>
             
             <p style="font-size: 14px; color: #334155; line-height: 1.6; margin-top: 0;">
-                Te informamos que hemos recibido un reporte indicando que el enlace multimedia externo de una de tus obras no se encuentra accesible o fue dado de baja en su plataforma de origen.
+                We are writing to inform you that we received a report indicating that the external media link for one of your artworks is no longer accessible or was taken down on its host platform.
             </p>
 
-            <!-- Alerta Informativa -->
+            <!-- Alert info -->
             <div class="alert-box">
-                <strong>Estado de tu obra: Oculta preventivamente.</strong><br>
-                Para mantener la mejor experiencia en la galería pública, la obra ha pasado a estado <em>Oculto</em>. Seguirá visible en tu panel personal y podrás reactivarla en cualquier momento actualizando su URL.
+                <strong>Artwork status: Temporarily hidden.</strong><br>
+                To maintain a quality experience in the public gallery, this artwork was switched to <em>Hidden</em>. It remains visible in your personal dashboard, and you can republish it at any time by updating its URL.
             </div>
 
-            <!-- Ficha de la obra -->
+            <!-- Artwork Details -->
             <div class="artwork-card">
                 <div class="artwork-title">{{ $artwork->title }}</div>
                 <div class="artwork-url">
-                    <strong>URL externa reportada:</strong> {{ $artwork->external_url }}
+                    <strong>Reported external URL:</strong> {{ $artwork->external_url }}
                 </div>
             </div>
 
             @if(!empty($adminNote))
                 <div class="admin-note-box">
-                    <strong style="color: #6b21a8; display: block; margin-bottom: 4px;">Nota del Administrador:</strong>
+                    <strong style="color: #6b21a8; display: block; margin-bottom: 4px;">Administrator Note:</strong>
                     {{ $adminNote }}
                 </div>
             @endif
 
             <p style="font-size: 14px; color: #475569; line-height: 1.5;">
-                Para restablecer la publicación en la galería, accede a la edición de la obra, introduce un enlace válido y vuelve a marcar su visibilidad como publicada:
+                To restore your artwork to the public gallery, edit the artwork, provide a working link, and set its visibility back to published:
             </p>
 
-            <!-- Botón de edición -->
+            <!-- Edit Button -->
             <div class="actions">
                 <a href="{{ route('artworks.edit', $artwork->id) }}" class="btn-action">
-                    Editar Obra y Actualizar Enlace
+                    Edit Artwork & Update Link
                 </a>
             </div>
         </div>
@@ -164,10 +164,10 @@
         <!-- Footer -->
         <div class="footer">
             <p style="margin: 0 0 4px 0;">
-                Este es un mensaje automático generado por el equipo de administración de <strong>Artfolio</strong> (Regla RN-02).
+                This is an automated notification from the <strong>Artfolio</strong> moderation team.
             </p>
             <p style="margin: 0;">
-                Si consideras que se trata de un error o el enlace ya funciona, puedes reactivarla directamente desde tu panel de artista.
+                If you believe this was an error or the link is functioning again, you can reactivate the artwork directly from your artist dashboard.
             </p>
         </div>
     </div>

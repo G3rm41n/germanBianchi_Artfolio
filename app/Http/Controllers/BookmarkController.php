@@ -23,7 +23,7 @@ class BookmarkController extends Controller
         return response()->json([
             'status' => 'success',
             'is_bookmarked' => $isBookmarked,
-            'message' => $isBookmarked ? 'Añadido a favoritos' : 'Eliminado de favoritos'
+            'message' => $isBookmarked ? 'Added to favorites' : 'Removed from favorites'
         ]);
     }
 }

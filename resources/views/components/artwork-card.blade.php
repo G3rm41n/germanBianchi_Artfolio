@@ -47,14 +47,14 @@
             @endif
         @endif
         
-        <!-- Overlay de Hover -->
+        <!-- Hover Overlay -->
         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
             <span class="opacity-0 group-hover:opacity-100 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-full font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                Ver Obra
+                View Artwork
             </span>
         </div>
 
-        <!-- Etiqueta de proveedor -->
+        <!-- Provider Badge -->
         @php
             $providerBadgeClasses = match(strtolower($artwork->provider)) {
                 'youtube' => 'bg-[#ff0000]/90 text-white',
@@ -90,9 +90,6 @@
             
             <div class="w-2/12 flex justify-end">
                 @auth
-                    @php
-                        $isBookmarked = auth()->user()->bookmarks()->where('artwork_id', $artwork->id)->exists();
-                    @endphp
                     <div x-data="{ bookmarked: {{ $isBookmarked ? 'true' : 'false' }}, loading: false }"
                          @bookmark-updated.window="if ($event.detail.id === {{ $artwork->id }}) bookmarked = $event.detail.status">
                         <button type="button" @click.stop="
@@ -108,14 +105,14 @@
                                 loading = false;
                                 window.dispatchEvent(new CustomEvent('bookmark-updated', { detail: { id: {{ $artwork->id }}, status: data.is_bookmarked } }));
                             }).catch(() => loading = false)
-                        " class="transition-colors focus:outline-none" :class="bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Guardar a Favoritos">
+                        " class="transition-colors focus:outline-none" :class="bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Save to Favorites">
                             <svg class="w-6 h-6 transition-all" :class="bookmarked ? 'fill-current scale-110' : 'scale-100'" :class="{'opacity-50': loading}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
                         </button>
                     </div>
                 @else
-                    <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Guardar a Favoritos">
+                    <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Save to Favorites">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>

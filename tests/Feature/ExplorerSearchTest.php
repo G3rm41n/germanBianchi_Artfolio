@@ -12,7 +12,7 @@ class ExplorerSearchTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * RF-07: La galería pública carga exitosamente y muestra solo obras publicadas.
+     * The public explorer renders only published artworks.
      */
     public function test_public_explorer_renders_published_artworks_only(): void
     {
@@ -63,7 +63,7 @@ class ExplorerSearchTest extends TestCase
     }
 
     /**
-     * RF-07: Búsqueda multi-campo por título, descripción y nombre del artista.
+     * Search by title, description, and artist name.
      */
     public function test_explorer_search_by_title_description_and_artist_name(): void
     {
@@ -108,7 +108,7 @@ class ExplorerSearchTest extends TestCase
     }
 
     /**
-     * RF-07: Filtrado por categorías multimedia.
+     * Category filtering in explorer.
      */
     public function test_explorer_filters_by_category(): void
     {
@@ -144,7 +144,7 @@ class ExplorerSearchTest extends TestCase
     }
 
     /**
-     * RF-07: Paginación de obras en bloques de 12 elementos.
+     * Explorer pagination.
      */
     public function test_explorer_paginates_properly(): void
     {

@@ -14,7 +14,7 @@ class TrashIndependentTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * RF-10: Borrado lógico (SoftDeletes) de obras.
+     * Artwork soft delete preserves record in database.
      */
     public function test_artwork_soft_delete_preserves_record_in_database(): void
     {
@@ -24,18 +24,18 @@ class TrashIndependentTest extends TestCase
         $response = $this->actingAs($artist)->delete("/artworks/{$artwork->id}");
         $response->assertRedirect('/artworks');
 
-        // Sigue existiendo en la tabla con deleted_at
+        // Still exists in table with deleted_at timestamp
         $this->assertSoftDeleted('artworks', ['id' => $artwork->id]);
         $this->assertDatabaseHas('artworks', ['id' => $artwork->id]);
 
-        // Aparece en la papelera del artista
+        // Appears in artist trash view
         $trashResponse = $this->actingAs($artist)->get('/papelera');
         $trashResponse->assertStatus(200);
         $trashResponse->assertSee('Obra a Papelera');
     }
 
     /**
-     * RF-10: Eliminar una colección no destruye ni altera las obras que contiene.
+     * Deleting a collection keeps associated artworks intact.
      */
     public function test_deleting_collection_keeps_artworks_intact(): void
     {
@@ -53,20 +53,19 @@ class TrashIndependentTest extends TestCase
 
         $collection->artworks()->attach($artwork->id);
 
-        // Se elimina la colección
+        // Delete collection
         $this->actingAs($artist)->delete("/collections/{$collection->id}");
 
         $this->assertSoftDeleted('collections', ['id' => $collection->id]);
 
-        // La obra permanece activa y no está en la papelera
+        // Artwork remains active and not deleted
         $freshArtwork = $artwork->fresh();
         $this->assertNull($freshArtwork->deleted_at);
         $this->assertEquals('published', $freshArtwork->status);
     }
 
     /**
-     * RF-10 / RN-03: Restauración independiente de obra huérfana.
-     * Si la colección asociada fue eliminada, al restaurar la obra se desvincula de la colección en papelera.
+     * Restoring an artwork detaches it from trashed collections.
      */
     public function test_restore_artwork_detaches_from_trashed_collections_rule_rn03(): void
     {
@@ -85,22 +84,22 @@ class TrashIndependentTest extends TestCase
 
         $collection->artworks()->attach($artwork->id);
 
-        // Ambas se envían a la papelera
+        // Both are moved to trash
         $collection->delete();
         $artwork->delete();
 
         $this->assertSoftDeleted('collections', ['id' => $collection->id]);
         $this->assertSoftDeleted('artworks', ['id' => $artwork->id]);
 
-        // El artista restaura únicamente la obra
+        // Artist restores only the artwork
         $restoreResponse = $this->actingAs($artist)->post("/papelera/obras/{$artwork->id}/restore");
         $restoreResponse->assertRedirect();
 
-        // 1. La obra ahora está activa (sin deleted_at)
+        // 1. Artwork is active
         $refreshedArtwork = $artwork->fresh();
         $this->assertNull($refreshedArtwork->deleted_at);
 
-        // 2. Se desvinculó de la colección eliminada (regla RN-03)
+        // 2. Detached from trashed collection
         $this->assertDatabaseMissing('artwork_collection', [
             'artwork_id' => $artwork->id,
             'collection_id' => $collection->id,
@@ -109,7 +108,7 @@ class TrashIndependentTest extends TestCase
     }
 
     /**
-     * RN-04: Purga automática de elementos con más de 30 días de antigüedad con model:prune.
+     * Automatic pruning removes records older than 30 days.
      */
     public function test_pruning_removes_records_older_than_30_days(): void
     {

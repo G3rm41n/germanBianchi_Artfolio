@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Mis Obras') }}
+                {{ __('My Artworks') }}
             </h2>
             <a href="{{ route('artworks.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out shadow-sm">
-                + Añadir Nueva Obra
+                + Add New Artwork
             </a>
         </div>
     </x-slot>
@@ -46,26 +46,26 @@
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 truncate pr-2" title="{{ $artwork->title }}">{{ $artwork->title }}</h3>
                                 <span class="px-2 py-1 text-xs rounded-full flex-shrink-0 {{ $artwork->status === 'published' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-yellow-100 text-yellow-800 border border-yellow-200' }}">
-                                    {{ $artwork->status === 'published' ? 'Público' : 'Oculto' }}
+                                    {{ $artwork->status === 'published' ? 'Public' : 'Hidden' }}
                                 </span>
                             </div>
                             
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 mb-4 line-clamp-2 h-10">
-                                {{ $artwork->description ?: 'Sin descripción' }}
+                                {{ $artwork->description ?: 'No description' }}
                             </p>
                             
                             <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                                 <a href="{{ route('artworks.edit', $artwork) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-semibold flex items-center transition-colors">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                    Editar
+                                    Edit
                                 </a>
                                 
-                                <form action="{{ route('artworks.destroy', $artwork) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas enviar esta obra a la papelera? (Se mantendrá durante 30 días antes de ser eliminada definitivamente)');">
+                                <form action="{{ route('artworks.destroy', $artwork) }}" method="POST" onsubmit="return confirm('Are you sure you want to move this artwork to trash? (It will be kept for 30 days before permanent deletion)');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-semibold flex items-center transition-colors">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        Papelera
+                                        Trash
                                     </button>
                                 </form>
                             </div>
@@ -76,14 +76,14 @@
                         <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">No tienes obras publicadas</h3>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Comienza compartiendo tu arte mediante un enlace de YouTube, Sketchfab, ArtStation, Vimeo, o cualquier servicio admitido.</p>
+                        <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">No artworks published yet</h3>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Start sharing your art by adding a link from YouTube, Sketchfab, ArtStation, Vimeo, or any supported provider.</p>
                         <div class="mt-6">
                             <a href="{{ route('artworks.create') }}" class="inline-flex items-center px-5 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
                                 <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                                 </svg>
-                                Publicar mi primera obra
+                                Publish My First Artwork
                             </a>
                         </div>
                     </div>
