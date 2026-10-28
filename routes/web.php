@@ -40,8 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/papelera/{id}/restore', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
     Route::delete('/papelera/{id}', [App\Http\Controllers\TrashController::class, 'destroy'])->name('trash.destroy');
 
-    // Artist Contact
-    Route::post('/artista/{slug}/contact', [App\Http\Controllers\ContactController::class, 'send'])->name('artist.contact');
+    // Artist Contact (Deshabilitado temporalmente)
+    // Route::post('/artista/{slug}/contact', [App\Http\Controllers\ContactController::class, 'send'])->name('artist.contact');
 
     // Artwork Reports
     Route::post('/obras/{id}/report', [App\Http\Controllers\ReportController::class, 'store'])->name('artworks.report');

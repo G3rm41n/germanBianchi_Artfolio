@@ -23,21 +23,6 @@ class GuestInterceptorTest extends TestCase
     }
 
     /**
-     * Guests cannot send contact messages to artists.
-     */
-    public function test_guest_cannot_send_contact_message(): void
-    {
-        $artist = User::factory()->create();
-
-        $response = $this->postJson("/artista/{$artist->slug}/contact", [
-            'subject' => 'Commission inquiry',
-            'message' => 'Hello, I would like to request a custom illustration.',
-        ]);
-
-        $response->assertStatus(401);
-    }
-
-    /**
      * Guests cannot report artworks.
      */
     public function test_guest_cannot_report_artwork(): void

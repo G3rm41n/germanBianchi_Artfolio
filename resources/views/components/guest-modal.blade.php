@@ -2,7 +2,7 @@
     x-data="{ 
         open: false,
         title: 'Join the Artfolio Community',
-        message: 'To interact with artworks, save favorites, and contact creators, please log in or create a free account.',
+        message: 'To interact with artworks, save favorites, and explore creative portfolios, please log in or create a free account.',
         context: 'general',
 
         handleOpen(e) {
@@ -13,8 +13,6 @@
                 this.title = detail.title;
             } else if (this.context === 'favorito') {
                 this.title = 'Save Your Favorite Artworks';
-            } else if (this.context === 'contacto') {
-                this.title = 'Contact the Artist Directly';
             } else if (this.context === 'reporte') {
                 this.title = 'Help Us Moderate Artfolio';
             } else {
@@ -25,12 +23,10 @@
                 this.message = detail.message;
             } else if (this.context === 'favorito') {
                 this.message = 'Create your private bookmarks and keep your favorite multimedia works at your fingertips with a single click.';
-            } else if (this.context === 'contacto') {
-                this.message = 'Send secure direct messages to request commissions, check availability, or collaborate.';
             } else if (this.context === 'reporte') {
                 this.message = 'Log in to report a broken link or inappropriate content to help maintain community quality.';
             } else {
-                this.message = 'To interact with artworks, organize private lists, and contact creators, log in or create your free account.';
+                this.message = 'To interact with artworks and organize private lists, log in or create your free account.';
             }
 
             this.open = true;
