@@ -55,4 +55,31 @@ class EmailVerificationTest extends TestCase
 
         $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
+
+    public function test_unverified_user_is_redirected_to_verify_email_when_accessing_dashboard(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertRedirect('/verify-email');
+    }
+
+    public function test_unverified_user_cannot_create_artwork(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $response = $this->actingAs($user)->get(route('artworks.create'));
+
+        $response->assertRedirect('/verify-email');
+    }
+
+    public function test_verified_user_can_access_dashboard(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertStatus(200);
+    }
 }

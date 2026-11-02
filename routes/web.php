@@ -20,31 +20,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    // Artworks & Collections
-    Route::post('artworks/preview-url', [App\Http\Controllers\ArtworkController::class, 'previewUrl'])->name('artworks.preview');
-    Route::resource('artworks', App\Http\Controllers\ArtworkController::class);
-    Route::resource('collections', App\Http\Controllers\CollectionController::class);
 
-    // Bookmarks / Favorites
-    Route::get('/favoritos', [App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
-    Route::post('/obras/{id}/bookmark', [App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+    // Protected actions requiring email verification
+    Route::middleware('verified')->group(function () {
+        // Artworks & Collections
+        Route::post('artworks/preview-url', [App\Http\Controllers\ArtworkController::class, 'previewUrl'])->name('artworks.preview');
+        Route::resource('artworks', App\Http\Controllers\ArtworkController::class);
+        Route::resource('collections', App\Http\Controllers\CollectionController::class);
 
-    // Trash
-    Route::get('/papelera', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
-    Route::post('/papelera/obras/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreArtwork'])->name('trash.artworks.restore');
-    Route::delete('/papelera/obras/{id}', [App\Http\Controllers\TrashController::class, 'destroyArtwork'])->name('trash.artworks.destroy');
-    Route::post('/papelera/colecciones/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreCollection'])->name('trash.collections.restore');
-    Route::delete('/papelera/colecciones/{id}', [App\Http\Controllers\TrashController::class, 'destroyCollection'])->name('trash.collections.destroy');
-    Route::post('/papelera/vaciar', [App\Http\Controllers\TrashController::class, 'emptyTrash'])->name('trash.empty');
-    Route::post('/papelera/{id}/restore', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
-    Route::delete('/papelera/{id}', [App\Http\Controllers\TrashController::class, 'destroy'])->name('trash.destroy');
+        // Bookmarks / Favorites
+        Route::get('/favoritos', [App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
+        Route::post('/obras/{id}/bookmark', [App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
 
-    // Artist Contact (Deshabilitado temporalmente)
-    // Route::post('/artista/{slug}/contact', [App\Http\Controllers\ContactController::class, 'send'])->name('artist.contact');
+        // Trash
+        Route::get('/papelera', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
+        Route::post('/papelera/obras/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreArtwork'])->name('trash.artworks.restore');
+        Route::delete('/papelera/obras/{id}', [App\Http\Controllers\TrashController::class, 'destroyArtwork'])->name('trash.artworks.destroy');
+        Route::post('/papelera/colecciones/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreCollection'])->name('trash.collections.restore');
+        Route::delete('/papelera/colecciones/{id}', [App\Http\Controllers\TrashController::class, 'destroyCollection'])->name('trash.collections.destroy');
+        Route::post('/papelera/vaciar', [App\Http\Controllers\TrashController::class, 'emptyTrash'])->name('trash.empty');
+        Route::post('/papelera/{id}/restore', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
+        Route::delete('/papelera/{id}', [App\Http\Controllers\TrashController::class, 'destroy'])->name('trash.destroy');
 
-    // Artwork Reports
-    Route::post('/obras/{id}/report', [App\Http\Controllers\ReportController::class, 'store'])->name('artworks.report');
+        // Artwork Reports
+        Route::post('/obras/{id}/report', [App\Http\Controllers\ReportController::class, 'store'])->name('artworks.report');
+    });
 });
 
 // Admin Panel Routes
