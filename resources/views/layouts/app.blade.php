@@ -50,5 +50,6 @@
         </div>
         
         <x-guest-modal />
+        <x-session-timeout-modal />
     </body>
 </html>

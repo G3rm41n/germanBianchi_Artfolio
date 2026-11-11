@@ -17,6 +17,16 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Session Keep-Alive Endpoint
+    Route::post('/session/keep-alive', function () {
+        session()->put('last_activity', now()->timestamp);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Session extended successfully',
+            'lifetime_minutes' => config('session.lifetime', 10),
+        ]);
+    })->name('session.keepAlive');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

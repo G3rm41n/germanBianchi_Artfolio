@@ -204,5 +204,7 @@
                 </main>
             </div>
         </div>
+
+        <x-session-timeout-modal />
     </body>
 </html>
