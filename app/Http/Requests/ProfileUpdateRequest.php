@@ -42,6 +42,7 @@ class ProfileUpdateRequest extends FormRequest
             'hiring_types' => ['nullable', 'array'],
             'hiring_types.*' => ['in:full-time,contract,freelance'],
             'public_email_enabled' => ['nullable', 'boolean'],
+            'contact_email' => ['nullable', 'email', 'max:255'],
         ];
     }
 }

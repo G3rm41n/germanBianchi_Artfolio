@@ -97,6 +97,7 @@ class OnboardingController extends Controller
             'commission_status'    => $validated['commission_status'],
             'hiring_types'         => $validated['hiring_types'] ?? [],
             'public_email_enabled' => $validated['public_email_enabled'] ?? false,
+            'contact_email'        => !empty($validated['contact_email']) ? trim($validated['contact_email']) : null,
         ]);
 
         $user->onboarding_step = 3;

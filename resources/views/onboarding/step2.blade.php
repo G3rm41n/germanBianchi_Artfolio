@@ -348,25 +348,92 @@
             @enderror
         </div>
 
-        <!-- 7. Public Email Toggle -->
+        <!-- 7. Public Email Toggle & Custom Email Address -->
         @php
             $publicEmail = old('public_email_enabled', $user->public_email_enabled ?? false);
+            $contactEmail = old('contact_email', $user->contact_email ?? '');
         @endphp
-        <div class="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 flex items-start gap-3">
-            <input type="checkbox"
-                   id="public_email_enabled"
-                   name="public_email_enabled"
-                   value="1"
-                   {{ $publicEmail ? 'checked' : '' }}
-                   class="mt-1 rounded text-indigo-600 focus:ring-indigo-500">
-            <div>
-                <label for="public_email_enabled" class="block text-sm font-bold text-gray-900 dark:text-white cursor-pointer">
-                    Show contact email publicly
-                </label>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                    When enabled, potential clients and recruiters can see your email address ({{ $user->email }}) on your public portfolio to inquire about work.
-                </p>
+        <div x-data="{
+            showEmail: {{ $publicEmail ? 'true' : 'false' }},
+            useCustomEmail: {{ !empty($contactEmail) ? 'true' : 'false' }},
+            customEmail: '{{ addslashes($contactEmail) }}',
+            accountEmail: '{{ addslashes($user->email) }}'
+        }"
+        class="p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 space-y-4">
+            <div class="flex items-start gap-3">
+                <input type="checkbox"
+                       id="public_email_enabled"
+                       name="public_email_enabled"
+                       value="1"
+                       x-model="showEmail"
+                       class="mt-1 rounded text-indigo-600 focus:ring-indigo-500">
+                <div>
+                    <label for="public_email_enabled" class="block text-sm font-bold text-gray-900 dark:text-white cursor-pointer">
+                        Show contact email publicly
+                    </label>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Allow potential clients, art directors, and recruiters to contact you directly from your public portfolio.
+                    </p>
+                </div>
             </div>
+
+            <!-- Email Options (Visible only when showEmail is true) -->
+            <div x-show="showEmail"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 style="display: none;"
+                 class="pt-3 border-t border-indigo-100 dark:border-indigo-900/60 sm:pl-7 space-y-3">
+
+                <p class="text-xs font-bold text-gray-700 dark:text-gray-300">
+                    Which email would you like to display for inquiries?
+                </p>
+
+                <!-- Radio 1: Use account email -->
+                <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-gray-800 dark:text-gray-200">
+                    <input type="radio"
+                           name="email_source_type"
+                           :checked="!useCustomEmail"
+                           @change="useCustomEmail = false; customEmail = ''"
+                           class="text-indigo-600 focus:ring-indigo-500">
+                    <span>Use my account email: <strong class="text-indigo-600 dark:text-indigo-400 font-mono">{{ $user->email }}</strong></span>
+                </label>
+
+                <!-- Radio 2: Use custom / dedicated contact email -->
+                <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-gray-800 dark:text-gray-200">
+                    <input type="radio"
+                           name="email_source_type"
+                           :checked="useCustomEmail"
+                           @change="useCustomEmail = true; $nextTick(() => $refs.customEmailInput.focus())"
+                           class="text-indigo-600 focus:ring-indigo-500">
+                    <span>Use a custom business / commission email</span>
+                </label>
+
+                <!-- Custom Email input field -->
+                <div x-show="useCustomEmail"
+                     x-transition
+                     style="display: none;"
+                     class="pt-2 sm:pl-6">
+                    <label for="contact_email" class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Custom Contact Email
+                    </label>
+                    <input type="email"
+                           id="contact_email"
+                           name="contact_email"
+                           x-ref="customEmailInput"
+                           x-model="customEmail"
+                           :disabled="!useCustomEmail"
+                           placeholder="e.g. contact@mystudio.com or commissions@artfolio.me"
+                           class="w-full sm:w-96 rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-xs focus:border-indigo-500 focus:ring-indigo-500 py-2.5 px-3 shadow-sm">
+                    <p class="text-[11px] text-gray-400 mt-1">This address will be shown on your profile instead of your account email.</p>
+                    @error('contact_email')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+            @error('public_email_enabled')
+                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
         <!-- Bottom Navigation Buttons -->

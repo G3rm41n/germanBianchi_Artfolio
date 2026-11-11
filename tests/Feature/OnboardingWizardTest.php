@@ -83,6 +83,7 @@ class OnboardingWizardTest extends TestCase
             'commission_status' => 'open',
             'hiring_types' => ['full-time', 'freelance'],
             'public_email_enabled' => true,
+            'contact_email' => 'business@artwizard.com',
         ]);
 
         $response->assertRedirect(route('onboarding.step', ['step' => 3]));
@@ -94,6 +95,8 @@ class OnboardingWizardTest extends TestCase
         $this->assertContains('Blender', $user->software);
         $this->assertEquals('open', $user->commission_status);
         $this->assertTrue($user->public_email_enabled);
+        $this->assertEquals('business@artwizard.com', $user->contact_email);
+        $this->assertEquals('business@artwizard.com', $user->getPublicEmail());
         $this->assertNull($user->onboarding_completed_at);
     }
 

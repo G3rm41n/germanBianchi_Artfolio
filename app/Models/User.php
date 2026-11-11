@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
     'name', 'email', 'password', 'slug', 'bio', 'commission_status',
     'is_admin', 'status', 'avatar_url', 'crop_x', 'crop_y', 'crop_zoom',
     'headline', 'city', 'country', 'skills', 'software', 'hiring_types',
-    'public_email_enabled', 'onboarding_step', 'onboarding_completed_at'
+    'public_email_enabled', 'contact_email', 'onboarding_step', 'onboarding_completed_at'
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
@@ -42,6 +42,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isOnboarded(): bool
     {
         return $this->onboarding_completed_at !== null;
+    }
+
+    public function getPublicEmail(): ?string
+    {
+        if (! $this->public_email_enabled) {
+            return null;
+        }
+
+        return $this->contact_email ?: $this->email;
     }
 
     // --- Slug auto-generado al crear ---
