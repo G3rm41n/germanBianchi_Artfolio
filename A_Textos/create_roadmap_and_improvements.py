@@ -337,36 +337,36 @@ def generate_roadmap_pdf():
 
     headers_list2 = ["#", "Prioridad", "Módulo / Categoría", "Nueva Funcionalidad Propuesta y Valor Agregado"]
     rows_list2 = [
-        ["1", "P1 - Inmediata", "Portafolio Público", "Enlaces a Redes Sociales Oficiales: Campos en el perfil para ArtStation, Instagram, Behance, X y sitio web con íconos en cabecera."],
-        ["2", "P1 - Inmediata", "Analítica de Obras", "Contador de Vistas (Views Counter): Registro del número de aperturas de cada obra en el visor modal y visualización en las tarjetas."],
-        ["3", "P1 - Inmediata", "Catálogo y Filtros", "Sistema de Etiquetas (Tags / Hashtags): Relación muchos-a-muchos para etiquetar obras (#blender, #pixelart, #lowpoly) y filtrar por tag."],
-        ["4", "P1 - Inmediata", "Descubrimiento", "Obras Destacadas (Pinned Artworks): Permitir al artista fijar hasta 3 obras principales en la parte superior de su portafolio."],
-        ["5", "P1 - Inmediata", "Viralidad / UX", "Botón 'Share Artwork / Portfolio' con generación automática de código QR y copia rápida de enlace directo al portapapeles."],
-        ["6", "P1 - Inmediata", "Reconocimiento", "Insignia de Artista Verificado (Verified Badge): Check azul otorgable por el administrador a artistas destacados de la comunidad."],
-        ["7", "P1 - Inmediata", "Curaduría Personal", "Portada Personalizada de Perfil (Banner Image): Imagen panorámica superior en el portafolio público del artista."],
-        ["8", "P2 - Alta", "Interacción Social", "Sistema de Aplausos / Likes ('Appreciations'): Botón de reconocimiento público separado del guardado privado en Favoritos."],
-        ["9", "P2 - Alta", "Detalle Técnico", "Ficha de Herramientas y Software Usado: Selector de programas utilizados en cada obra (Photoshop, ZBrush, Unreal, Ableton)."],
-        ["10", "P2 - Alta", "Comisiones", "Tabla de Tarifas y Servicios (Commission Sheet): Sección estructurada en el perfil del artista detallando precios base y tiempos de entrega."],
-        ["11", "P2 - Alta", "Nuevos Proveedores", "Ampliación de EmbedService: Soporte para SoundCloud, Vimeo, CodePen (arte generativo), Bandcamp y ArtStation embeds."],
-        ["12", "P2 - Alta", "Presentación", "Modo Presentación / Slideshow a Pantalla Completa: Botón en las colecciones para reproducir las obras secuencialmente como exposición."],
-        ["13", "P2 - Alta", "Derechos de Autor", "Selector de Licencia Creative Commons / Copyright: Especificar en cada obra si permite uso comercial, atribución o todos los derechos reservados."],
-        ["14", "P2 - Alta", "Moderación Activa", "Centro de Notificaciones Internas (Campana en Navbar): Avisos en la barra superior cuando una obra recibe favoritos o alertas del admin."],
-        ["15", "P3 - Media", "Exportación", "Generador de CV / Portafolio en PDF: Botón para que el artista descargue un resumen elegante en PDF de su biografía y mejores obras."],
-        ["16", "P3 - Media", "Exploración Visual", "Filtro por Paleta de Colores Dominante: Asignar color principal a cada obra visual y permitir explorar la galería por tonalidades."],
-        ["17", "P3 - Media", "Internacionalización", "Selector de Idioma Dinámico (EN / ES): Botón en la barra superior junto al cambio de tema para alternar toda la interfaz entre inglés y español."],
-        ["18", "P3 - Media", "Seguridad", "Registro de Actividad de Moderación (Audit Log): Tabla histórica para saber qué administrador suspendió a un usuario o resolvió un reporte."],
-        ["19", "P3 - Media", "Productividad", "Acciones por Lote (Bulk Actions) en Mis Obras: Seleccionar varias obras a la vez para cambiar su estado, moverlas a una colección o enviarlas a papelera."],
-        ["20", "P3 - Media", "Comunidad", "Directorio Público de Artistas (/artists): Página dedicada a explorar creadores filtrando por disponibilidad de comisiones ('Open') y especialidad."],
-        ["21", "P3 - Media", "Proceso Creativo", "Comparador Interactivo 'Antes / Después' (Wireframe vs Render Final): Slider superpuesto para mostrar el detrás de escena de una obra."],
-        ["22", "P3 - Media", "Integración", "Canal RSS / JSON Feed por Artista: URL pública (/artista/{slug}/feed) para que seguidores se suscriban a las novedades del creador."],
-        ["23", "P4 - Exploratoria", "Social", "Sistema de Seguimiento entre Artistas (Follow / Following) y pestaña de feed personalizado con obras de artistas seguidos."],
-        ["24", "P4 - Exploratoria", "Feedback", "Comentarios Curados por Obra: Sección de comentarios donde el artista autor tiene control para aprobar, fijar o desactivar comentarios."],
-        ["25", "P4 - Exploratoria", "E-Commerce Ligero", "Enlaces de Compra / Descarga Directa (Gumroad, Patreon, Ko-fi, Itch.io) integrados como botón de acción en cada obra."],
-        ["26", "P4 - Exploratoria", "Autenticación", "Inicio de Sesión Social (OAuth con Google y GitHub/Discord) mediante Laravel Socialite para registro en un clic."],
-        ["27", "P4 - Exploratoria", "Curaduría Editorial", "Sección 'Staff Picks / Obra de la Semana' en la portada elegida desde el panel de administración."],
-        ["28", "P4 - Exploratoria", "Protección", "Filtro de Contenido Sensible / Maduro (NSFW Blur Toggle): Desenfoque preventivo opcional que el visitante decide revelar con un clic."],
-        ["29", "P4 - Exploratoria", "Colaboración", "Colecciones Colaborativas o Co-Autoría: Permitir acreditar a más de un artista registrado en un mismo proyecto multidisciplinario."],
-        ["30", "P4 - Exploratoria", "API Abierta", "Widget Embebible / API Pública Read-Only: Permitir al artista incrustar una tarjeta interactiva de su portafolio Artfolio en su blog externo."]
+        ["1", "P1 - Inmediata", "Onboarding / FTUE", "Asistente de Onboarding Inicial (3 Etapas estilo ArtStation): Flujo guiado obligatorio post-registro (Paso 1: Información Básica, Headline, País y Avatar; Paso 2: Perfil Profesional, Username/Slug público, Resumen, Habilidades y Comisiones; Paso 3: Felicitaciones y Lanzamiento a Homepage) con middleware de bloqueo que intercepta cualquier navegación y re-login hasta completar el perfil."],
+        ["2", "P1 - Inmediata", "Portafolio Público", "Enlaces a Redes Sociales Oficiales: Campos en el perfil para ArtStation, Instagram, Behance, X y sitio web con íconos en cabecera."],
+        ["3", "P1 - Inmediata", "Analítica de Obras", "Contador de Vistas (Views Counter): Registro del número de aperturas de cada obra en el visor modal y visualización en las tarjetas."],
+        ["4", "P1 - Inmediata", "Catálogo y Filtros", "Sistema de Etiquetas (Tags / Hashtags): Relación muchos-a-muchos para etiquetar obras (#blender, #pixelart, #lowpoly) y filtrar por tag."],
+        ["5", "P1 - Inmediata", "Descubrimiento", "Obras Destacadas (Pinned Artworks): Permitir al artista fijar hasta 3 obras principales en la parte superior de su portafolio."],
+        ["6", "P1 - Inmediata", "Viralidad / UX", "Botón 'Share Artwork / Portfolio' con generación automática de código QR y copia rápida de enlace directo al portapapeles."],
+        ["7", "P1 - Inmediata", "Reconocimiento", "Insignia de Artista Verificado (Verified Badge): Check azul otorgable por el administrador a artistas destacados de la comunidad."],
+        ["8", "P1 - Inmediata", "Curaduría Personal", "Portada Personalizada de Perfil (Banner Image): Imagen panorámica superior en el portafolio público del artista."],
+        ["9", "P2 - Alta", "Interacción Social", "Sistema de Aplausos / Likes ('Appreciations'): Botón de reconocimiento público separado del guardado privado en Favoritos."],
+        ["10", "P2 - Alta", "Detalle Técnico", "Ficha de Herramientas y Software Usado: Selector de programas utilizados en cada obra (Photoshop, ZBrush, Unreal, Ableton)."],
+        ["11", "P2 - Alta", "Comisiones", "Tabla de Tarifas y Servicios (Commission Sheet): Sección estructurada en el perfil del artista detallando precios base y tiempos de entrega."],
+        ["12", "P2 - Alta", "Nuevos Proveedores", "Ampliación de EmbedService: Soporte para SoundCloud, Vimeo, CodePen (arte generativo), Bandcamp y ArtStation embeds."],
+        ["13", "P2 - Alta", "Presentación", "Modo Presentación / Slideshow a Pantalla Completa: Botón en las colecciones para reproducir las obras secuencialmente como exposición."],
+        ["14", "P2 - Alta", "Derechos de Autor", "Selector de Licencia Creative Commons / Copyright: Especificar en cada obra si permite uso comercial, atribución o todos los derechos reservados."],
+        ["15", "P2 - Alta", "Moderación Activa", "Centro de Notificaciones Internas (Campana en Navbar): Avisos en la barra superior cuando una obra recibe favoritos o alertas del admin."],
+        ["16", "P3 - Media", "Exportación", "Generador de CV / Portafolio en PDF: Botón para que el artista descargue un resumen elegante en PDF de su biografía y mejores obras."],
+        ["17", "P3 - Media", "Exploración Visual", "Filtro por Paleta de Colores Dominante: Asignar color principal a cada obra visual y permitir explorar la galería por tonalidades."],
+        ["18", "P3 - Media", "Internacionalización", "Selector de Idioma Dinámico (EN / ES): Botón en la barra superior junto al cambio de tema para alternar toda la interfaz entre inglés y español."],
+        ["19", "P3 - Media", "Seguridad", "Registro de Actividad de Moderación (Audit Log): Tabla histórica para saber qué administrador suspendió a un usuario o resolvió un reporte."],
+        ["20", "P3 - Media", "Productividad", "Acciones por Lote (Bulk Actions) en Mis Obras: Seleccionar varias obras a la vez para cambiar su estado, moverlas a una colección o enviarlas a papelera."],
+        ["21", "P3 - Media", "Comunidad", "Directorio Público de Artistas (/artists): Página dedicada a explorar creadores filtrando por disponibilidad de comisiones ('Open') y especialidad."],
+        ["22", "P3 - Media", "Proceso Creativo", "Comparador Interactivo 'Antes / Después' (Wireframe vs Render Final): Slider superpuesto para mostrar el detrás de escena de una obra."],
+        ["23", "P3 - Media", "Integración", "Canal RSS / JSON Feed por Artista: URL pública (/artista/{slug}/feed) para que seguidores se suscriban a las novedades del creador."],
+        ["24", "P4 - Exploratoria", "Social", "Sistema de Seguimiento entre Artistas (Follow / Following) y pestaña de feed personalizado con obras de artistas seguidos."],
+        ["25", "P4 - Exploratoria", "Feedback", "Comentarios Curados por Obra: Sección de comentarios donde el artista autor tiene control para aprobar, fijar o desactivar comentarios."],
+        ["26", "P4 - Exploratoria", "E-Commerce Ligero", "Enlaces de Compra / Descarga Directa (Gumroad, Patreon, Ko-fi, Itch.io) integrados como botón de acción en cada obra."],
+        ["27", "P4 - Exploratoria", "Autenticación", "Inicio de Sesión Social (OAuth con Google y GitHub/Discord) mediante Laravel Socialite para registro en un clic."],
+        ["28", "P4 - Exploratoria", "Curaduría Editorial", "Sección 'Staff Picks / Obra de la Semana' en la portada elegida desde el panel de administración."],
+        ["29", "P4 - Exploratoria", "Protección", "Filtro de Contenido Sensible / Maduro (NSFW Blur Toggle): Desenfoque preventivo opcional que el visitante decide revelar con un clic."],
+        ["30", "P4 - Exploratoria", "Colaboración", "Colecciones Colaborativas o Co-Autoría: Permitir acreditar a más de un artista registrado en un mismo proyecto multidisciplinario."]
     ]
     add_priority_table(doc, headers_list2, rows_list2, [0.45, 0.95, 1.45, 3.95])
 
@@ -388,9 +388,10 @@ def generate_roadmap_pdf():
     )
     add_bullet(
         doc,
-        "Si se desea añadir un factor diferenciador extra de alto impacto visual con mínimo código, los ítems 1, 2 y 4 de la Lista 2 "
-        "(Redes sociales en el perfil, Contador de vistas por obra y Obras fijadas/destacadas) aportan un enorme valor estético y funcional "
-        "utilizando exactamente los mismos patrones de Laravel vistos en clase.",
+        "Si se desea añadir un factor diferenciador extra de alto impacto visual y profesionalismo, el ítem 1 de la Lista 2 "
+        "(Asistente de Onboarding Inicial en 3 Etapas con bloqueo estricto por middleware) junto a los ítems 2 y 3 "
+        "(Redes sociales en el perfil y Contador de vistas por obra) elevan la percepción de la plataforma al nivel de un producto comercial "
+        "como ArtStation o Behance, garantizando que ninguna cuenta quede incompleta o sin avatar.",
         bold_prefix="Fase B — Expansión Funcional Destacada (Opcional): "
     )
 
