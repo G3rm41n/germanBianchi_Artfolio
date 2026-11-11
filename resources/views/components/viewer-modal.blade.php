@@ -198,7 +198,7 @@
                                 
                                 <div class="flex items-center space-x-1 ml-4 flex-shrink-0">
                                     <!-- Add to Collection Picker Button -->
-                                    <x-collection-picker artwork-id-expr="artwork ? artwork.id : null" size="lg" placement="bottom" />
+                                    <x-collection-picker artwork-id-expr="artwork ? artwork.id : null" size="lg" placement="bottom" align="modal" />
 
                                     <!-- Report Artwork Button -->
                                     @auth

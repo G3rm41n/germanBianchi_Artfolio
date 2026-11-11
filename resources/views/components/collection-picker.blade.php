@@ -3,10 +3,16 @@
     'artworkIdExpr' => null,
     'size' => 'md',
     'placement' => 'top',
+    'align' => 'right',
 ])
 
 @php
     $isAuth = auth()->check();
+    $alignClasses = match($align) {
+        'left' => 'left-0',
+        'modal' => 'right-0 sm:-right-20',
+        default => 'right-0',
+    };
 @endphp
 
 <div class="relative inline-block text-left"
@@ -177,7 +183,7 @@
              x-transition:leave-start="opacity-100 scale-100 translate-y-0"
              x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
              style="display: none;"
-             class="absolute right-0 {{ $placement === 'bottom' ? 'top-full mt-2' : 'bottom-full mb-2' }} w-72 sm:w-80 rounded-2xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 z-[100] p-3 select-none text-left">
+             class="absolute {{ $alignClasses }} {{ $placement === 'bottom' ? 'top-full mt-2' : 'bottom-full mb-2' }} w-72 sm:w-[290px] max-w-[calc(100vw-2rem)] rounded-2xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 z-[100] p-3 select-none text-left">
             
             <!-- Popover Header -->
             <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-700/60 mb-2">
