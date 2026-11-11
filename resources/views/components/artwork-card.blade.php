@@ -10,8 +10,10 @@
 @endphp
 
 <div 
-    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-xl border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group"
-    x-data
+    class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-xl border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group"
+    x-data="{ pickerOpen: false }"
+    :class="pickerOpen ? 'relative z-50 ring-2 ring-indigo-500/20' : 'relative z-0'"
+    @collection-picker-toggled.stop="pickerOpen = $event.detail.open"
     @click="$dispatch('open-viewer', {{ json_encode([
         'id' => $artwork->id,
         'title' => $artwork->title,
@@ -35,7 +37,7 @@
     ]) }})"
 >
     <!-- Thumbnail/Preview area -->
-    <div class="h-56 bg-gray-100 dark:bg-gray-900 flex items-center justify-center border-b border-gray-100 dark:border-gray-800 relative overflow-hidden">
+    <div class="h-56 bg-gray-100 dark:bg-gray-900 flex items-center justify-center border-b border-gray-100 dark:border-gray-800 relative rounded-t-xl overflow-hidden">
         @if($artwork->thumbnail_url)
             <img src="{{ $artwork->preview_url ?: $artwork->thumbnail_url }}" alt="{{ $artwork->title }}" referrerpolicy="no-referrer" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
         @else
@@ -85,7 +87,7 @@
         @endif
     </div>
     
-    <div class="p-5">
+    <div class="p-5 relative z-20">
         <div class="flex justify-between items-start">
             <div class="flex-1 min-w-0 pr-2">
                 <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" title="{{ $artwork->title }}">
@@ -102,7 +104,7 @@
             
             <div class="flex items-center space-x-1 shrink-0">
                 <!-- Add to Collection Picker Button -->
-                <x-collection-picker :artwork-id="$artwork->id" size="sm" placement="top" />
+                <x-collection-picker :artwork-id="$artwork->id" size="sm" placement="bottom" />
 
                 <!-- Bookmark/Favorite Button -->
                 @auth

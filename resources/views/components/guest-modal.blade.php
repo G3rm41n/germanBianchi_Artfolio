@@ -38,7 +38,7 @@
     }" 
     @open-guest-modal.window="handleOpen($event)" 
     @keydown.escape.window="open = false"
-    class="relative z-50" 
+    class="relative z-[100]" 
     aria-labelledby="modal-title" 
     role="dialog" 
     aria-modal="true"

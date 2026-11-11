@@ -42,10 +42,19 @@
             if (!aid) return;
 
             this.open = !this.open;
+            this.$dispatch('collection-picker-toggled', { open: this.open });
             if (this.open) {
                 if (!this.hasLoaded || this.lastLoadedArtworkId !== aid) {
                     this.loadCollections();
                 }
+            }
+        },
+
+        closeDropdown() {
+            if (this.open) {
+                this.open = false;
+                this.creating = false;
+                this.$dispatch('collection-picker-toggled', { open: false });
             }
         },
 
@@ -145,7 +154,8 @@
         }
      }"
      @click.stop
-     @click.outside="open = false; creating = false;">
+     @click.outside="closeDropdown()"
+     @keydown.escape.window="closeDropdown()">
     
     <!-- Trigger Button -->
     <button type="button"
@@ -167,7 +177,7 @@
              x-transition:leave-start="opacity-100 scale-100 translate-y-0"
              x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
              style="display: none;"
-             class="absolute right-0 {{ $placement === 'bottom' ? 'top-full mt-2' : 'bottom-full mb-2' }} w-72 sm:w-80 rounded-2xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 z-50 p-3 select-none text-left">
+             class="absolute right-0 {{ $placement === 'bottom' ? 'top-full mt-2' : 'bottom-full mb-2' }} w-72 sm:w-80 rounded-2xl bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 z-[100] p-3 select-none text-left">
             
             <!-- Popover Header -->
             <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-700/60 mb-2">
@@ -175,14 +185,14 @@
                     <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     Add to Collection
                 </span>
-                <button type="button" @click="open = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                <button type="button" @click="closeDropdown()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
             <!-- Feedback Message Toast -->
-            <div x-show="feedback" x-transition class="mb-2 p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+            <div x-show="feedback" x-transition class="mb-2 p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 text-xs font-semibold text-indigo-700 dark:text-indigo-200 flex items-center gap-2 shadow-sm relative z-10">
+                <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                 <span x-text="feedback"></span>
             </div>
 
