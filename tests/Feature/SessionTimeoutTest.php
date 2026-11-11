@@ -55,3 +55,4 @@ class SessionTimeoutTest extends TestCase
         $response->assertSee('Sign out now');
     }
 }
+
