@@ -132,6 +132,11 @@ Route::prefix('admin')
 
         // Users & Artists Management
         Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+        Route::get('/users/export', [App\Http\Controllers\Admin\UserController::class, 'exportAll'])->name('users.exportAll');
+        Route::get('/users/{id}/export', [App\Http\Controllers\Admin\UserController::class, 'exportOne'])->name('users.exportOne');
+        Route::post('/users/import-check', [App\Http\Controllers\Admin\UserController::class, 'importCheck'])->name('users.importCheck');
+        Route::post('/users/import-one', [App\Http\Controllers\Admin\UserController::class, 'importOne'])->name('users.importOne');
+        Route::post('/users/import-all', [App\Http\Controllers\Admin\UserController::class, 'importAll'])->name('users.importAll');
         Route::post('/users/{id}/suspend', [App\Http\Controllers\Admin\UserController::class, 'suspend'])->name('users.suspend');
         Route::post('/users/{id}/activate', [App\Http\Controllers\Admin\UserController::class, 'activate'])->name('users.activate');
         Route::delete('/users/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
