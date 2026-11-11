@@ -287,12 +287,99 @@
                 @enderror
             </div>
 
-            <!-- Country (Required - Loaded dynamically from Open Countries API) -->
+            <!-- Country (Required - Interactive Searchable Combobox) -->
             <div x-data="{
                 countries: [],
                 loading: true,
                 source: '',
                 selectedCountry: '{{ old('country', $user->country ?? '') }}',
+                searchQuery: '{{ old('country', $user->country ?? '') }}',
+                isOpen: false,
+                highlightedIndex: 0,
+
+                get filteredCountries() {
+                    if (!this.searchQuery || !this.searchQuery.trim()) {
+                        return this.countries;
+                    }
+                    const q = this.searchQuery.toLowerCase().trim();
+                    const startsWith = [];
+                    const contains = [];
+
+                    for (const c of this.countries) {
+                        const lower = c.toLowerCase();
+                        if (lower.startsWith(q)) {
+                            startsWith.push(c);
+                        } else if (lower.includes(q)) {
+                            contains.push(c);
+                        }
+                    }
+
+                    return [...startsWith, ...contains];
+                },
+
+                select(country) {
+                    this.selectedCountry = country;
+                    this.searchQuery = country;
+                    this.isOpen = false;
+                    this.highlightedIndex = 0;
+                },
+
+                openDropdown() {
+                    if (!this.loading) {
+                        this.isOpen = true;
+                        this.highlightedIndex = 0;
+                    }
+                },
+
+                closeDropdown() {
+                    this.isOpen = false;
+                    // If user typed something that matches an existing country exactly, keep it
+                    const match = this.countries.find(c => c.toLowerCase() === this.searchQuery.toLowerCase().trim());
+                    if (match) {
+                        this.select(match);
+                    } else if (this.selectedCountry) {
+                        this.searchQuery = this.selectedCountry;
+                    }
+                },
+
+                onArrowDown() {
+                    if (!this.isOpen) {
+                        this.openDropdown();
+                        return;
+                    }
+                    if (this.highlightedIndex < this.filteredCountries.length - 1) {
+                        this.highlightedIndex++;
+                        this.scrollToHighlighted();
+                    }
+                },
+
+                onArrowUp() {
+                    if (this.highlightedIndex > 0) {
+                        this.highlightedIndex--;
+                        this.scrollToHighlighted();
+                    }
+                },
+
+                onEnter() {
+                    if (this.isOpen && this.filteredCountries.length > 0) {
+                        const choice = this.filteredCountries[this.highlightedIndex] || this.filteredCountries[0];
+                        if (choice) this.select(choice);
+                    }
+                },
+
+                scrollToHighlighted() {
+                    this.$nextTick(() => {
+                        const el = document.getElementById('country-option-' + this.highlightedIndex);
+                        if (el) el.scrollIntoView({ block: 'nearest' });
+                    });
+                },
+
+                clearSelection() {
+                    this.selectedCountry = '';
+                    this.searchQuery = '';
+                    this.isOpen = true;
+                    this.$refs.countryInput.focus();
+                },
 
                 async init() {
                     // 1. Check browser session cache for instantaneous 0ms reload
@@ -385,41 +472,102 @@
                     this.loading = false;
                     this.source = 'Local Fallback';
                 }
-            }">
-                <label for="country" class="block text-sm font-bold text-gray-900 dark:text-white mb-2">
+            }"
+            @click.outside="closeDropdown()"
+            class="relative">
+                <label for="country_search_input" class="block text-sm font-bold text-gray-900 dark:text-white mb-2">
                     Country <span class="text-red-500">*</span>
                 </label>
 
-                <div class="relative">
-                    <select id="country"
-                            name="country"
-                            x-model="selectedCountry"
-                            :disabled="loading"
-                            required
-                            class="w-full rounded-2xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 shadow-sm disabled:opacity-60 transition-opacity">
-                        <option value="" disabled :selected="!selectedCountry">
-                            <span x-text="loading ? 'Connecting to Open Countries API...' : 'Select your country...'">Select your country...</span>
-                        </option>
+                <!-- Hidden Input bound to form submission -->
+                <input type="hidden" name="country" :value="selectedCountry" required>
 
-                        <!-- Dynamic alphabetically sorted country options -->
-                        <template x-for="c in countries" :key="c">
-                            <option :value="c" x-text="c" :selected="selectedCountry === c"></option>
+                <div class="relative">
+                    <!-- Searchable Input Field -->
+                    <input type="text"
+                           id="country_search_input"
+                           x-ref="countryInput"
+                           x-model="searchQuery"
+                           :disabled="loading"
+                           @focus="openDropdown()"
+                           @click="openDropdown()"
+                           @input="openDropdown()"
+                           @keydown.arrow-down.prevent="onArrowDown()"
+                           @keydown.arrow-up.prevent="onArrowUp()"
+                           @keydown.enter.prevent="onEnter()"
+                           @keydown.escape="closeDropdown()"
+                           autocomplete="off"
+                           :placeholder="loading ? 'Connecting to Open Countries API...' : 'Type to search country (e.g. Argentina, Canada)...'"
+                           class="w-full rounded-2xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 pl-4 pr-10 shadow-sm disabled:opacity-60 transition-all">
+
+                    <!-- Right Action Icons (Clear / Arrow / Spinner) -->
+                    <div class="absolute right-3.5 top-3.5 flex items-center gap-1.5 text-gray-400">
+                        <!-- Spinner while loading -->
+                        <div x-show="loading" class="animate-spin h-4 w-4 text-indigo-500">
+                            <svg fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                        </div>
+
+                        <!-- Clear button if text entered -->
+                        <button type="button"
+                                x-show="searchQuery && !loading"
+                                @click.stop="clearSelection()"
+                                class="hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                                title="Clear country">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+
+                        <!-- Chevron indicator -->
+                        <button type="button"
+                                @click.stop="isOpen ? closeDropdown() : openDropdown()"
+                                class="hover:text-gray-600 dark:hover:text-gray-200">
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="isOpen ? 'transform rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Autocomplete Dropdown List -->
+                    <div x-show="isOpen && !loading"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-1"
+                         style="display: none;"
+                         class="absolute z-50 mt-1.5 w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-60 overflow-y-auto py-2 focus:outline-none">
+
+                        <!-- Filtered items count summary -->
+                        <div class="px-4 py-1.5 text-[10px] uppercase font-bold tracking-wider text-gray-400 border-b border-gray-100 dark:border-gray-700/60 mb-1 flex items-center justify-between">
+                            <span x-text="filteredCountries.length + ' matching countries'"></span>
+                            <span class="text-[9px] lowercase font-normal">Use ↑ ↓ & Enter</span>
+                        </div>
+
+                        <!-- No results message -->
+                        <template x-if="filteredCountries.length === 0">
+                            <div class="px-4 py-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                                <p class="font-semibold">No countries found</p>
+                                <p class="text-[11px] text-gray-400 mt-0.5">Try searching with a different spelling.</p>
+                            </div>
                         </template>
 
-                        <!-- If user already has a saved country not in list yet during initial load -->
-                        @if ($user->country)
-                            <option value="{{ $user->country }}" class="hidden" x-show="!countries.includes('{{ $user->country }}')">
-                                {{ $user->country }}
-                            </option>
-                        @endif
-                    </select>
-
-                    <!-- Small Loading Spinner inside Select when fetching -->
-                    <div x-show="loading" class="absolute right-8 top-3.5 pointer-events-none">
-                        <svg class="animate-spin h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                        </svg>
+                        <!-- Country Options List -->
+                        <template x-for="(c, index) in filteredCountries" :key="c">
+                            <div :id="'country-option-' + index"
+                                 @click="select(c)"
+                                 @mouseenter="highlightedIndex = index"
+                                 :class="{
+                                     'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold': index === highlightedIndex,
+                                     'text-gray-700 dark:text-gray-200': index !== highlightedIndex
+                                 }"
+                                 class="px-4 py-2 text-xs sm:text-sm cursor-pointer flex items-center justify-between transition-colors">
+                                <span x-text="c"></span>
+                                <template x-if="selectedCountry === c">
+                                    <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                </template>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
