@@ -287,7 +287,7 @@
                 @enderror
             </div>
 
-            <!-- Country (Required - Loaded dynamically from REST Countries API) -->
+            <!-- Country (Required - Loaded dynamically from Open Countries API) -->
             <div x-data="{
                 countries: [],
                 loading: true,
@@ -295,24 +295,26 @@
                 selectedCountry: '{{ old('country', $user->country ?? '') }}',
 
                 async init() {
-                    // 1. Check browser cache for instantaneous load
-                    const cached = sessionStorage.getItem('artfolio_countries');
+                    // 1. Check browser session cache for instantaneous 0ms reload
+                    const cached = sessionStorage.getItem('artfolio_countries_v2');
                     if (cached) {
                         try {
-                            this.countries = JSON.parse(cached);
-                            this.loading = false;
-                            this.source = 'Session Cache';
-                            return;
+                            const parsed = JSON.parse(cached);
+                            if (Array.isArray(parsed) && parsed.length >= 240) {
+                                this.countries = parsed;
+                                this.loading = false;
+                                this.source = 'Session Cache';
+                                return;
+                            }
                         } catch (e) {}
                     }
 
-                    // 2. Fetch live from REST Countries API
+                    // 2. Fetch from Open Dataset (CORS-enabled: *)
                     try {
-                        const response = await fetch('https://restcountries.com/v3.1/all?fields=name');
-                        if (!response.ok) throw new Error('API returned status ' + response.status);
+                        const response = await fetch('https://raw.githubusercontent.com/mledoze/countries/master/countries.json');
+                        if (!response.ok) throw new Error('CDN returned HTTP ' + response.status);
                         const data = await response.json();
 
-                        // Extract common country names and sort alphabetically
                         const list = data
                             .map(item => item?.name?.common)
                             .filter(name => typeof name === 'string' && name.trim().length > 0);
@@ -321,34 +323,67 @@
 
                         this.countries = list;
                         this.loading = false;
-                        this.source = 'REST Countries API';
-
-                        // Save in sessionStorage to avoid repeated API requests
-                        sessionStorage.setItem('artfolio_countries', JSON.stringify(list));
-                    } catch (error) {
-                        console.warn('REST Countries API unreachable, activating local fallback:', error);
-                        // 3. Graceful local fallback (top international countries sorted alphabetically)
-                        this.countries = [
-                            'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia',
-                            'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados',
-                            'Belarus', 'Belgium', 'Belize', 'Benin', 'Bolivia', 'Bosnia and Herzegovina',
-                            'Botswana', 'Brazil', 'Bulgaria', 'Canada', 'Chile', 'China', 'Colombia',
-                            'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark',
-                            'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Estonia', 'Finland',
-                            'France', 'Georgia', 'Germany', 'Greece', 'Guatemala', 'Honduras', 'Hungary',
-                            'Iceland', 'India', 'Indonesia', 'Ireland', 'Israel', 'Italy', 'Jamaica',
-                            'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kuwait', 'Latvia', 'Lebanon',
-                            'Lithuania', 'Luxembourg', 'Malaysia', 'Malta', 'Mexico', 'Monaco', 'Morocco',
-                            'Netherlands', 'New Zealand', 'Nicaragua', 'Nigeria', 'Norway', 'Panama',
-                            'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania',
-                            'Saudi Arabia', 'Serbia', 'Singapore', 'Slovakia', 'Slovenia', 'South Africa',
-                            'South Korea', 'Spain', 'Sweden', 'Switzerland', 'Taiwan', 'Thailand',
-                            'Turkey', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States',
-                            'Uruguay', 'Venezuela', 'Vietnam', 'Other'
-                        ];
-                        this.loading = false;
-                        this.source = 'Local Fallback';
+                        this.source = 'Open Countries API';
+                        sessionStorage.setItem('artfolio_countries_v2', JSON.stringify(list));
+                        return;
+                    } catch (errExternal) {
+                        console.warn('External API call failed, falling back to internal gateway:', errExternal);
                     }
+
+                    // 3. Fallback to Laravel Internal API Gateway
+                    try {
+                        const response = await fetch('{{ route('api.countries') }}');
+                        if (!response.ok) throw new Error('Gateway returned HTTP ' + response.status);
+                        const list = await response.json();
+
+                        list.sort((a, b) => a.localeCompare(b));
+
+                        this.countries = list;
+                        this.loading = false;
+                        this.source = 'Internal API Gateway';
+                        sessionStorage.setItem('artfolio_countries_v2', JSON.stringify(list));
+                        return;
+                    } catch (errInternal) {
+                        console.warn('Internal API gateway failed, activating local fallback:', errInternal);
+                    }
+
+                    // 4. Complete ISO 3166-1 250 Countries Fallback
+                    this.countries = [
+                        'Afghanistan', 'Åland Islands', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla',
+                        'Antarctica', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan',
+                        'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan',
+                        'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Bouvet Island', 'Brazil', 'British Indian Ocean Territory',
+                        'British Virgin Islands', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada',
+                        'Cape Verde', 'Caribbean Netherlands', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China',
+                        'Christmas Island', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Congo', 'Cook Islands', 'Costa Rica',
+                        'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czechia', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic',
+                        'DR Congo', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia',
+                        'Falkland Islands', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia',
+                        'French Southern and Antarctic Lands', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece',
+                        'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana',
+                        'Haiti', 'Heard Island and McDonald Islands', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia',
+                        'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jersey', 'Jordan',
+                        'Kazakhstan', 'Kenya', 'Kiribati', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho',
+                        'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macau', 'Madagascar', 'Malawi', 'Malaysia',
+                        'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico',
+                        'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar',
+                        'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria',
+                        'Niue', 'Norfolk Island', 'North Korea', 'North Macedonia', 'Northern Mariana Islands', 'Norway', 'Oman',
+                        'Pakistan', 'Palau', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines',
+                        'Pitcairn Islands', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda',
+                        'Saint Barthélemy', 'Saint Helena, Ascension and Tristan da Cunha', 'Saint Kitts and Nevis', 'Saint Lucia',
+                        'Saint Martin', 'Saint Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino',
+                        'São Tomé and Príncipe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore',
+                        'Sint Maarten', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Georgia',
+                        'South Korea', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Svalbard and Jan Mayen', 'Sweden',
+                        'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo', 'Tokelau',
+                        'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Türkiye', 'Turkmenistan', 'Turks and Caicos Islands', 'Tuvalu',
+                        'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States',
+                        'United States Minor Outlying Islands', 'United States Virgin Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu',
+                        'Vatican City', 'Venezuela', 'Vietnam', 'Wallis and Futuna', 'Western Sahara', 'Yemen', 'Zambia', 'Zimbabwe'
+                    ];
+                    this.loading = false;
+                    this.source = 'Local Fallback';
                 }
             }">
                 <label for="country" class="block text-sm font-bold text-gray-900 dark:text-white mb-2">
@@ -363,7 +398,7 @@
                             required
                             class="w-full rounded-2xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 shadow-sm disabled:opacity-60 transition-opacity">
                         <option value="" disabled :selected="!selectedCountry">
-                            <span x-text="loading ? 'Connecting to REST Countries API...' : 'Select your country...'">Select your country...</span>
+                            <span x-text="loading ? 'Connecting to Open Countries API...' : 'Select your country...'">Select your country...</span>
                         </option>
 
                         <!-- Dynamic alphabetically sorted country options -->

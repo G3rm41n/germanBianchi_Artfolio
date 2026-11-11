@@ -11,6 +11,51 @@ Route::get('/', [App\Http\Controllers\ExplorerController::class, 'index'])->name
 // Artist Public Profile
 Route::get('/artista/{slug}', [App\Http\Controllers\PublicProfileController::class, 'show'])->name('profile.public');
 
+// Global Countries API Endpoint (Cached proxy for onboarding & location)
+Route::get('/api/countries', function () {
+    return \Illuminate\Support\Facades\Cache::remember('global_countries_list_v1', 86400 * 30, function () {
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(3)->get('https://raw.githubusercontent.com/mledoze/countries/master/countries.json');
+            if ($response->successful()) {
+                return collect($response->json())
+                    ->pluck('name.common')
+                    ->filter()
+                    ->sort()
+                    ->values();
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(3)->get('https://restcountries.com/v3.1/all?fields=name');
+            if ($response->successful()) {
+                return collect($response->json())
+                    ->pluck('name.common')
+                    ->filter()
+                    ->sort()
+                    ->values();
+            }
+        } catch (\Throwable $e) {}
+
+        return [
+            'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia',
+            'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados',
+            'Belarus', 'Belgium', 'Belize', 'Benin', 'Bolivia', 'Bosnia and Herzegovina',
+            'Botswana', 'Brazil', 'Bulgaria', 'Canada', 'Chile', 'China', 'Colombia',
+            'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czechia', 'Denmark', 'Dominican Republic',
+            'Ecuador', 'Egypt', 'El Salvador', 'Estonia', 'Finland', 'France', 'Georgia',
+            'Germany', 'Greece', 'Guatemala', 'Honduras', 'Hungary', 'Iceland', 'India',
+            'Indonesia', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan',
+            'Kazakhstan', 'Kenya', 'Kuwait', 'Latvia', 'Lebanon', 'Lithuania', 'Luxembourg',
+            'Malaysia', 'Malta', 'Mexico', 'Monaco', 'Morocco', 'Netherlands', 'New Zealand',
+            'Nicaragua', 'Nigeria', 'Norway', 'Panama', 'Paraguay', 'Peru', 'Philippines',
+            'Poland', 'Portugal', 'Qatar', 'Romania', 'Saudi Arabia', 'Serbia', 'Singapore',
+            'Slovakia', 'Slovenia', 'South Africa', 'South Korea', 'Spain', 'Sweden',
+            'Switzerland', 'Taiwan', 'Thailand', 'Turkey', 'Ukraine', 'United Arab Emirates',
+            'United Kingdom', 'United States', 'Uruguay', 'Venezuela', 'Vietnam', 'Other'
+        ];
+    });
+})->name('api.countries');
+
 // Authenticated Artist Routes
 Route::get('/dashboard', function () {
     return view('dashboard');
