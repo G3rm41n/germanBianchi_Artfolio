@@ -571,15 +571,6 @@
                     </div>
                 </div>
 
-                <!-- Live API Status Indicator -->
-                <div class="mt-1.5 flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
-                    <span class="flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full" :class="loading ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'"></span>
-                        <span x-text="loading ? 'Loading global country list...' : countries.length + ' countries loaded (A-Z)'"></span>
-                    </span>
-                    <span class="font-mono text-[10px] text-gray-400" x-text="source ? 'Source: ' + source : ''"></span>
-                </div>
-
                 @error('country')
                     <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                 @enderror
