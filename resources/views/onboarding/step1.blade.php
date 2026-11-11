@@ -287,31 +287,116 @@
                 @enderror
             </div>
 
-            <!-- Country (Required) -->
-            <div>
+            <!-- Country (Required - Loaded dynamically from REST Countries API) -->
+            <div x-data="{
+                countries: [],
+                loading: true,
+                source: '',
+                selectedCountry: '{{ old('country', $user->country ?? '') }}',
+
+                async init() {
+                    // 1. Check browser cache for instantaneous load
+                    const cached = sessionStorage.getItem('artfolio_countries');
+                    if (cached) {
+                        try {
+                            this.countries = JSON.parse(cached);
+                            this.loading = false;
+                            this.source = 'Session Cache';
+                            return;
+                        } catch (e) {}
+                    }
+
+                    // 2. Fetch live from REST Countries API
+                    try {
+                        const response = await fetch('https://restcountries.com/v3.1/all?fields=name');
+                        if (!response.ok) throw new Error('API returned status ' + response.status);
+                        const data = await response.json();
+
+                        // Extract common country names and sort alphabetically
+                        const list = data
+                            .map(item => item?.name?.common)
+                            .filter(name => typeof name === 'string' && name.trim().length > 0);
+
+                        list.sort((a, b) => a.localeCompare(b));
+
+                        this.countries = list;
+                        this.loading = false;
+                        this.source = 'REST Countries API';
+
+                        // Save in sessionStorage to avoid repeated API requests
+                        sessionStorage.setItem('artfolio_countries', JSON.stringify(list));
+                    } catch (error) {
+                        console.warn('REST Countries API unreachable, activating local fallback:', error);
+                        // 3. Graceful local fallback (top international countries sorted alphabetically)
+                        this.countries = [
+                            'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia',
+                            'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados',
+                            'Belarus', 'Belgium', 'Belize', 'Benin', 'Bolivia', 'Bosnia and Herzegovina',
+                            'Botswana', 'Brazil', 'Bulgaria', 'Canada', 'Chile', 'China', 'Colombia',
+                            'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark',
+                            'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Estonia', 'Finland',
+                            'France', 'Georgia', 'Germany', 'Greece', 'Guatemala', 'Honduras', 'Hungary',
+                            'Iceland', 'India', 'Indonesia', 'Ireland', 'Israel', 'Italy', 'Jamaica',
+                            'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kuwait', 'Latvia', 'Lebanon',
+                            'Lithuania', 'Luxembourg', 'Malaysia', 'Malta', 'Mexico', 'Monaco', 'Morocco',
+                            'Netherlands', 'New Zealand', 'Nicaragua', 'Nigeria', 'Norway', 'Panama',
+                            'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania',
+                            'Saudi Arabia', 'Serbia', 'Singapore', 'Slovakia', 'Slovenia', 'South Africa',
+                            'South Korea', 'Spain', 'Sweden', 'Switzerland', 'Taiwan', 'Thailand',
+                            'Turkey', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States',
+                            'Uruguay', 'Venezuela', 'Vietnam', 'Other'
+                        ];
+                        this.loading = false;
+                        this.source = 'Local Fallback';
+                    }
+                }
+            }">
                 <label for="country" class="block text-sm font-bold text-gray-900 dark:text-white mb-2">
                     Country <span class="text-red-500">*</span>
                 </label>
-                <select id="country"
-                        name="country"
-                        required
-                        class="w-full rounded-2xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 shadow-sm">
-                    <option value="" disabled {{ old('country', $user->country) ? '' : 'selected' }}>Select your country...</option>
-                    @php
-                        $countries = [
-                            'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany',
-                            'France', 'Japan', 'Spain', 'Italy', 'Netherlands', 'South Korea',
-                            'Argentina', 'Brazil', 'Chile', 'Colombia', 'Mexico', 'Peru',
-                            'Austria', 'Belgium', 'Czech Republic', 'Denmark', 'Finland',
-                            'Ireland', 'New Zealand', 'Norway', 'Poland', 'Portugal',
-                            'Singapore', 'Sweden', 'Switzerland', 'Ukraine', 'Other'
-                        ];
-                        $selectedCountry = old('country', $user->country);
-                    @endphp
-                    @foreach($countries as $c)
-                        <option value="{{ $c }}" {{ $selectedCountry === $c ? 'selected' : '' }}>{{ $c }}</option>
-                    @endforeach
-                </select>
+
+                <div class="relative">
+                    <select id="country"
+                            name="country"
+                            x-model="selectedCountry"
+                            :disabled="loading"
+                            required
+                            class="w-full rounded-2xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 shadow-sm disabled:opacity-60 transition-opacity">
+                        <option value="" disabled :selected="!selectedCountry">
+                            <span x-text="loading ? 'Connecting to REST Countries API...' : 'Select your country...'">Select your country...</span>
+                        </option>
+
+                        <!-- Dynamic alphabetically sorted country options -->
+                        <template x-for="c in countries" :key="c">
+                            <option :value="c" x-text="c" :selected="selectedCountry === c"></option>
+                        </template>
+
+                        <!-- If user already has a saved country not in list yet during initial load -->
+                        @if ($user->country)
+                            <option value="{{ $user->country }}" class="hidden" x-show="!countries.includes('{{ $user->country }}')">
+                                {{ $user->country }}
+                            </option>
+                        @endif
+                    </select>
+
+                    <!-- Small Loading Spinner inside Select when fetching -->
+                    <div x-show="loading" class="absolute right-8 top-3.5 pointer-events-none">
+                        <svg class="animate-spin h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Live API Status Indicator -->
+                <div class="mt-1.5 flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full" :class="loading ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'"></span>
+                        <span x-text="loading ? 'Loading global country list...' : countries.length + ' countries loaded (A-Z)'"></span>
+                    </span>
+                    <span class="font-mono text-[10px] text-gray-400" x-text="source ? 'Source: ' + source : ''"></span>
+                </div>
+
                 @error('country')
                     <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                 @enderror
