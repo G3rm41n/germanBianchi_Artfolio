@@ -20,10 +20,11 @@ class AdminSeeder extends Seeder
         User::updateOrCreate(
             ['email' => $email],
             [
-                'name'     => $name,
-                'password' => Hash::make($password),
-                'is_admin' => true,
-                'status'   => 'active',
+                'name'              => $name,
+                'password'          => Hash::make($password),
+                'is_admin'          => true,
+                'status'            => 'active',
+                'email_verified_at' => now(),
             ]
         );
     }
