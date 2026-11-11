@@ -22,9 +22,11 @@ class AdminSeeder extends Seeder
             [
                 'name'              => $name,
                 'password'          => Hash::make($password),
-                'is_admin'          => true,
-                'status'            => 'active',
-                'email_verified_at' => now(),
+                'is_admin'                => true,
+                'status'                  => 'active',
+                'email_verified_at'       => now(),
+                'onboarding_step'         => 3,
+                'onboarding_completed_at' => now(),
             ]
         );
     }

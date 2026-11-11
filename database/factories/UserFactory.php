@@ -30,7 +30,20 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'onboarding_step' => 3,
+            'onboarding_completed_at' => now(),
         ];
+    }
+
+    /**
+     * Indicate that the user has not completed onboarding.
+     */
+    public function unonboarded(int $step = 1): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'onboarding_step' => $step,
+            'onboarding_completed_at' => null,
+        ]);
     }
 
     /**

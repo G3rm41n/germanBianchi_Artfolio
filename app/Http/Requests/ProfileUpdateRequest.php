@@ -32,6 +32,16 @@ class ProfileUpdateRequest extends FormRequest
             'crop_zoom' => ['nullable', 'numeric', 'min:0.1', 'max:5'],
             'bio' => ['nullable', 'string', 'max:1000'],
             'commission_status' => ['nullable', 'string', 'in:open,closed,consult'],
+            'headline' => ['nullable', 'string', 'max:100'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'country' => ['nullable', 'string', 'max:100'],
+            'skills' => ['nullable', 'array', 'max:15'],
+            'skills.*' => ['string', 'max:50'],
+            'software' => ['nullable', 'array', 'max:15'],
+            'software.*' => ['string', 'max:50'],
+            'hiring_types' => ['nullable', 'array'],
+            'hiring_types.*' => ['in:full-time,contract,freelance'],
+            'public_email_enabled' => ['nullable', 'boolean'],
         ];
     }
 }

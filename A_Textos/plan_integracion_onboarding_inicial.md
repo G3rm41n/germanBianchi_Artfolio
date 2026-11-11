@@ -133,3 +133,4 @@ Se creará la suite `tests/Feature/OnboardingWizardTest.php` con los siguientes 
 | **Fase 3** | Controlador y Validación | `OnboardingController`, Requests con reglas de validación y verificación de slug AJAX. |
 | **Fase 4** | Vistas Blade & UX | Layout de onboarding y las 3 vistas de etapa con Alpine.js. |
 | **Fase 5** | Tests & Verificación | Creación de `OnboardingWizardTest.php` (6 tests) y ejecución de la suite completa. |
+

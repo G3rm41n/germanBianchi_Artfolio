@@ -17,6 +17,15 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Onboarding Wizard
+    Route::prefix('onboarding')->name('onboarding.')->group(function () {
+        Route::get('/step/{step}', [App\Http\Controllers\OnboardingController::class, 'step'])->name('step');
+        Route::post('/step/1', [App\Http\Controllers\OnboardingController::class, 'saveStep1'])->name('step1.save');
+        Route::post('/step/2', [App\Http\Controllers\OnboardingController::class, 'saveStep2'])->name('step2.save');
+        Route::post('/complete', [App\Http\Controllers\OnboardingController::class, 'complete'])->name('complete');
+        Route::get('/check-username', [App\Http\Controllers\OnboardingController::class, 'checkUsername'])->name('checkUsername');
+    });
+
     // Session Keep-Alive Endpoint
     Route::post('/session/keep-alive', function () {
         session()->put('last_activity', now()->timestamp);

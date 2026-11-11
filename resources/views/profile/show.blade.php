@@ -25,12 +25,32 @@
                     <!-- Info -->
                     <div class="text-center md:text-left flex-1">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-                            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
-                                {{ $user->name }}
-                            </h1>
+                            <div>
+                                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
+                                    {{ $user->name }}
+                                </h1>
+                                @if($user->headline)
+                                    <p class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">
+                                        {{ $user->headline }}
+                                    </p>
+                                @endif
+                                @if($user->city || $user->country)
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center justify-center md:justify-start gap-1">
+                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                        <span>{{ implode(', ', array_filter([$user->city, $user->country])) }}</span>
+                                    </p>
+                                @endif
+                            </div>
 
                             <!-- Actions -->
-                            <div class="flex justify-center md:justify-end">
+                            <div class="flex flex-wrap items-center justify-center md:justify-end gap-2">
+                                @if($user->public_email_enabled && $user->email)
+                                    <a href="mailto:{{ $user->email }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition shadow-sm">
+                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                        Contact Artist
+                                    </a>
+                                @endif
+
                                 @if(auth()->check() && auth()->id() === $user->id)
                                     <a href="{{ route('profile.edit') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-xl transition shadow-sm">
                                         <svg class="w-4 h-4 mr-1.5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
@@ -44,13 +64,28 @@
                             {{ $user->bio ?: 'This artist prefers to let their artwork speak for itself.' }}
                         </div>
                         
-                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 text-xs font-semibold">
+                        <!-- Badges: Commission & Hiring -->
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs font-semibold mb-3">
                             @if($user->commission_status === 'open')
                                 <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                     <span class="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
                                     Commissions Open
                                 </span>
+                            @elseif($user->commission_status === 'consult')
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                                    <span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
+                                    Consult for Commissions
+                                </span>
                             @endif
+
+                            @php
+                                $userHiring = is_array($user->hiring_types) ? $user->hiring_types : (json_decode($user->hiring_types ?? '[]', true) ?: []);
+                            @endphp
+                            @foreach($userHiring as $hType)
+                                <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800 capitalize">
+                                    Available for {{ str_replace('-', ' ', $hType) }}
+                                </span>
+                            @endforeach
                             
                             @if($user->price_guide)
                                 <span class="text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700/60 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700">
@@ -58,6 +93,26 @@
                                 </span>
                             @endif
                         </div>
+
+                        <!-- Skills and Software Pills -->
+                        @php
+                            $userSkills = is_array($user->skills) ? $user->skills : (json_decode($user->skills ?? '[]', true) ?: []);
+                            $userSoftware = is_array($user->software) ? $user->software : (json_decode($user->software ?? '[]', true) ?: []);
+                        @endphp
+                        @if(!empty($userSkills) || !empty($userSoftware))
+                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-1.5 pt-1">
+                                @foreach($userSkills as $skill)
+                                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300">
+                                        {{ $skill }}
+                                    </span>
+                                @endforeach
+                                @foreach($userSoftware as $tool)
+                                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300">
+                                        {{ $tool }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

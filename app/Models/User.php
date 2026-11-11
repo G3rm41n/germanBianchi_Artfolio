@@ -12,7 +12,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'email', 'password', 'slug', 'bio', 'commission_status', 'is_admin', 'status', 'avatar_url', 'crop_x', 'crop_y', 'crop_zoom'])]
+#[Fillable([
+    'name', 'email', 'password', 'slug', 'bio', 'commission_status',
+    'is_admin', 'status', 'avatar_url', 'crop_x', 'crop_y', 'crop_zoom',
+    'headline', 'city', 'country', 'skills', 'software', 'hiring_types',
+    'public_email_enabled', 'onboarding_step', 'onboarding_completed_at'
+])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -22,10 +27,21 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'is_admin'          => 'boolean',
+            'email_verified_at'       => 'datetime',
+            'password'                => 'hashed',
+            'is_admin'                => 'boolean',
+            'skills'                  => 'array',
+            'software'                => 'array',
+            'hiring_types'            => 'array',
+            'public_email_enabled'    => 'boolean',
+            'onboarding_step'         => 'integer',
+            'onboarding_completed_at' => 'datetime',
         ];
+    }
+
+    public function isOnboarded(): bool
+    {
+        return $this->onboarding_completed_at !== null;
     }
 
     // --- Slug auto-generado al crear ---
