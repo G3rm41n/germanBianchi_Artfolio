@@ -13,6 +13,8 @@
                 this.title = detail.title;
             } else if (this.context === 'favorito') {
                 this.title = 'Save Your Favorite Artworks';
+            } else if (this.context === 'coleccion') {
+                this.title = 'Add to Your Collections';
             } else if (this.context === 'reporte') {
                 this.title = 'Help Us Moderate Artfolio';
             } else {
@@ -23,6 +25,8 @@
                 this.message = detail.message;
             } else if (this.context === 'favorito') {
                 this.message = 'Create your private bookmarks and keep your favorite multimedia works at your fingertips with a single click.';
+            } else if (this.context === 'coleccion') {
+                this.message = 'Sign in or create a free account to organize artworks into custom thematic collections and moodboards.';
             } else if (this.context === 'reporte') {
                 this.message = 'Log in to report a broken link or inappropriate content to help maintain community quality.';
             } else {

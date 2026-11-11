@@ -63,3 +63,4 @@ class CollectionPolicy
         return $user->id === $collection->user_id || $user->isAdmin();
     }
 }
+

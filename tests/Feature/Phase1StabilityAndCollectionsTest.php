@@ -226,4 +226,158 @@ class Phase1StabilityAndCollectionsTest extends TestCase
         $responseOwner->assertSee('Unlisted Client Demos');
         $responseOwner->assertSee('Private Archives');
     }
+
+    public function test_artwork_collection_status_endpoint(): void
+    {
+        $artwork = Artwork::create([
+            'user_id' => $this->user->id,
+            'title' => 'Sample Status Artwork',
+            'external_url' => 'https://www.deviantart.com/art/sample-status',
+            'category' => 'image',
+            'provider' => 'deviantart',
+            'render_type' => 'image',
+            'status' => 'published',
+        ]);
+
+        $col1 = Collection::create([
+            'user_id' => $this->user->id,
+            'name' => 'Collection One',
+            'visibility' => 'public',
+        ]);
+
+        $col2 = Collection::create([
+            'user_id' => $this->user->id,
+            'name' => 'Collection Two',
+            'visibility' => 'unlisted',
+        ]);
+
+        // Attach artwork to col1 only
+        $artwork->collections()->attach($col1);
+
+        // 1. Guest request is redirected
+        $guestResponse = $this->getJson(route('collections.artworkStatus', $artwork));
+        $guestResponse->assertUnauthorized();
+
+        // 2. Authenticated user receives collection list with is_in_collection states
+        $authResponse = $this->actingAs($this->user)->getJson(route('collections.artworkStatus', $artwork));
+        $authResponse->assertOk();
+        $authResponse->assertJsonStructure([
+            'collections' => [
+                '*' => ['id', 'name', 'visibility', 'is_in_collection']
+            ]
+        ]);
+
+        $data = $authResponse->json('collections');
+        $this->assertCount(2, $data);
+
+        $col1Data = collect($data)->firstWhere('id', $col1->id);
+        $col2Data = collect($data)->firstWhere('id', $col2->id);
+
+        $this->assertTrue($col1Data['is_in_collection']);
+        $this->assertFalse($col2Data['is_in_collection']);
+    }
+
+    public function test_toggle_artwork_in_collection(): void
+    {
+        $artwork = Artwork::create([
+            'user_id' => $this->user->id,
+            'title' => 'Toggle Artwork Piece',
+            'external_url' => 'https://www.deviantart.com/art/toggle-art',
+            'category' => 'image',
+            'provider' => 'deviantart',
+            'render_type' => 'image',
+            'status' => 'published',
+        ]);
+
+        $collection = Collection::create([
+            'user_id' => $this->user->id,
+            'name' => 'Cyberpunk Art',
+            'visibility' => 'public',
+        ]);
+
+        // 1. Toggle to attach
+        $response1 = $this->actingAs($this->user)->postJson(route('collections.toggleArtwork', $collection), [
+            'artwork_id' => $artwork->id,
+        ]);
+
+        $response1->assertOk();
+        $response1->assertJson([
+            'success' => true,
+            'attached' => true,
+        ]);
+        $this->assertTrue($collection->artworks()->where('artworks.id', $artwork->id)->exists());
+
+        // 2. Toggle to detach
+        $response2 = $this->actingAs($this->user)->postJson(route('collections.toggleArtwork', $collection), [
+            'artwork_id' => $artwork->id,
+        ]);
+
+        $response2->assertOk();
+        $response2->assertJson([
+            'success' => true,
+            'attached' => false,
+        ]);
+        $this->assertFalse($collection->artworks()->where('artworks.id', $artwork->id)->exists());
+
+        // 3. Another user cannot toggle into someone else's collection
+        $otherUser = User::factory()->create(['status' => 'active', 'onboarding_completed_at' => now()]);
+        $responseForbidden = $this->actingAs($otherUser)->postJson(route('collections.toggleArtwork', $collection), [
+            'artwork_id' => $artwork->id,
+        ]);
+        $responseForbidden->assertStatus(403);
+    }
+
+    public function test_quick_create_collection_with_artwork(): void
+    {
+        $artwork = Artwork::create([
+            'user_id' => $this->user->id,
+            'title' => 'Quick Add Artwork',
+            'external_url' => 'https://www.deviantart.com/art/quick-add',
+            'category' => 'image',
+            'provider' => 'deviantart',
+            'render_type' => 'image',
+            'status' => 'published',
+        ]);
+
+        $response = $this->actingAs($this->user)->postJson(route('collections.quickCreateWithArtwork'), [
+            'name' => 'Brand New Quick Collection',
+            'visibility' => 'unlisted',
+            'artwork_id' => $artwork->id,
+        ]);
+
+        $response->assertCreated();
+        $response->assertJson([
+            'success' => true,
+            'collection' => [
+                'name' => 'Brand New Quick Collection',
+                'visibility' => 'unlisted',
+                'is_in_collection' => true,
+            ],
+        ]);
+
+        $createdCollection = Collection::where('name', 'Brand New Quick Collection')->first();
+        $this->assertNotNull($createdCollection);
+        $this->assertEquals('unlisted', $createdCollection->visibility);
+        $this->assertTrue($createdCollection->artworks()->where('artworks.id', $artwork->id)->exists());
+    }
+
+    public function test_artwork_card_and_guest_modal_integration(): void
+    {
+        Artwork::create([
+            'user_id' => $this->user->id,
+            'title' => 'Card Display Art',
+            'external_url' => 'https://www.deviantart.com/art/display-art',
+            'category' => 'image',
+            'provider' => 'deviantart',
+            'render_type' => 'image',
+            'status' => 'published',
+        ]);
+
+        // When a guest visits the home page, the artwork card renders with the collection picker trigger
+        $response = $this->get('/');
+        $response->assertOk();
+        $response->assertSee('Card Display Art');
+        $response->assertSee('title="Add to Collection"', false);
+        $response->assertSee('context === \'coleccion\'', false);
+    }
 }

@@ -87,7 +87,7 @@
     
     <div class="p-5">
         <div class="flex justify-between items-start">
-            <div class="w-10/12">
+            <div class="flex-1 min-w-0 pr-2">
                 <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" title="{{ $artwork->title }}">
                     {{ $artwork->title }}
                 </h3>
@@ -100,7 +100,11 @@
                 </div>
             </div>
             
-            <div class="w-2/12 flex justify-end">
+            <div class="flex items-center space-x-1 shrink-0">
+                <!-- Add to Collection Picker Button -->
+                <x-collection-picker :artwork-id="$artwork->id" size="sm" placement="top" />
+
+                <!-- Bookmark/Favorite Button -->
                 @auth
                     <div x-data="{ bookmarked: {{ $isBookmarked ? 'true' : 'false' }}, loading: false }"
                          @bookmark-updated.window="if ($event.detail.id === {{ $artwork->id }}) bookmarked = $event.detail.status">
@@ -117,14 +121,14 @@
                                 loading = false;
                                 window.dispatchEvent(new CustomEvent('bookmark-updated', { detail: { id: {{ $artwork->id }}, status: data.is_bookmarked } }));
                             }).catch(() => loading = false)
-                        " class="transition-colors focus:outline-none" :class="bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Save to Favorites">
+                        " class="transition-colors focus:outline-none p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/60" :class="bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Save to Favorites">
                             <svg class="w-6 h-6 transition-all" :class="bookmarked ? 'fill-current scale-110' : 'scale-100'" :class="{'opacity-50': loading}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
                         </button>
                     </div>
                 @else
-                    <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Save to Favorites">
+                    <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/60" title="Save to Favorites">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>

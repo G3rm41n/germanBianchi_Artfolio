@@ -67,3 +67,4 @@ class ArtworkPolicy
         return $user->id === $artwork->user_id || $user->isAdmin();
     }
 }
+

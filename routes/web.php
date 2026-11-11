@@ -93,6 +93,9 @@ Route::middleware('auth')->group(function () {
         Route::post('artworks/preview-url', [App\Http\Controllers\ArtworkController::class, 'previewUrl'])->name('artworks.preview');
         Route::resource('artworks', App\Http\Controllers\ArtworkController::class);
         Route::resource('collections', App\Http\Controllers\CollectionController::class);
+        Route::get('/collections/artwork-status/{artwork}', [App\Http\Controllers\CollectionController::class, 'artworkStatus'])->name('collections.artworkStatus');
+        Route::post('/collections/{collection}/toggle-artwork', [App\Http\Controllers\CollectionController::class, 'toggleArtwork'])->name('collections.toggleArtwork');
+        Route::post('/collections/quick-create-with-artwork', [App\Http\Controllers\CollectionController::class, 'quickCreateWithArtwork'])->name('collections.quickCreateWithArtwork');
 
         // Bookmarks / Favorites
         Route::get('/favoritos', [App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');

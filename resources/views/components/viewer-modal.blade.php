@@ -197,6 +197,9 @@
                                 </div>
                                 
                                 <div class="flex items-center space-x-1 ml-4 flex-shrink-0">
+                                    <!-- Add to Collection Picker Button -->
+                                    <x-collection-picker artwork-id-expr="artwork ? artwork.id : null" size="lg" placement="bottom" />
+
                                     <!-- Report Artwork Button -->
                                     @auth
                                         <button type="button" @click.stop="openReport()" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Report Artwork">

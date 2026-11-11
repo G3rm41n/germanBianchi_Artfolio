@@ -99,4 +99,84 @@ class CollectionController extends Controller
 
         return redirect()->route('collections.index')->with('success', 'Collection moved to trash.');
     }
+
+    /**
+     * Returns the user's collections and whether the given artwork belongs to each.
+     */
+    public function artworkStatus(\App\Models\Artwork $artwork)
+    {
+        $user = Auth::user();
+        $userCollections = $user->collections()->orderBy('name')->get();
+        
+        $artworkCollectionIds = $artwork->collections()
+            ->where('collections.user_id', $user->id)
+            ->pluck('collections.id')
+            ->flip();
+
+        $data = $userCollections->map(function ($collection) use ($artworkCollectionIds) {
+            return [
+                'id' => $collection->id,
+                'name' => $collection->name,
+                'visibility' => $collection->visibility,
+                'is_in_collection' => isset($artworkCollectionIds[$collection->id]),
+            ];
+        });
+
+        return response()->json([
+            'collections' => $data,
+        ]);
+    }
+
+    /**
+     * Toggles an artwork inside a user's collection.
+     */
+    public function toggleArtwork(Collection $collection, Request $request)
+    {
+        $this->authorize('update', $collection);
+
+        $validated = $request->validate([
+            'artwork_id' => ['required', 'exists:artworks,id'],
+        ]);
+
+        $changes = $collection->artworks()->toggle($validated['artwork_id']);
+        $attached = count($changes['attached']) > 0;
+
+        return response()->json([
+            'success' => true,
+            'attached' => $attached,
+            'message' => $attached 
+                ? "Artwork added to '{$collection->name}'." 
+                : "Artwork removed from '{$collection->name}'.",
+        ]);
+    }
+
+    /**
+     * Creates a new collection and immediately attaches the artwork to it.
+     */
+    public function quickCreateWithArtwork(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'visibility' => ['nullable', 'in:public,unlisted,private'],
+            'artwork_id' => ['required', 'exists:artworks,id'],
+        ]);
+
+        $collection = Auth::user()->collections()->create([
+            'name' => $validated['name'],
+            'visibility' => $validated['visibility'] ?? 'public',
+        ]);
+
+        $collection->artworks()->attach($validated['artwork_id']);
+
+        return response()->json([
+            'success' => true,
+            'collection' => [
+                'id' => $collection->id,
+                'name' => $collection->name,
+                'visibility' => $collection->visibility,
+                'is_in_collection' => true,
+            ],
+            'message' => "Collection '{$collection->name}' created and artwork added!",
+        ], 201);
+    }
 }
