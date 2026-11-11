@@ -14,7 +14,7 @@ class CollectionController extends Controller
      */
     public function index()
     {
-        $collections = Auth::user()->collections()->withCount('artworks')->latest()->paginate(10);
+        $collections = Auth::user()->collections()->withCount('artworks')->latest()->paginate(12);
         return view('collections.index', compact('collections'));
     }
 
@@ -23,6 +23,7 @@ class CollectionController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Collection::class);
         return view('collections.form');
     }
 
@@ -31,10 +32,15 @@ class CollectionController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Collection::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
+            'visibility' => 'nullable|in:public,unlisted,private',
         ]);
+
+        $validated['visibility'] = $validated['visibility'] ?? 'public';
 
         Auth::user()->collections()->create($validated);
 
@@ -42,13 +48,24 @@ class CollectionController extends Controller
     }
 
     /**
+     * Display the specified collection.
+     */
+    public function show(Collection $collection)
+    {
+        $this->authorize('view', $collection);
+
+        return redirect()->route('profile.public', [
+            'slug' => $collection->user->slug,
+            'collection_id' => $collection->id
+        ]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Collection $collection)
     {
-        if ($collection->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized.');
-        }
+        $this->authorize('update', $collection);
 
         return view('collections.form', compact('collection'));
     }
@@ -58,13 +75,12 @@ class CollectionController extends Controller
      */
     public function update(Request $request, Collection $collection)
     {
-        if ($collection->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized.');
-        }
+        $this->authorize('update', $collection);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
+            'visibility' => 'required|in:public,unlisted,private',
         ]);
 
         $collection->update($validated);
@@ -77,9 +93,7 @@ class CollectionController extends Controller
      */
     public function destroy(Collection $collection)
     {
-        if ($collection->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized.');
-        }
+        $this->authorize('delete', $collection);
 
         $collection->delete();
 

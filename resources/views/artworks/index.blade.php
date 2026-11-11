@@ -89,6 +89,12 @@
                     </div>
                 @endforelse
             </div>
+
+            @if($artworks->hasPages())
+                <div class="mt-8">
+                    {{ $artworks->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

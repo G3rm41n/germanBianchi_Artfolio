@@ -11,7 +11,7 @@ class Collection extends Model
 {
     use HasFactory, SoftDeletes, MassPrunable;
 
-    protected $fillable = ['user_id', 'name', 'description'];
+    protected $fillable = ['user_id', 'name', 'description', 'visibility'];
 
     // Auto-prune soft deleted collections after 30 days
     public function prunable()
@@ -28,5 +28,46 @@ class Collection extends Model
     public function artworks()
     {
         return $this->belongsToMany(Artwork::class);
+    }
+
+    // Visibility Helpers
+    public function isPublic(): bool
+    {
+        return $this->visibility === 'public';
+    }
+
+    public function isUnlisted(): bool
+    {
+        return $this->visibility === 'unlisted';
+    }
+
+    public function isPrivate(): bool
+    {
+        return $this->visibility === 'private';
+    }
+
+    public function canBeViewedBy(?User $user): bool
+    {
+        if ($this->isPublic() || $this->isUnlisted()) {
+            return true;
+        }
+
+        // Private collections are only visible to the owner (or admin)
+        return $user !== null && ($user->id === $this->user_id || $user->isAdmin());
+    }
+
+    // Scopes
+    public function scopePublic($query)
+    {
+        return $query->where('visibility', 'public');
+    }
+
+    public function scopeListedForUser($query, ?User $viewer, int $ownerId)
+    {
+        if ($viewer && $viewer->id === $ownerId) {
+            return $query;
+        }
+
+        return $query->where('visibility', 'public');
     }
 }

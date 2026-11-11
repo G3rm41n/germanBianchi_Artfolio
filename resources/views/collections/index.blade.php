@@ -25,31 +25,77 @@
                     @if ($collections->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             @foreach ($collections as $collection)
-                                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white truncate" title="{{ $collection->name }}">
-                                            {{ $collection->name }}
-                                        </h3>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                                            {{ $collection->artworks_count }} {{ Str::plural('artwork', $collection->artworks_count) }}
-                                        </span>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 hover:shadow-lg transition-all flex flex-col justify-between"
+                                     x-data="{ copied: false, shareUrl: '{{ route('profile.public', ['slug' => Auth::user()->slug, 'collection_id' => $collection->id]) }}' }">
+                                    <div>
+                                        <div class="flex justify-between items-start gap-2 mb-2">
+                                            <h3 class="text-lg font-bold text-gray-900 dark:text-white truncate" title="{{ $collection->name }}">
+                                                {{ $collection->name }}
+                                            </h3>
+                                            
+                                            <!-- Visibility Badge -->
+                                            @if($collection->visibility === 'public')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 shrink-0">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                                                    Public
+                                                </span>
+                                            @elseif($collection->visibility === 'unlisted')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200 dark:border-amber-800 shrink-0" title="Hidden from portfolio. Accessible via direct link only.">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span>
+                                                    Unlisted
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-800 shrink-0" title="Private collection. Only you can view this.">
+                                                    <svg class="w-2.5 h-2.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                                    Private
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
+                                                {{ $collection->artworks_count }} {{ Str::plural('artwork', $collection->artworks_count) }}
+                                            </span>
+                                        </div>
+                                        
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-4">
+                                            {{ $collection->description ?: 'No description provided.' }}
+                                        </p>
                                     </div>
                                     
-                                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4 h-10">
-                                        {{ $collection->description ?: 'No description.' }}
-                                    </p>
-                                    
-                                    <div class="flex justify-end space-x-2 pt-3 border-t border-gray-200 dark:border-gray-600">
-                                        <a href="{{ route('collections.edit', $collection) }}" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">
-                                            Edit
-                                        </a>
-                                        <form method="POST" action="{{ route('collections.destroy', $collection) }}" onsubmit="return confirm('Are you sure you want to delete this collection? Artworks will not be deleted.');" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
-                                                Delete
+                                    <div class="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-600 text-xs">
+                                        <!-- Copy direct link button (for public & unlisted) -->
+                                        @if($collection->visibility !== 'private')
+                                            <button type="button"
+                                                    @click="navigator.clipboard.writeText(shareUrl); copied = true; setTimeout(() => copied = false, 2000)"
+                                                    class="inline-flex items-center font-semibold text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition"
+                                                    title="Copy link to this collection">
+                                                <svg x-show="!copied" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                                <svg x-show="copied" class="w-4 h-4 mr-1 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                <span x-text="copied ? 'Copied Link!' : 'Copy Link'"></span>
                                             </button>
-                                        </form>
+                                        @else
+                                            <span class="text-gray-400 text-[11px] italic">Private link</span>
+                                        @endif
+
+                                        <div class="flex items-center space-x-3">
+                                            <!-- Edit / Settings -->
+                                            <a href="{{ route('collections.edit', $collection) }}"
+                                               class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                                               title="Edit name, description, and visibility settings">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                                Settings
+                                            </a>
+
+                                            <!-- Delete -->
+                                            <form method="POST" action="{{ route('collections.destroy', $collection) }}" onsubmit="return confirm('Are you sure you want to delete this collection? Artworks will not be deleted.');" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="font-semibold text-red-600 dark:text-red-400 hover:underline">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach

@@ -58,3 +58,4 @@ class UserBlockController extends Controller
         return back()->with('status', "User @{$blockedUser->name} has been unblocked.")->with('active_tab', 'blocking');
     }
 }
+

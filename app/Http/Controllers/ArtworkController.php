@@ -22,7 +22,7 @@ class ArtworkController extends Controller
      */
     public function index()
     {
-        $artworks = Auth::user()->artworks()->latest()->get();
+        $artworks = Auth::user()->artworks()->with('collections')->latest()->paginate(12);
         return view('artworks.index', compact('artworks'));
     }
 
@@ -31,6 +31,7 @@ class ArtworkController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Artwork::class);
         $collections = Auth::user()->collections()->get();
         return view('artworks.create', compact('collections'));
     }
@@ -78,7 +79,7 @@ class ArtworkController extends Controller
      */
     public function edit(Artwork $artwork)
     {
-        abort_if($artwork->user_id !== Auth::id(), 403, 'You do not have permission to edit this artwork.');
+        $this->authorize('update', $artwork);
         
         $collections = Auth::user()->collections()->get();
         $artworkCollections = $artwork->collections()->pluck('collections.id')->toArray();
@@ -91,7 +92,7 @@ class ArtworkController extends Controller
      */
     public function update(ArtworkRequest $request, Artwork $artwork)
     {
-        abort_if($artwork->user_id !== Auth::id(), 403, 'You do not have permission to edit this artwork.');
+        $this->authorize('update', $artwork);
 
         $url = $request->input('external_url');
         
@@ -130,7 +131,7 @@ class ArtworkController extends Controller
      */
     public function destroy(Artwork $artwork)
     {
-        abort_if($artwork->user_id !== Auth::id(), 403, 'You do not have permission to delete this artwork.');
+        $this->authorize('delete', $artwork);
 
         $artwork->delete(); // Soft delete
 

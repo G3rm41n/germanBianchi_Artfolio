@@ -10,11 +10,12 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     
-                    <form method="POST" action="{{ route('artworks.update', $artwork) }}" x-data="{
+                    <form method="POST" action="{{ route('artworks.update', $artwork) }}" @submit="submitting = true" x-data="{
                         url: '{{ old('external_url', $artwork->external_url) }}',
                         title: '{{ old('title', $artwork->title) }}',
                         category: '{{ old('category', $artwork->category) }}',
                         loading: false,
+                        submitting: false,
                         preview: {
                             thumbnail_url: '{{ $artwork->thumbnail_url }}',
                             provider: '{{ $artwork->provider }}',
@@ -237,8 +238,12 @@
                                 <a href="{{ route('artworks.index') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition mr-4">
                                     Cancel
                                 </a>
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                    Update Artwork
+                                <button type="submit" :disabled="submitting" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-50 transition ease-in-out duration-150">
+                                    <span x-show="!submitting">Update Artwork</span>
+                                    <span x-show="submitting" class="flex items-center gap-1.5">
+                                        <svg class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                        Saving...
+                                    </span>
                                 </button>
                             </div>
                         </div>

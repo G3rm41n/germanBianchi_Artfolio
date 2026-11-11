@@ -141,8 +141,15 @@
                                     All
                                 </a>
                                 @foreach($collections as $collection)
-                                    <a href="{{ route('profile.public', ['slug' => $user->slug, 'collection_id' => $collection->id]) }}" class="px-4 py-2 text-sm font-medium rounded-full transition-colors {{ $selectedCollectionId == $collection->id ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50' }}">
-                                        {{ $collection->name }}
+                                    <a href="{{ route('profile.public', ['slug' => $user->slug, 'collection_id' => $collection->id]) }}" class="px-4 py-2 text-sm font-medium rounded-full transition-colors flex items-center gap-1.5 {{ $selectedCollectionId == $collection->id ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50' }}">
+                                        <span>{{ $collection->name }}</span>
+                                        @if(auth()->id() === $user->id)
+                                            @if($collection->visibility === 'unlisted')
+                                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 uppercase tracking-wider" title="Unlisted collection">Unlisted</span>
+                                            @elseif($collection->visibility === 'private')
+                                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 uppercase tracking-wider" title="Private collection">Private</span>
+                                            @endif
+                                        @endif
                                     </a>
                                 @endforeach
                             </nav>
