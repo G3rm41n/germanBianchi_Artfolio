@@ -1,37 +1,40 @@
 <x-app-layout>
     <div>
         @if($user->banner_url)
-            <!-- Artist Cover Banner -->
-            <div class="w-full h-48 sm:h-64 md:h-80 overflow-hidden relative bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-                <img src="{{ $user->banner_url }}" alt="{{ $user->name }} cover banner" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+            <!-- Artist Cover Banner with Precise Framing & Positioning -->
+            <div class="w-full h-48 sm:h-64 md:h-80 lg:h-96 overflow-hidden relative bg-gray-950 border-b border-gray-200 dark:border-gray-800 select-none">
+                <div class="w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none"
+                     style="background-image: url('{{ $user->banner_url }}'); transform: translate({{ $user->banner_crop_x ?? 0 }}%, {{ $user->banner_crop_y ?? 0 }}%) scale({{ $user->banner_crop_zoom ?? 1 }});">
+                </div>
+                <!-- Gradient shadow overlay for aesthetic depth -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
             </div>
         @endif
 
         <!-- Artist Profile Header -->
         <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 {{ $user->banner_url ? 'pb-10 pt-0 sm:pb-12' : 'py-12 lg:py-16' }}">
                 
                 @if(session('success'))
-                    <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 flex items-center shadow-sm">
+                    <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 flex items-center shadow-sm {{ $user->banner_url ? 'mt-4' : '' }}">
                         <svg class="w-5 h-5 mr-3 text-emerald-600 dark:text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                         <span class="text-sm font-medium">{{ session('success') }}</span>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 flex items-center shadow-sm">
+                    <div class="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 flex items-center shadow-sm {{ $user->banner_url ? 'mt-4' : '' }}">
                         <svg class="w-5 h-5 mr-3 text-rose-600 dark:text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span class="text-sm font-medium">{{ session('error') }}</span>
                     </div>
                 @endif
 
-                <div class="flex flex-col md:flex-row md:items-center md:space-x-8">
-                    <!-- Avatar -->
-                    <x-user-avatar :user="$user" size="2xl" class="border-4 border-white dark:border-gray-900 shadow-xl mb-6 md:mb-0 mx-auto md:mx-0" />
+                <div class="flex flex-col md:flex-row md:items-end md:space-x-8 {{ $user->banner_url ? '-mt-16 sm:-mt-20 md:-mt-24' : '' }} mb-4">
+                    <!-- Avatar with overlapping border -->
+                    <x-user-avatar :user="$user" size="2xl" class="border-4 border-white dark:border-gray-800 shadow-2xl mb-4 md:mb-0 mx-auto md:mx-0 relative z-10 shrink-0" />
                     
                     <!-- Info -->
-                    <div class="text-center md:text-left flex-1">
+                    <div class="text-center md:text-left flex-1 min-w-0 {{ $user->banner_url ? 'pt-4 md:pt-0' : '' }}">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
                             <div>
                                 <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">

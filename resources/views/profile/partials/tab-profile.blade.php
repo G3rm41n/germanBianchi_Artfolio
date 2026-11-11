@@ -234,37 +234,264 @@
                 </div>
             </div>
 
-            <!-- 2. Cover Banner URL -->
-            <div x-data="{ bannerUrl: '{{ old('banner_url', $user->banner_url) }}' }">
-                <label for="banner_url" class="block text-sm font-bold text-gray-900 dark:text-white">
+            <!-- 2. Cover Banner Positioning & URL -->
+            <div x-data="{
+                bannerUrl: '{{ old('banner_url', $user->banner_url) }}',
+                bannerCropX: {{ old('banner_crop_x', $user->banner_crop_x ?? 0) }},
+                bannerCropY: {{ old('banner_crop_y', $user->banner_crop_y ?? 0) }},
+                bannerCropZoom: {{ old('banner_crop_zoom', $user->banner_crop_zoom ?? 1) }},
+                isModalOpen: false,
+
+                tempUrl: '',
+                tempCropX: 0,
+                tempCropY: 0,
+                tempCropZoom: 1,
+
+                isDragging: false,
+                startX: 0,
+                startY: 0,
+                startCropX: 0,
+                startCropY: 0,
+                imageError: false,
+
+                openModal() {
+                    this.tempUrl = this.bannerUrl || '';
+                    this.tempCropX = parseFloat(this.bannerCropX) || 0;
+                    this.tempCropY = parseFloat(this.bannerCropY) || 0;
+                    this.tempCropZoom = parseFloat(this.bannerCropZoom) || 1;
+                    this.imageError = false;
+                    this.isModalOpen = true;
+                },
+
+                closeModal() {
+                    this.isModalOpen = false;
+                    this.isDragging = false;
+                },
+
+                applyChanges() {
+                    this.bannerUrl = this.tempUrl ? this.tempUrl.trim() : '';
+                    this.bannerCropX = this.tempCropX;
+                    this.bannerCropY = this.tempCropY;
+                    this.bannerCropZoom = this.tempCropZoom;
+                    this.closeModal();
+                },
+
+                removeBanner() {
+                    this.bannerUrl = '';
+                    this.tempUrl = '';
+                    this.bannerCropX = 0;
+                    this.bannerCropY = 0;
+                    this.bannerCropZoom = 1;
+                    this.closeModal();
+                },
+
+                resetCrop() {
+                    this.tempCropX = 0;
+                    this.tempCropY = 0;
+                    this.tempCropZoom = 1;
+                },
+
+                onMouseDown(e) {
+                    if (!this.tempUrl || this.imageError) return;
+                    this.isDragging = true;
+                    this.startX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                    this.startY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+                    this.startCropX = parseFloat(this.tempCropX) || 0;
+                    this.startCropY = parseFloat(this.tempCropY) || 0;
+                },
+
+                onMouseMove(e) {
+                    if (!this.isDragging) return;
+                    const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                    const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+                    const dx = clientX - this.startX;
+                    const dy = clientY - this.startY;
+                    const container = this.$refs.bannerCropContainer;
+                    const containerWidth = container ? container.clientWidth : 500;
+                    const containerHeight = container ? container.clientHeight : 180;
+                    const zoomFactor = Math.max(parseFloat(this.tempCropZoom) || 1, 0.5);
+                    this.tempCropX = Math.round(this.startCropX + ((dx / containerWidth) * 100) / zoomFactor);
+                    this.tempCropY = Math.round(this.startCropY + ((dy / containerHeight) * 100) / zoomFactor);
+                },
+
+                onMouseUp() {
+                    this.isDragging = false;
+                },
+
+                zoomIn() {
+                    let next = parseFloat((parseFloat(this.tempCropZoom) + 0.1).toFixed(2));
+                    this.tempCropZoom = Math.min(next, 3.0);
+                },
+
+                zoomOut() {
+                    let next = parseFloat((parseFloat(this.tempCropZoom) - 0.1).toFixed(2));
+                    this.tempCropZoom = Math.max(next, 0.5);
+                },
+
+                onWheel(e) {
+                    if (e.deltaY < 0) this.zoomIn();
+                    else this.zoomOut();
+                }
+            }">
+                <label class="block text-sm font-bold text-gray-900 dark:text-white mb-2">
                     Cover Banner Image
                 </label>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                    A panoramic banner displayed across the top of your public artist portfolio (recommended 1920x640px).
-                </p>
 
-                <div class="space-y-3">
-                    <input type="url"
-                           id="banner_url"
-                           name="banner_url"
-                           x-model="bannerUrl"
-                           placeholder="https://images.unsplash.com/photo-..."
-                           class="block w-full text-sm rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500">
+                <!-- Hidden inputs for persisting coordinates & URL -->
+                <input type="hidden" name="banner_url" :value="bannerUrl">
+                <input type="hidden" name="banner_crop_x" :value="bannerCropX">
+                <input type="hidden" name="banner_crop_y" :value="bannerCropY">
+                <input type="hidden" name="banner_crop_zoom" :value="bannerCropZoom">
 
-                    <!-- Live Banner Preview Card -->
-                    <div class="h-32 sm:h-40 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 relative bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+                <div class="space-y-3 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700/60">
+                    <!-- Live Panoramic Banner Preview Card -->
+                    <div class="h-32 sm:h-44 w-full rounded-2xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-700 relative bg-gray-100 dark:bg-gray-900 flex items-center justify-center cursor-pointer shadow-sm group transition-all hover:border-indigo-500"
+                         @click="openModal()" title="Click to adjust banner framing">
                         <template x-if="bannerUrl">
-                            <img :src="bannerUrl" alt="Banner preview" class="w-full h-full object-cover">
+                            <div class="w-full h-full bg-cover bg-center bg-no-repeat transition-transform duration-150"
+                                 :style="`background-image: url('${bannerUrl}'); transform: translate(${bannerCropX}%, ${bannerCropY}%) scale(${bannerCropZoom});`">
+                            </div>
                         </template>
                         <template x-if="!bannerUrl">
                             <div class="text-center p-4 text-gray-400 dark:text-gray-500">
-                                <svg class="w-8 h-8 mx-auto mb-1 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                <span class="text-xs">No banner set (Default portfolio header will be used)</span>
+                                <svg class="w-8 h-8 mx-auto mb-1 stroke-1 text-gray-400 dark:text-gray-500 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span class="text-xs font-medium">No banner set (Click to set & adjust panoramic banner)</span>
                             </div>
                         </template>
+
+                        <!-- Hover Overlay Indicator -->
+                        <div x-show="bannerUrl" class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                            <span class="px-3 py-1.5 rounded-xl bg-black/60 text-white text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                Adjust Framing
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                        <div class="flex items-center space-x-2">
+                            <button type="button" @click="openModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span x-text="bannerUrl ? 'Adjust Framing / Change' : 'Upload Banner'"></span>
+                            </button>
+                            <button type="button" x-show="bannerUrl" @click="removeBanner()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-200 dark:bg-gray-700 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-950/40 dark:hover:text-red-400 text-gray-700 dark:text-gray-300 transition">
+                                Remove
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Panoramic banner (recommended 1920x640px). Pan & zoom supported.
+                        </p>
                     </div>
                 </div>
                 <x-input-error class="mt-2" :messages="$errors->get('banner_url')" />
+
+                <!-- Modal Dialog for Banner Framing -->
+                <div x-show="isModalOpen" 
+                     class="fixed inset-0 z-50 overflow-y-auto" 
+                     style="display: none;" 
+                     @keydown.escape.window="closeModal()">
+                    <div x-show="isModalOpen" 
+                         x-transition:enter="ease-out duration-200" 
+                         x-transition:enter-start="opacity-0" 
+                         x-transition:enter-end="opacity-100" 
+                         x-transition:leave="ease-in duration-150" 
+                         x-transition:leave-start="opacity-100" 
+                         x-transition:leave-end="opacity-0" 
+                         class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity" 
+                         @click="closeModal()"></div>
+
+                    <div class="flex min-h-full items-center justify-center p-4">
+                        <div x-show="isModalOpen"
+                             x-transition:enter="ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="ease-in duration-150"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="relative rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-gray-800"
+                             @click.stop
+                             @mouseup.window="onMouseUp()"
+                             @touchend.window="onMouseUp()"
+                             @mousemove.window="onMouseMove($event)"
+                             @touchmove.window="onMouseMove($event)">
+
+                            <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
+                                <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    Adjust Cover Banner Framing
+                                </h3>
+                                <button type="button" @click="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+
+                            <div class="py-4 space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Banner Image URL</label>
+                                    <input type="url" x-model.lazy="tempUrl" placeholder="https://example.com/banner.jpg" class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+                                </div>
+
+                                <!-- Panoramic Rectangular Viewport -->
+                                <div class="bg-gray-950 p-4 sm:p-6 rounded-2xl flex flex-col items-center justify-center relative select-none border border-gray-800">
+                                    <div x-ref="bannerCropContainer"
+                                         class="relative w-full h-44 sm:h-56 rounded-xl overflow-hidden bg-gray-900 border-2 border-indigo-500 cursor-move select-none shadow-inner"
+                                         @mousedown.prevent="onMouseDown"
+                                         @touchstart.prevent="onMouseDown"
+                                         @wheel.prevent="onWheel">
+                                        <template x-if="tempUrl && !imageError">
+                                            <div class="w-full h-full bg-cover bg-center bg-no-repeat pointer-events-none"
+                                                 :style="`background-image: url('${tempUrl}'); transform: translate(${tempCropX}%, ${tempCropY}%) scale(${tempCropZoom});`"></div>
+                                        </template>
+                                        <template x-if="!tempUrl || imageError">
+                                            <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 text-xs">
+                                                <svg class="w-10 h-10 mb-2 text-gray-600 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                <span>Provide a valid banner image URL above</span>
+                                            </div>
+                                        </template>
+
+                                        <!-- Rule-of-thirds grid guidelines -->
+                                        <div class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 opacity-20 border border-white/20">
+                                            <div class="border-r border-b border-white/30"></div>
+                                            <div class="border-r border-b border-white/30"></div>
+                                            <div class="border-b border-white/30"></div>
+                                            <div class="border-r border-b border-white/30"></div>
+                                            <div class="border-r border-b border-white/30"></div>
+                                            <div class="border-b border-white/30"></div>
+                                            <div class="border-r border-white/30"></div>
+                                            <div class="border-r border-white/30"></div>
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                                        <span>Click & drag horizontally/vertically to position • Mouse wheel to zoom</span>
+                                    </p>
+                                </div>
+
+                                <div x-show="tempUrl" class="space-y-1">
+                                    <div class="flex justify-between items-center text-xs text-gray-500">
+                                        <span class="font-semibold text-gray-700 dark:text-gray-300">Zoom: <span class="font-mono text-indigo-600 dark:text-indigo-400" x-text="Number(tempCropZoom).toFixed(2) + 'x'"></span></span>
+                                        <button type="button" @click="resetCrop()" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Reset Positioning</button>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <button type="button" @click="zoomOut()" :disabled="tempCropZoom <= 0.5" class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                                        </button>
+                                        <input type="range" x-model.number="tempCropZoom" min="0.5" max="3.0" step="0.05" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg accent-indigo-600 cursor-pointer">
+                                        <button type="button" @click="zoomIn()" :disabled="tempCropZoom >= 3.0" class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end space-x-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+                                <button type="button" @click="closeModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 transition">Cancel</button>
+                                <button type="button" @click="applyChanges()" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

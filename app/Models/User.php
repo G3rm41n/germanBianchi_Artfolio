@@ -15,7 +15,8 @@ use Illuminate\Support\Str;
 #[Fillable([
     'name', 'email', 'password', 'slug', 'bio', 'commission_status',
     'is_admin', 'status', 'avatar_url', 'crop_x', 'crop_y', 'crop_zoom',
-    'banner_url', 'headline', 'city', 'country', 'skills', 'software', 'hiring_types',
+    'banner_url', 'banner_crop_x', 'banner_crop_y', 'banner_crop_zoom',
+    'headline', 'city', 'country', 'skills', 'software', 'hiring_types',
     'public_email_enabled', 'contact_email', 'show_mature_content', 'hide_ai_content',
     'notify_new_artworks', 'notify_messages', 'onboarding_step', 'onboarding_completed_at'
 ])]
@@ -31,6 +32,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at'       => 'datetime',
             'password'                => 'hashed',
             'is_admin'                => 'boolean',
+            'banner_crop_x'           => 'float',
+            'banner_crop_y'           => 'float',
+            'banner_crop_zoom'        => 'float',
             'skills'                  => 'array',
             'software'                => 'array',
             'hiring_types'            => 'array',
