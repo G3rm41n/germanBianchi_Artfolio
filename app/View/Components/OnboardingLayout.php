@@ -20,3 +20,4 @@ class OnboardingLayout extends Component
         return view('layouts.onboarding');
     }
 }
+

@@ -159,3 +159,4 @@ class OnboardingWizardTest extends TestCase
         $response->assertOk();
     }
 }
+

@@ -82,3 +82,4 @@ class EnsureOnboardingCompleted
         return redirect()->route('onboarding.step', ['step' => $currentStep]);
     }
 }
+

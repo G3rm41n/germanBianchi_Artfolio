@@ -30,6 +30,15 @@
                             name="password"
                             required autocomplete="current-password" />
 
+            <!-- Forgot your password? placed directly below Password input -->
+            @if (Route::has('password.request'))
+                <div class="flex justify-end mt-1.5">
+                    <a class="text-xs text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 rounded" href="{{ route('password.request') }}">
+                        {{ __('Forgot your password?') }}
+                    </a>
+                </div>
+            @endif
+
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
@@ -41,14 +50,15 @@
             </label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+        <!-- Action Buttons: Register & Log In -->
+        <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-100 dark:border-gray-700/60">
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                    {{ __('Register') }}
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button class="{{ Route::has('register') ? 'ms-3' : 'ms-auto' }}">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>

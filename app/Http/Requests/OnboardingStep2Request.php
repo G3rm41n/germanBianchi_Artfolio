@@ -92,3 +92,4 @@ class OnboardingStep2Request extends FormRequest
         ];
     }
 }
+

@@ -44,3 +44,4 @@ class OnboardingStep1Request extends FormRequest
         ];
     }
 }
+
