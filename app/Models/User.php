@@ -15,8 +15,9 @@ use Illuminate\Support\Str;
 #[Fillable([
     'name', 'email', 'password', 'slug', 'bio', 'commission_status',
     'is_admin', 'status', 'avatar_url', 'crop_x', 'crop_y', 'crop_zoom',
-    'headline', 'city', 'country', 'skills', 'software', 'hiring_types',
-    'public_email_enabled', 'contact_email', 'onboarding_step', 'onboarding_completed_at'
+    'banner_url', 'headline', 'city', 'country', 'skills', 'software', 'hiring_types',
+    'public_email_enabled', 'contact_email', 'show_mature_content', 'hide_ai_content',
+    'notify_new_artworks', 'notify_messages', 'onboarding_step', 'onboarding_completed_at'
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
@@ -34,6 +35,10 @@ class User extends Authenticatable implements MustVerifyEmail
             'software'                => 'array',
             'hiring_types'            => 'array',
             'public_email_enabled'    => 'boolean',
+            'show_mature_content'     => 'boolean',
+            'hide_ai_content'         => 'boolean',
+            'notify_new_artworks'     => 'boolean',
+            'notify_messages'         => 'boolean',
             'onboarding_step'         => 'integer',
             'onboarding_completed_at' => 'datetime',
         ];
@@ -111,5 +116,37 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Artwork::class, 'bookmarks')
                     ->withTimestamps();
+    }
+
+    public function blockedUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'user_id', 'blocked_user_id')
+                    ->withTimestamps();
+    }
+
+    public function blockedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'blocked_user_id', 'user_id')
+                    ->withTimestamps();
+    }
+
+    public function isBlocking(User|int $user): bool
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+        return $this->blockedUsers()->where('blocked_user_id', $userId)->exists();
+    }
+
+    public function block(User|int $user): void
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+        if ($userId !== $this->id && !$this->isBlocking($userId)) {
+            $this->blockedUsers()->attach($userId);
+        }
+    }
+
+    public function unblock(User|int $user): void
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+        $this->blockedUsers()->detach($userId);
     }
 }

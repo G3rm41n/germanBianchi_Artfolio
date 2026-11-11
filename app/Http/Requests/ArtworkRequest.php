@@ -29,9 +29,18 @@ class ArtworkRequest extends FormRequest
             'status' => ['nullable', 'in:published,hidden'],
             'external_url' => ['required', 'url', 'max:2000'],
             'category' => ['required', 'in:image,video,3d,audio,doc'],
+            'subcategory' => ['nullable', 'string', 'max:100'],
+            'is_ai_generated' => ['nullable', 'boolean'],
         ];
 
         return $rules;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_ai_generated' => $this->boolean('is_ai_generated'),
+        ]);
     }
 
     /**

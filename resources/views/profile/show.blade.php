@@ -1,5 +1,13 @@
 <x-app-layout>
     <div>
+        @if($user->banner_url)
+            <!-- Artist Cover Banner -->
+            <div class="w-full h-48 sm:h-64 md:h-80 overflow-hidden relative bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                <img src="{{ $user->banner_url }}" alt="{{ $user->name }} cover banner" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+            </div>
+        @endif
+
         <!-- Artist Profile Header -->
         <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">

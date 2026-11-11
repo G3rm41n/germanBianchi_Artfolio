@@ -178,8 +178,23 @@
 
                     <template x-if="artwork">
                         <div class="mt-4 sm:mt-0 pt-4 flex flex-col h-full">
-                            <div class="flex justify-between items-start mb-4">
-                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="artwork.title"></h2>
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <!-- Badges: Category, Subcategory, AI -->
+                                    <div class="flex flex-wrap items-center gap-1.5 mb-2">
+                                        <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400" x-text="artwork.category"></span>
+                                        <template x-if="artwork.subcategory">
+                                            <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300" x-text="artwork.subcategory"></span>
+                                        </template>
+                                        <template x-if="artwork.is_ai_generated">
+                                            <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 flex items-center space-x-1" title="Created with AI assistance">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                                <span>AI Generated</span>
+                                            </span>
+                                        </template>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="artwork.title"></h2>
+                                </div>
                                 
                                 <div class="flex items-center space-x-1 ml-4 flex-shrink-0">
                                     <!-- Report Artwork Button -->
@@ -210,13 +225,13 @@
                                                 artwork.is_bookmarked = data.is_bookmarked;
                                                 window.dispatchEvent(new CustomEvent('bookmark-updated', { detail: { id: artwork.id, status: data.is_bookmarked } }));
                                             })
-                                        " class="p-1 transition-colors focus:outline-none" :class="artwork.is_bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Guardar a Favoritos">
+                                        " class="p-1 transition-colors focus:outline-none" :class="artwork.is_bookmarked ? 'text-red-500 hover:text-red-600' : 'text-gray-300 dark:text-gray-600 hover:text-red-500'" title="Save to Favorites">
                                             <svg class="w-8 h-8 transition-all" :class="artwork.is_bookmarked ? 'fill-current scale-110' : 'scale-100'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                             </svg>
                                         </button>
                                     @else
-                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="p-1 text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Guardar a Favoritos">
+                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="p-1 text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Save to Favorites">
                                             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                             </svg>

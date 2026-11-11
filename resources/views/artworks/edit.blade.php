@@ -134,11 +134,11 @@
                             @enderror
                         </div>
 
-                        <!-- Price / Category / Visibility -->
-                        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Price / Category / Subcategory / Visibility -->
+                        <div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
                                 <label for="category" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Category <span class="text-red-500">*</span></label>
-                                <select id="category" name="category" x-model="category" required class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <select id="category" name="category" x-model="category" required class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
                                     <option value="image" {{ old('category', $artwork->category) == 'image' ? 'selected' : '' }}>Illustration / 2D</option>
                                     <option value="video" {{ old('category', $artwork->category) == 'video' ? 'selected' : '' }}>Animation / Video</option>
                                     <option value="3d" {{ old('category', $artwork->category) == '3d' ? 'selected' : '' }}>3D Modeling</option>
@@ -151,8 +151,16 @@
                             </div>
 
                             <div>
+                                <label for="subcategory" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Subcategory <span class="text-xs text-gray-400 font-normal">(Optional)</span></label>
+                                <input id="subcategory" type="text" name="subcategory" value="{{ old('subcategory', $artwork->subcategory) }}" placeholder="e.g. Concept Art, Sculpting" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm" />
+                                @error('subcategory')
+                                    <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
                                 <label for="price_hint" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Price Hint</label>
-                                <input id="price_hint" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" name="price_hint" value="{{ old('price_hint', $artwork->price_hint) }}" placeholder="e.g. $150 USD" />
+                                <input id="price_hint" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm" type="text" name="price_hint" value="{{ old('price_hint', $artwork->price_hint) }}" placeholder="e.g. $150 USD" />
                                 @error('price_hint')
                                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -160,13 +168,45 @@
 
                             <div>
                                 <label for="status" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Visibility</label>
-                                <select id="status" name="status" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <select id="status" name="status" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
                                     <option value="published" {{ old('status', $artwork->status) == 'published' ? 'selected' : '' }}>Public (Gallery)</option>
                                     <option value="hidden" {{ old('status', $artwork->status) == 'hidden' ? 'selected' : '' }}>Hidden (Private)</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <!-- AI Content Disclosure Button / Toggle -->
+                        <div x-data="{ isAi: {{ old('is_ai_generated', $artwork->is_ai_generated) ? 'true' : 'false' }} }"
+                             class="mb-6 p-4 rounded-xl border transition-all"
+                             :class="isAi ? 'bg-purple-50/70 dark:bg-purple-950/20 border-purple-300 dark:border-purple-800' : 'bg-gray-50/70 dark:bg-gray-800/40 border-gray-200 dark:border-gray-700'">
+                            <div class="flex items-center justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors shrink-0"
+                                         :class="isAi ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    </div>
+                                    <div>
+                                        <span class="block font-bold text-sm text-gray-900 dark:text-white">
+                                            AI-Generated or AI-Assisted Artwork
+                                        </span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                                            Indicate if this artwork was created or partially generated with AI tools (Midjourney, Stable Diffusion, etc.).
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <label class="relative inline-flex items-center cursor-pointer select-none">
+                                    <input type="checkbox" name="is_ai_generated" value="1" x-model="isAi" class="sr-only">
+                                    <div class="w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full peer transition-colors" :class="isAi ? '!bg-purple-600' : ''"></div>
+                                    <div class="absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform" :class="isAi ? 'transform translate-x-5' : ''"></div>
+                                </label>
+                            </div>
+                            <div x-show="isAi" x-transition class="mt-2.5 pt-2.5 border-t border-purple-200 dark:border-purple-900/50 flex items-center gap-2 text-xs text-purple-700 dark:text-purple-300 font-semibold" style="display: none;">
+                                <span class="px-2 py-0.5 rounded bg-purple-200/80 dark:bg-purple-900 text-[10px] font-bold tracking-wider uppercase">AI Label Active</span>
+                                <span>This artwork will display an AI badge for community transparency.</span>
                             </div>
                         </div>
 

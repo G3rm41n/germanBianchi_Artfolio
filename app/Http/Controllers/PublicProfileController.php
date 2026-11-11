@@ -9,7 +9,9 @@ class PublicProfileController extends Controller
 {
     public function show($slug)
     {
-        $user = User::where('slug', $slug)->firstOrFail();
+        $user = User::where('slug', $slug)
+            ->where('status', 'active')
+            ->firstOrFail();
 
         $collections = $user->collections()->has('artworks')->get();
         $selectedCollectionId = request('collection_id');

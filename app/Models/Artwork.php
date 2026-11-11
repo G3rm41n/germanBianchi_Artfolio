@@ -13,7 +13,7 @@ class Artwork extends Model
 
     protected $fillable = [
         'user_id', 'title', 'description', 'price_hint',
-        'external_url', 'provider', 'category', 'render_type',
+        'external_url', 'provider', 'category', 'subcategory', 'is_ai_generated', 'render_type',
         'thumbnail_url', 'embed_html', 'status', 'is_featured',
     ];
 
@@ -22,7 +22,8 @@ class Artwork extends Model
     protected function casts(): array
     {
         return [
-            'is_featured' => 'boolean',
+            'is_featured'     => 'boolean',
+            'is_ai_generated' => 'boolean',
         ];
     }
 
@@ -114,6 +115,18 @@ class Artwork extends Model
     public function scopeByCategory($query, string $category)
     {
         return $query->where('category', $category);
+    }
+
+    /** Exclude AI-generated artworks */
+    public function scopeNotAi($query)
+    {
+        return $query->where('is_ai_generated', false);
+    }
+
+    /** Include only AI-generated artworks */
+    public function scopeOnlyAi($query)
+    {
+        return $query->where('is_ai_generated', true);
     }
 
     /** Search by title, description, or artist name */

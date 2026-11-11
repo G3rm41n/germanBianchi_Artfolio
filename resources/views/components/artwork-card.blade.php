@@ -16,6 +16,9 @@
         'id' => $artwork->id,
         'title' => $artwork->title,
         'description' => $artwork->description,
+        'category' => $artwork->category,
+        'subcategory' => $artwork->subcategory,
+        'is_ai_generated' => (bool)$artwork->is_ai_generated,
         'author_name' => $artwork->user->name,
         'author_url' => route('profile.public', $artwork->user->slug),
         'author_avatar' => $artwork->user->avatar_url,
@@ -27,6 +30,7 @@
         'high_res_url' => $artwork->high_res_url ?: $artwork->external_url,
         'external_url' => $artwork->external_url,
         'render_type' => $artwork->render_type,
+        'provider' => $artwork->provider,
         'is_bookmarked' => $isBookmarked
     ]) }})"
 >
@@ -71,6 +75,14 @@
         <span class="absolute top-3 right-3 backdrop-blur-sm text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full shadow-md {{ $providerBadgeClasses }}">
             {{ $artwork->provider }}
         </span>
+
+        @if($artwork->is_ai_generated)
+            <!-- AI Badge -->
+            <span class="absolute top-3 left-3 backdrop-blur-sm text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full shadow-md bg-purple-600/90 text-white flex items-center space-x-1" title="Created with AI assistance">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>AI</span>
+            </span>
+        @endif
     </div>
     
     <div class="p-5">

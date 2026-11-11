@@ -83,3 +83,14 @@ flowchart TD
    - Controlador y rutas para bloquear/desbloquear usuarios.
    - Filtrado en [`ExplorerController.php`](file:///c:/laragon/www/germanBianchi_artfolio/app/Http/Controllers/ExplorerController.php).
    - Creación de pruebas automatizadas en `tests/Feature/SettingsHubTest.php`.
+
+---
+
+## 4. Estado de Implementación: Completado al 100% ✅
+- **Base de Datos & Modelos:** Migración `add_settings_and_user_blocks_tables` ejecutada. Modelo `User` con fillable, casts y relaciones `blockedUsers()`, `blockedByUsers()`, `isBlocking()`, `block()`, `unblock()`.
+- **UI & Layout:** `resources/views/profile/edit.blade.php` transformado a arquitectura de 2 columnas estilo ArtStation con navegación por 6 pestañas modulares (`tab-profile`, `tab-resume`, `tab-account`, `tab-notifications`, `tab-password`, `tab-blocking`). Reutilización de los mejores componentes (selector reactivo de 250 países, editor de avatar pan & zoom, selector de software y disciplinas, comprobación en vivo de handle).
+- **Banner de Portada:** Campo `banner_url` integrado en `tab-profile` con previsualización en vivo y cabecera en el portafolio público (`profile/show.blade.php`).
+- **Flags de IA y Subcategorías en Obras:** Migración `add_subcategory_and_ai_flag_to_artworks_table`, selector interactivo en create/edit, badge `[AI]` en tarjetas y visor modal, y filtro activo en el explorador.
+- **Suite de Pruebas:** 80 tests ejecutados y pasando al 100% (`ArtworkSubcategoryAndAiTest`, `SettingsHubTest`, `UserSuspensionTest`, etc.).
+
+

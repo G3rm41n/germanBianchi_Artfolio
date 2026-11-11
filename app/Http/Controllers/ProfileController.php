@@ -16,8 +16,12 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        $blockedUsers = $user->blockedUsers()->orderBy('name')->get();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'blockedUsers' => $blockedUsers,
         ]);
     }
 
@@ -35,7 +39,13 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $redirect = $request->filled('active_tab')
+            ? Redirect::route('profile.edit', ['tab' => $request->input('active_tab')])
+            : Redirect::route('profile.edit');
+
+        return $redirect
+            ->with('status', 'profile-updated')
+            ->with('active_tab', $request->input('active_tab', 'profile'));
     }
 
     /**

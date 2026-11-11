@@ -84,6 +84,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/blocking', [App\Http\Controllers\UserBlockController::class, 'store'])->name('profile.blocking.store');
+    Route::delete('/profile/blocking/{blockedUser}', [App\Http\Controllers\UserBlockController::class, 'destroy'])->name('profile.blocking.destroy');
 
     // Protected actions requiring email verification
     Route::middleware('verified')->group(function () {
@@ -103,8 +105,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/papelera/colecciones/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreCollection'])->name('trash.collections.restore');
         Route::delete('/papelera/colecciones/{id}', [App\Http\Controllers\TrashController::class, 'destroyCollection'])->name('trash.collections.destroy');
         Route::post('/papelera/vaciar', [App\Http\Controllers\TrashController::class, 'emptyTrash'])->name('trash.empty');
-        Route::post('/papelera/{id}/restore', [App\Http\Controllers\TrashController::class, 'restore'])->name('trash.restore');
-        Route::delete('/papelera/{id}', [App\Http\Controllers\TrashController::class, 'destroy'])->name('trash.destroy');
 
         // Artwork Reports
         Route::post('/obras/{id}/report', [App\Http\Controllers\ReportController::class, 'store'])->name('artworks.report');
