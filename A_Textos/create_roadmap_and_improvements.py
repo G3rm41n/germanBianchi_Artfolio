@@ -338,13 +338,13 @@ def generate_roadmap_pdf():
     headers_list2 = ["#", "Prioridad", "Módulo / Categoría", "Nueva Funcionalidad Propuesta y Valor Agregado"]
     rows_list2 = [
         ["1", "P1 - Inmediata", "Onboarding / FTUE", "Asistente de Onboarding Inicial (3 Etapas estilo ArtStation): Flujo guiado obligatorio post-registro (Paso 1: Información Básica, Headline, País y Avatar; Paso 2: Perfil Profesional, Username/Slug público, Resumen, Habilidades y Comisiones; Paso 3: Felicitaciones y Lanzamiento a Homepage) con middleware de bloqueo que intercepta cualquier navegación y re-login hasta completar el perfil."],
-        ["2", "P1 - Inmediata", "Portafolio Público", "Enlaces a Redes Sociales Oficiales: Campos en el perfil para ArtStation, Instagram, Behance, X y sitio web con íconos en cabecera."],
-        ["3", "P1 - Inmediata", "Analítica de Obras", "Contador de Vistas (Views Counter): Registro del número de aperturas de cada obra en el visor modal y visualización en las tarjetas."],
-        ["4", "P1 - Inmediata", "Catálogo y Filtros", "Sistema de Etiquetas (Tags / Hashtags): Relación muchos-a-muchos para etiquetar obras (#blender, #pixelart, #lowpoly) y filtrar por tag."],
-        ["5", "P1 - Inmediata", "Descubrimiento", "Obras Destacadas (Pinned Artworks): Permitir al artista fijar hasta 3 obras principales en la parte superior de su portafolio."],
-        ["6", "P1 - Inmediata", "Viralidad / UX", "Botón 'Share Artwork / Portfolio' con generación automática de código QR y copia rápida de enlace directo al portapapeles."],
-        ["7", "P1 - Inmediata", "Reconocimiento", "Insignia de Artista Verificado (Verified Badge): Check azul otorgable por el administrador a artistas destacados de la comunidad."],
-        ["8", "P1 - Inmediata", "Curaduría Personal", "Portada Personalizada de Perfil (Banner Image): Imagen panorámica superior en el portafolio público del artista."],
+        ["2", "P1 - Inmediata", "Gestión de Perfil / Settings", "Centro de Configuración y Edición de Perfil por Pestañas (Estilo ArtStation Settings Hub): Rediseño integral de la vista /profile con barra lateral de navegación interactiva y cabecera de identidad (Avatar, nombre, 'Member since...'), organizada en 6 pestañas modulares: 1) Profile (edición de datos básicos de Step 1: nombre, headline, ciudad, país con combobox reactivo, avatar con editor Discord-style y banner de portada), 2) Resume (edición de datos profesionales de Step 2: slug público, bio, etiquetas interactivas de habilidades y software, disponibilidad de comisiones, opciones de contratación y correo de contacto público personalizable), 3) Account (preferencias QoL: filtros de contenido +18/maduro, interruptor para ocultar arte generado por IA y borrado de cuenta en zona de peligro), 4) Notifications (ajustes de notificaciones en plataforma y por email para publicaciones de seguidos y mensajería), 5) Password (actualización segura de credenciales) y 6) Blocking (bloqueo preventivo de usuarios por @username para ocultar obras y restringir mensajes)."],
+        ["3", "P1 - Inmediata", "Portafolio Público", "Enlaces a Redes Sociales Oficiales: Campos en el perfil para ArtStation, Instagram, Behance, X y sitio web con íconos en cabecera."],
+        ["4", "P1 - Inmediata", "Analítica de Obras", "Contador de Vistas (Views Counter): Registro del número de aperturas de cada obra en el visor modal y visualización en las tarjetas."],
+        ["5", "P1 - Inmediata", "Catálogo y Filtros", "Sistema de Etiquetas (Tags / Hashtags): Relación muchos-a-muchos para etiquetar obras (#blender, #pixelart, #lowpoly) y filtrar por tag."],
+        ["6", "P1 - Inmediata", "Descubrimiento", "Obras Destacadas (Pinned Artworks): Permitir al artista fijar hasta 3 obras principales en la parte superior de su portafolio."],
+        ["7", "P1 - Inmediata", "Viralidad / UX", "Botón 'Share Artwork / Portfolio' con generación automática de código QR y copia rápida de enlace directo al portapapeles."],
+        ["8", "P1 - Inmediata", "Reconocimiento", "Insignia de Artista Verificado (Verified Badge): Check azul otorgable por el administrador a artistas destacados de la comunidad."],
         ["9", "P2 - Alta", "Interacción Social", "Sistema de Aplausos / Likes ('Appreciations'): Botón de reconocimiento público separado del guardado privado en Favoritos."],
         ["10", "P2 - Alta", "Detalle Técnico", "Ficha de Herramientas y Software Usado: Selector de programas utilizados en cada obra (Photoshop, ZBrush, Unreal, Ableton)."],
         ["11", "P2 - Alta", "Comisiones", "Tabla de Tarifas y Servicios (Commission Sheet): Sección estructurada en el perfil del artista detallando precios base y tiempos de entrega."],
@@ -365,8 +365,8 @@ def generate_roadmap_pdf():
         ["26", "P4 - Exploratoria", "E-Commerce Ligero", "Enlaces de Compra / Descarga Directa (Gumroad, Patreon, Ko-fi, Itch.io) integrados como botón de acción en cada obra."],
         ["27", "P4 - Exploratoria", "Autenticación", "Inicio de Sesión Social (OAuth con Google y GitHub/Discord) mediante Laravel Socialite para registro en un clic."],
         ["28", "P4 - Exploratoria", "Curaduría Editorial", "Sección 'Staff Picks / Obra de la Semana' en la portada elegida desde el panel de administración."],
-        ["29", "P4 - Exploratoria", "Protección", "Filtro de Contenido Sensible / Maduro (NSFW Blur Toggle): Desenfoque preventivo opcional que el visitante decide revelar con un clic."],
-        ["30", "P4 - Exploratoria", "Colaboración", "Colecciones Colaborativas o Co-Autoría: Permitir acreditar a más de un artista registrado en un mismo proyecto multidisciplinario."]
+        ["29", "P4 - Exploratoria", "Colaboración", "Colecciones Colaborativas o Co-Autoría: Permitir acreditar a más de un artista registrado en un mismo proyecto multidisciplinario."],
+        ["30", "P4 - Exploratoria", "Gamificación", "Insignias de Trayectoria / Logros: Reconocimientos automáticos por cantidad de obras publicadas o tiempo en la plataforma."]
     ]
     add_priority_table(doc, headers_list2, rows_list2, [0.45, 0.95, 1.45, 3.95])
 
@@ -388,10 +388,10 @@ def generate_roadmap_pdf():
     )
     add_bullet(
         doc,
-        "Si se desea añadir un factor diferenciador extra de alto impacto visual y profesionalismo, el ítem 1 de la Lista 2 "
-        "(Asistente de Onboarding Inicial en 3 Etapas con bloqueo estricto por middleware) junto a los ítems 2 y 3 "
-        "(Redes sociales en el perfil y Contador de vistas por obra) elevan la percepción de la plataforma al nivel de un producto comercial "
-        "como ArtStation o Behance, garantizando que ninguna cuenta quede incompleta o sin avatar.",
+        "Si se desea añadir un factor diferenciador extra de alto impacto visual y profesionalismo, los ítems 1 y 2 de la Lista 2 "
+        "(Asistente de Onboarding Inicial en 3 Etapas con bloqueo estricto por middleware, junto con el Centro de Configuración y Gestión de Perfil "
+        "por Pestañas estilo ArtStation Hub) elevan la experiencia del usuario al nivel de una plataforma de producción moderna, "
+        "garantizando que el perfil del artista quede perfectamente configurado desde el registro y sea fácilmente personalizable en cualquier momento.",
         bold_prefix="Fase B — Expansión Funcional Destacada (Opcional): "
     )
 
