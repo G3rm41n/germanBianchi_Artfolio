@@ -42,7 +42,6 @@ class SettingsHubTest extends TestCase
         $response = $this->actingAs($this->user)->patch(route('profile.update'), [
             'active_tab' => 'profile',
             'name' => 'Renowned Concept Artist',
-            'email' => $this->user->email,
             'headline' => 'Senior Environment Designer',
             'city' => 'Kyoto',
             'country' => 'Japan',
@@ -51,6 +50,9 @@ class SettingsHubTest extends TestCase
             'crop_y' => -5,
             'crop_zoom' => 1.5,
             'banner_url' => 'https://example.com/panoramic-banner.jpg',
+            'banner_crop_x' => -15,
+            'banner_crop_y' => 20,
+            'banner_crop_zoom' => 1.35,
         ]);
 
         $response->assertRedirect(route('profile.edit', ['tab' => 'profile']));
@@ -61,6 +63,14 @@ class SettingsHubTest extends TestCase
         $this->assertEquals('Kyoto', $this->user->city);
         $this->assertEquals('Japan', $this->user->country);
         $this->assertEquals('https://example.com/panoramic-banner.jpg', $this->user->banner_url);
+        $this->assertEquals(-15, $this->user->banner_crop_x);
+        $this->assertEquals(20, $this->user->banner_crop_y);
+        $this->assertEquals(1.35, $this->user->banner_crop_zoom);
+
+        $publicView = $this->get(route('profile.public', $this->user->slug));
+        $publicView->assertOk();
+        $publicView->assertSee('https://example.com/panoramic-banner.jpg', false);
+        $publicView->assertSee('translate(-15%, 20%) scale(1.35)', false);
     }
 
     public function test_resume_tab_updates_professional_skills_and_handle(): void

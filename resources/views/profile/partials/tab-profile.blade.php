@@ -193,7 +193,7 @@
                             <div class="py-4 space-y-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Image URL</label>
-                                    <input type="url" x-model.lazy="tempUrl" placeholder="https://example.com/avatar.jpg" class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+                                    <input type="url" x-model="tempUrl" @input="imageError = false" placeholder="https://example.com/avatar.jpg" class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
                                 </div>
 
                                 <div class="bg-gray-950 p-6 rounded-2xl flex flex-col items-center justify-center relative select-none border border-gray-800">
@@ -428,7 +428,7 @@
                             <div class="py-4 space-y-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Banner Image URL</label>
-                                    <input type="url" x-model.lazy="tempUrl" placeholder="https://example.com/banner.jpg" class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+                                    <input type="url" x-model="tempUrl" @input="imageError = false" placeholder="https://example.com/banner.jpg" class="w-full text-xs rounded-xl border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
                                 </div>
 
                                 <!-- Panoramic Rectangular Viewport -->
