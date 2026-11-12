@@ -10,7 +10,7 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12" x-data>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
             @if (session('success'))
@@ -95,17 +95,17 @@
                                         Edit
                                     </a>
                                     
-                                    <form action="{{ route('artworks.destroy', $artwork) }}" method="POST">
+                                    <form id="delete-artwork-{{ $artwork->id }}" action="{{ route('artworks.destroy', $artwork) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
-                                                @click.prevent="$dispatch('open-confirm', {
+                                                @click.prevent="window.dispatchEvent(new CustomEvent('open-confirm', { detail: {
                                                     title: 'Move Artwork to Trash',
-                                                    message: 'Are you sure you want to move \'{{ addslashes($artwork->title) }}\' to the recycle bin? It will be retained for 30 days before permanent deletion.',
-                                                    form: $el.closest('form'),
+                                                    message: {{ json_encode('Are you sure you want to move \'' . $artwork->title . '\' to the recycle bin? It will be retained for 30 days before permanent deletion.') }},
+                                                    formId: 'delete-artwork-{{ $artwork->id }}',
                                                     confirmText: 'Move to Trash',
                                                     isDanger: true
-                                                })"
+                                                }}))"
                                                 class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-semibold flex items-center transition-colors">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             Trash
