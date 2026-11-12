@@ -136,15 +136,20 @@
         @php
             $initialSkills = old('skills', is_array($user->skills) ? $user->skills : (json_decode($user->skills ?? '[]', true) ?: []));
             $initialSkillsJson = json_encode(array_values($initialSkills));
+
+            $curatedSkills = \App\Models\CuratedTag::disciplines()->suggested()->orderBy('sort_order')->orderBy('name')->pluck('name')->all();
+            if (empty($curatedSkills)) {
+                $curatedSkills = [
+                    'Concept Art', 'Character Design', '3D Modeling', 'Digital Painting',
+                    'Illustration', 'Environment Art', 'Animation', 'Sculpting',
+                    'Storyboarding', 'Texturing', 'UI/UX Art', 'VFX'
+                ];
+            }
         @endphp
         <div x-data="{
             skills: {{ $initialSkillsJson }},
             newSkill: '',
-            suggestedSkills: [
-                'Concept Art', 'Character Design', '3D Modeling', 'Digital Painting',
-                'Illustration', 'Environment Art', 'Animation', 'Sculpting',
-                'Storyboarding', 'Texturing', 'UI/UX Art', 'VFX'
-            ],
+            suggestedSkills: {{ json_encode($curatedSkills) }},
             addSkill(tag) {
                 tag = (tag || this.newSkill).trim();
                 if (tag && !this.skills.includes(tag) && this.skills.length < 15) {
@@ -207,15 +212,20 @@
         @php
             $initialSoftware = old('software', is_array($user->software) ? $user->software : (json_decode($user->software ?? '[]', true) ?: []));
             $initialSoftwareJson = json_encode(array_values($initialSoftware));
+
+            $curatedSoftware = \App\Models\CuratedTag::software()->suggested()->orderBy('sort_order')->orderBy('name')->pluck('name')->all();
+            if (empty($curatedSoftware)) {
+                $curatedSoftware = [
+                    'Blender', 'Photoshop', 'ZBrush', 'Maya', 'Unreal Engine',
+                    'Procreate', 'Substance 3D', 'Clip Studio Paint', 'Cinema 4D',
+                    'After Effects', 'Figma', 'Unity'
+                ];
+            }
         @endphp
         <div x-data="{
             tools: {{ $initialSoftwareJson }},
             newTool: '',
-            suggestedTools: [
-                'Blender', 'Photoshop', 'ZBrush', 'Maya', 'Unreal Engine',
-                'Procreate', 'Substance 3D', 'Clip Studio Paint', 'Cinema 4D',
-                'After Effects', 'Figma', 'Unity'
-            ],
+            suggestedTools: {{ json_encode($curatedSoftware) }},
             addTool(tool) {
                 tool = (tool || this.newTool).trim();
                 if (tool && !this.tools.includes(tool) && this.tools.length < 15) {

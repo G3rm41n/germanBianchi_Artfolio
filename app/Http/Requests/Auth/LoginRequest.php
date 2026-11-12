@@ -30,6 +30,9 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'cf-turnstile-response' => config('services.turnstile.enabled')
+                ? ['required', new \App\Rules\TurnstileRule()]
+                : ['nullable'],
         ];
     }
 

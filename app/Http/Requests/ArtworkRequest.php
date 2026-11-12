@@ -31,6 +31,12 @@ class ArtworkRequest extends FormRequest
             'category' => ['required', 'in:image,video,3d,audio,doc'],
             'subcategory' => ['nullable', 'string', 'max:100'],
             'is_ai_generated' => ['nullable', 'boolean'],
+            'is_mature' => ['nullable', 'boolean'],
+            'software_used' => ['nullable', 'array', 'max:15'],
+            'software_used.*' => ['string', 'max:50'],
+            'license' => ['nullable', 'string', 'in:all_rights_reserved,cc_by,cc_by_sa,cc_by_nc,cc_by_nc_nd,cc0'],
+            'tags' => ['nullable', 'array', 'max:15'],
+            'tags.*' => ['string', 'max:50'],
         ];
 
         return $rules;
@@ -38,8 +44,20 @@ class ArtworkRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if ($this->has('tags') && is_string($this->input('tags'))) {
+            $raw = array_filter(array_map('trim', explode(',', $this->input('tags'))));
+            $this->merge(['tags' => array_values($raw)]);
+        }
+
+        if ($this->has('software_used') && is_string($this->input('software_used'))) {
+            $rawSoftware = array_filter(array_map('trim', explode(',', $this->input('software_used'))));
+            $this->merge(['software_used' => array_values($rawSoftware)]);
+        }
+
         $this->merge([
             'is_ai_generated' => $this->boolean('is_ai_generated'),
+            'is_mature' => $this->boolean('is_mature'),
+            'license' => $this->input('license') ?: 'all_rights_reserved',
         ]);
     }
 

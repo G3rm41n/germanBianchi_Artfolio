@@ -49,27 +49,77 @@
                     Content Censorship & Browsing Filters
                 </h3>
 
-                <!-- Filter 1: Mature Content (+18) -->
-                <div class="flex items-start justify-between p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700/60">
-                    <div class="pr-6">
+                <!-- Filter 1: Mature Content (+18) Three-State Selector -->
+                <div class="p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700/60"
+                     x-data="{ maturePref: '{{ old('mature_filter_preference', $user->mature_filter_preference ?? 'blur') }}' }">
+                    <div class="mb-4">
                         <div class="flex items-center gap-2">
                             <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-900">
                                 18+
                             </span>
                             <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                                Show Mature & Sensitive Content
+                                Mature & Sensitive Content Display Mode
                             </h4>
                         </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
-                            Allow artworks containing adult, graphic, or sensitive artistic themes to appear across the explorer and search. If unchecked, mature content remains hidden.
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Choose how artworks containing adult, graphic, or sensitive artistic themes appear across your exploration feeds, searches, and artist portfolios.
                         </p>
                     </div>
 
-                    <input type="hidden" name="show_mature_content" value="0">
-                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-1">
-                        <input type="checkbox" name="show_mature_content" value="1" {{ old('show_mature_content', $user->show_mature_content) ? 'checked' : '' }} class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-rose-600"></div>
-                    </label>
+                    <input type="hidden" name="mature_filter_preference" :value="maturePref">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <!-- Option 1: Blurred (Default / Recommended) -->
+                        <button type="button"
+                                @click="maturePref = 'blur'"
+                                :class="maturePref === 'blur' ? 'border-indigo-500 ring-2 ring-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-950/30' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300'"
+                                class="p-4 rounded-xl border text-left transition-all">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    Blurred
+                                </span>
+                                <span x-show="maturePref === 'blur'" class="text-indigo-600 font-bold">✓</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 dark:text-gray-400">
+                                Previews are blurred with a sensitive content warning. Click any card to reveal immediately.
+                            </p>
+                        </button>
+
+                        <!-- Option 2: Hide (No mostrar) -->
+                        <button type="button"
+                                @click="maturePref = 'hide'"
+                                :class="maturePref === 'hide' ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/50 dark:bg-rose-950/30' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300'"
+                                class="p-4 rounded-xl border text-left transition-all">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path></svg>
+                                    Do Not Show
+                                </span>
+                                <span x-show="maturePref === 'hide'" class="text-rose-600 font-bold">✓</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 dark:text-gray-400">
+                                Completely filter out and hide all mature 18+ artworks from all feeds and searches.
+                            </p>
+                        </button>
+
+                        <!-- Option 3: Show (Mostrar) -->
+                        <button type="button"
+                                @click="maturePref = 'show'"
+                                :class="maturePref === 'show' ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-950/30' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300'"
+                                class="p-4 rounded-xl border text-left transition-all">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Always Show
+                                </span>
+                                <span x-show="maturePref === 'show'" class="text-emerald-600 font-bold">✓</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 dark:text-gray-400">
+                                Display all mature artworks directly in full clarity without any blurring or warning screens.
+                            </p>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Filter 2: Hide AI-Generated Works -->
@@ -115,25 +165,15 @@
         </form>
     </div>
 
-    <!-- Danger Zone: Permanent Account Deletion -->
-    <div class="pt-8 border-t-2 border-red-100 dark:border-red-950/40">
-        <div class="p-6 rounded-2xl bg-red-50/40 dark:bg-red-950/20 border border-red-200 dark:border-red-900/60">
-            <h3 class="text-base font-bold text-red-700 dark:text-red-400 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                Danger Zone: Delete Account
-            </h3>
-            <p class="text-xs text-red-600/80 dark:text-red-400/80 mt-2 max-w-2xl leading-relaxed">
-                Once your account is deleted, all portfolio artworks, collections, favorites, and profile data will be permanently removed. This action cannot be reversed.
-            </p>
-
-            <div class="mt-4">
-                <x-danger-button
-                    x-data=""
-                    x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-                    class="rounded-xl px-5 py-2.5">
-                    {{ __('Permanently Delete Account') }}
-                </x-danger-button>
-            </div>
+    <!-- Permanent Account Deletion -->
+    <div class="pt-8 border-t border-gray-200 dark:border-gray-800">
+        <div>
+            <x-danger-button
+                x-data=""
+                x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+                class="rounded-xl px-5 py-2.5">
+                {{ __('Delete Account') }}
+            </x-danger-button>
         </div>
 
         <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>

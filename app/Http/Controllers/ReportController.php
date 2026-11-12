@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Artwork;
 use App\Models\Report;
+use App\Services\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,16 @@ class ReportController extends Controller
             'details'    => $validated['details'] ?? null,
             'status'     => 'pending',
         ]);
+
+        AuditLogger::log(
+            'user.report_created',
+            $artwork,
+            $artwork->title,
+            ['reason' => $validated['reason'], 'report_id' => $report->id],
+            "User submitted report on artwork '{$artwork->title}' ({$validated['reason']})",
+            auth()->user(),
+            'user'
+        );
 
         return response()->json([
             'message' => 'Report submitted successfully. Our team will review this artwork shortly.',

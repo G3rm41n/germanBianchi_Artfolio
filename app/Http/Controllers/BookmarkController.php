@@ -19,6 +19,13 @@ class BookmarkController extends Controller
         $toggled = $user->bookmarks()->toggle($artwork_id);
         
         $isBookmarked = count($toggled['attached']) > 0;
+
+        if ($isBookmarked) {
+            $artwork = \App\Models\Artwork::with('user')->find($artwork_id);
+            if ($artwork && $artwork->user_id !== $user->id && $artwork->user) {
+                $artwork->user->notify(new \App\Notifications\ArtworkBookmarkedNotification($artwork, $user));
+            }
+        }
         
         return response()->json([
             'status' => 'success',

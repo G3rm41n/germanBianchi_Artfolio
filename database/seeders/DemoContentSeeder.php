@@ -748,8 +748,20 @@ class DemoContentSeeder extends Seeder
                     'headline'          => $artistInfo['headline'] ?? 'Digital Creator & Visual Artist',
                     'city'              => $artistInfo['city'] ?? 'San Francisco',
                     'country'           => $artistInfo['country'] ?? 'United States',
-                    'skills'            => $artistInfo['skills'] ?? ['Digital Art', 'Concept Art', 'Illustration'],
+                    'skills'            => $artistInfo['skills'] ?? ['Digital Artist', 'Concept Art', 'Virtual Artist'],
                     'software'          => $artistInfo['software'] ?? ['Blender', 'Photoshop', 'Procreate'],
+                    'social_links'      => $artistInfo['social_links'] ?? [
+                        'artstation' => 'https://artstation.com/' . ($artistInfo['slug'] ?? 'artist'),
+                        'instagram'  => 'https://instagram.com/' . ($artistInfo['slug'] ?? 'artist'),
+                    ],
+                    'is_verified'       => $artistInfo['is_verified'] ?? true,
+                    'commission_services' => $artistInfo['commission_services'] ?? [
+                        [
+                            'title'       => 'Custom Creative Commission',
+                            'price'       => '$200 - $500',
+                            'description' => 'Original production-ready artwork tailored to your specification with full commercial usage rights.',
+                        ]
+                    ],
                     'hiring_types'      => $artistInfo['hiring_types'] ?? ['full-time', 'freelance'],
                     'public_email_enabled' => true,
                     'onboarding_step'   => 3,
@@ -788,8 +800,22 @@ class DemoContentSeeder extends Seeder
                     'thumbnail_url' => $artData['thumbnail_url'],
                     'embed_html'    => $artData['embed_html'],
                     'is_featured'   => $artData['is_featured'],
+                    'software_used' => $artData['software_used'] ?? $user->software,
                     'status'        => 'published',
                 ]);
+
+                // Sync tags based on artist skills
+                if (!empty($user->skills)) {
+                    $tagIds = [];
+                    foreach ($user->skills as $skillName) {
+                        $tModel = \App\Models\Tag::firstOrCreate(
+                            ['slug' => \Illuminate\Support\Str::slug($skillName)],
+                            ['name' => $skillName]
+                        );
+                        $tagIds[] = $tModel->id;
+                    }
+                    $artwork->tags()->syncWithoutDetaching($tagIds);
+                }
 
                 // Attach to creator's collection
                 if (!empty($createdCollections)) {

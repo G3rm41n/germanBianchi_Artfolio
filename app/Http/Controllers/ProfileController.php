@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,11 +42,25 @@ class ProfileController extends Controller
 
         $user->fill($validated);
 
+        $dirtyFields = array_keys($user->getDirty());
+
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
 
         $user->save();
+
+        if (!empty($dirtyFields)) {
+            AuditLogger::log(
+                'user.profile_updated',
+                $user,
+                $user->name,
+                ['updated_fields' => $dirtyFields],
+                "User updated profile fields: " . implode(', ', $dirtyFields),
+                $user,
+                'user'
+            );
+        }
 
         $redirect = $request->filled('active_tab')
             ? Redirect::route('profile.edit', ['tab' => $request->input('active_tab')])
@@ -87,10 +102,22 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+        $userName = $user->name;
+        $userEmail = $user->email;
 
         Auth::logout();
 
         $user->delete();
+
+        AuditLogger::log(
+            'user.account_deleted',
+            null,
+            $userName,
+            null,
+            "User {$userName} ({$userEmail}) deleted their account",
+            null,
+            'user'
+        );
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

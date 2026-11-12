@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\LinkDownAlert;
 use App\Models\Artwork;
 use App\Models\Report;
+use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -85,6 +86,14 @@ class ReportController extends Controller
             'admin_note' => $validated['admin_note'],
         ]);
 
+        AuditLogger::log(
+            'admin.report_note_updated',
+            $report,
+            "Report #{$report->id}",
+            ['admin_note' => $validated['admin_note']],
+            "Admin updated note on report #{$report->id}"
+        );
+
         return back()->with('success', 'Admin note updated successfully.');
     }
 
@@ -99,6 +108,14 @@ class ReportController extends Controller
             'status'     => 'resolved',
             'admin_note' => $request->input('admin_note', $report->admin_note),
         ]);
+
+        AuditLogger::log(
+            'admin.report_resolved',
+            $report,
+            "Report #{$report->id}",
+            ['status' => 'resolved'],
+            "Admin marked report #{$report->id} as resolved"
+        );
 
         return back()->with('success', 'Report marked as resolved.');
     }
@@ -116,6 +133,14 @@ class ReportController extends Controller
             'status'     => 'resolved',
             'admin_note' => $note,
         ]);
+
+        AuditLogger::log(
+            'admin.report_dismissed',
+            $report,
+            "Report #{$report->id}",
+            ['status' => 'resolved'],
+            "Admin dismissed report #{$report->id}"
+        );
 
         return redirect()->route('admin.reports.index')->with('success', 'Report dismissed.');
     }
@@ -144,6 +169,14 @@ class ReportController extends Controller
             'status'     => 'resolved',
             'admin_note' => $customNote ?: 'Broken link confirmed. Artwork hidden preventively.',
         ]);
+
+        AuditLogger::log(
+            'admin.report_link_down_alert',
+            $report,
+            "Report #{$report->id}",
+            ['artwork_id' => $artwork->id, 'artwork_status' => 'hidden'],
+            "Admin confirmed broken link, hid artwork '{$artwork->title}', and notified artist"
+        );
 
         // Send email to artist if exists
         if ($artwork->user) {

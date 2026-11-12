@@ -52,7 +52,7 @@ class GuestInterceptorTest extends TestCase
         $responseExplorer->assertSee('handleOpen');
 
         // 2. Perfil público de artista
-        $responseProfile = $this->get("/artista/{$artist->slug}");
+        $responseProfile = $this->get(route('profile.public', $artist->slug));
         $responseProfile->assertStatus(200);
         $responseProfile->assertSee('open-guest-modal');
         $responseProfile->assertSee('handleOpen');

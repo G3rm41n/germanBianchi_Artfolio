@@ -8,8 +8,38 @@ use Illuminate\Support\Facades\Route;
 // Public Gallery / Home
 Route::get('/', [App\Http\Controllers\ExplorerController::class, 'index'])->name('home');
 
-// Artist Public Profile
-Route::get('/artista/{slug}', [App\Http\Controllers\PublicProfileController::class, 'show'])->name('profile.public');
+// Artists Directory & Discovery (Artstation style Ref4)
+Route::get('/artists', [App\Http\Controllers\ArtistExplorerController::class, 'index'])->name('artists.index');
+Route::get('/artistas', fn() => redirect()->route('artists.index', [], 301));
+
+// Artist Public Profile (Standardized English route with 301 backward-compatible redirect)
+Route::get('/artist/{slug}', [App\Http\Controllers\PublicProfileController::class, 'show'])->name('profile.public');
+Route::get('/artista/{slug}', fn($slug) => redirect()->route('profile.public', ['slug' => $slug], 301));
+
+// Dedicated Artwork Page (Pinterest Style with Recommendations & Comments)
+Route::get('/artworks/{artwork}', [App\Http\Controllers\ArtworkController::class, 'show'])->whereNumber('artwork')->name('artworks.show');
+Route::get('/obra/{id}', fn($id) => redirect()->route('artworks.show', ['artwork' => $id], 301))->whereNumber('id');
+Route::post('/artworks/{artwork}/view', [App\Http\Controllers\ArtworkViewController::class, 'store'])->whereNumber('artwork')->name('artworks.view');
+
+// Dedicated Collection Board Page (Pinterest Style: /{artist}/collections/{collection})
+Route::get('/{artist}/collections/{collection}', [App\Http\Controllers\CollectionController::class, 'show'])
+    ->whereNumber('collection')
+    ->name('collections.show');
+
+// Backward-compatible redirects for legacy collection URLs
+Route::get('/collections/{collection}', function (\App\Models\Collection $collection) {
+    $artist = $collection->user?->slug ?: $collection->user_id;
+    return redirect()->route('collections.show', ['artist' => $artist, 'collection' => $collection->id], 301);
+})->whereNumber('collection');
+
+Route::get('/coleccion/{id}', function ($id) {
+    $collection = \App\Models\Collection::findOrFail($id);
+    $artist = $collection->user?->slug ?: $collection->user_id;
+    return redirect()->route('collections.show', ['artist' => $artist, 'collection' => $collection->id], 301);
+})->whereNumber('id');
+
+Route::get('/artist/{artist}/collections/{collection}', fn($artist, $collection) => redirect()->route('collections.show', ['artist' => $artist, 'collection' => $collection], 301))->whereNumber('collection');
+Route::get('/artista/{artist}/collections/{collection}', fn($artist, $collection) => redirect()->route('collections.show', ['artist' => $artist, 'collection' => $collection], 301))->whereNumber('collection');
 
 // Global Countries API Endpoint (Cached proxy for onboarding & location)
 Route::get('/api/countries', function () {
@@ -91,23 +121,48 @@ Route::middleware('auth')->group(function () {
     Route::middleware('verified')->group(function () {
         // Artworks & Collections
         Route::post('artworks/preview-url', [App\Http\Controllers\ArtworkController::class, 'previewUrl'])->name('artworks.preview');
-        Route::resource('artworks', App\Http\Controllers\ArtworkController::class);
-        Route::resource('collections', App\Http\Controllers\CollectionController::class);
+        Route::post('/artworks/{artwork}/toggle-pin', [App\Http\Controllers\ArtworkController::class, 'togglePin'])->name('artworks.toggle-pin');
+        Route::resource('artworks', App\Http\Controllers\ArtworkController::class)->except(['show']);
+        Route::post('/collections/reorder', [App\Http\Controllers\CollectionController::class, 'reorder'])->name('collections.reorder');
+        Route::post('/collections/{collection}/set-preview-artwork', [App\Http\Controllers\CollectionController::class, 'setPreviewArtwork'])->name('collections.setPreviewArtwork');
+        Route::resource('collections', App\Http\Controllers\CollectionController::class)->except(['show']);
         Route::get('/collections/artwork-status/{artwork}', [App\Http\Controllers\CollectionController::class, 'artworkStatus'])->name('collections.artworkStatus');
         Route::post('/collections/{collection}/toggle-artwork', [App\Http\Controllers\CollectionController::class, 'toggleArtwork'])->name('collections.toggleArtwork');
         Route::post('/collections/quick-create-with-artwork', [App\Http\Controllers\CollectionController::class, 'quickCreateWithArtwork'])->name('collections.quickCreateWithArtwork');
 
-        // Bookmarks / Favorites
-        Route::get('/favoritos', [App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
-        Route::post('/obras/{id}/bookmark', [App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+        // Artwork Comments
+        Route::post('/artworks/{artwork}/comments', [App\Http\Controllers\ArtworkCommentController::class, 'store'])->name('artworks.comments.store');
+        Route::delete('/artworks/{artwork}/comments/{comment}', [App\Http\Controllers\ArtworkCommentController::class, 'destroy'])->name('artworks.comments.destroy');
 
-        // Trash
-        Route::get('/papelera', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
-        Route::post('/papelera/obras/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreArtwork'])->name('trash.artworks.restore');
-        Route::delete('/papelera/obras/{id}', [App\Http\Controllers\TrashController::class, 'destroyArtwork'])->name('trash.artworks.destroy');
-        Route::post('/papelera/colecciones/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreCollection'])->name('trash.collections.restore');
-        Route::delete('/papelera/colecciones/{id}', [App\Http\Controllers\TrashController::class, 'destroyCollection'])->name('trash.collections.destroy');
-        Route::post('/papelera/vaciar', [App\Http\Controllers\TrashController::class, 'emptyTrash'])->name('trash.empty');
+        // Likes / Public Appreciations
+        Route::post('/artworks/{artwork}/like', [App\Http\Controllers\ArtworkLikeController::class, 'toggle'])->name('artworks.like');
+
+        // Notifications
+        Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+
+        // Bookmarks / Favorites (Standardized English routes with 301 redirects)
+        Route::get('/favorites', [App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
+        Route::get('/favoritos', fn() => redirect()->route('bookmarks.index', [], 301));
+        Route::post('/artworks/{id}/bookmark', [App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+        Route::post('/obras/{id}/bookmark', [App\Http\Controllers\BookmarkController::class, 'toggle']);
+
+        // Trash (Standardized English routes with aliases for legacy paths)
+        Route::get('/trash', [App\Http\Controllers\TrashController::class, 'index'])->name('trash.index');
+        Route::get('/papelera', fn() => redirect()->route('trash.index', [], 301));
+        Route::post('/trash/artworks/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreArtwork'])->name('trash.artworks.restore');
+        Route::delete('/trash/artworks/{id}', [App\Http\Controllers\TrashController::class, 'destroyArtwork'])->name('trash.artworks.destroy');
+        Route::post('/trash/collections/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreCollection'])->name('trash.collections.restore');
+        Route::delete('/trash/collections/{id}', [App\Http\Controllers\TrashController::class, 'destroyCollection'])->name('trash.collections.destroy');
+        Route::post('/trash/empty', [App\Http\Controllers\TrashController::class, 'emptyTrash'])->name('trash.empty');
+
+        // Backward compatibility for legacy trash paths
+        Route::post('/papelera/obras/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreArtwork']);
+        Route::delete('/papelera/obras/{id}', [App\Http\Controllers\TrashController::class, 'destroyArtwork']);
+        Route::post('/papelera/colecciones/{id}/restore', [App\Http\Controllers\TrashController::class, 'restoreCollection']);
+        Route::delete('/papelera/colecciones/{id}', [App\Http\Controllers\TrashController::class, 'destroyCollection']);
+        Route::post('/papelera/vaciar', [App\Http\Controllers\TrashController::class, 'emptyTrash']);
 
         // Artwork Reports
         Route::post('/obras/{id}/report', [App\Http\Controllers\ReportController::class, 'store'])->name('artworks.report');
@@ -139,6 +194,7 @@ Route::prefix('admin')
         Route::post('/users/import-all', [App\Http\Controllers\Admin\UserController::class, 'importAll'])->name('users.importAll');
         Route::post('/users/{id}/suspend', [App\Http\Controllers\Admin\UserController::class, 'suspend'])->name('users.suspend');
         Route::post('/users/{id}/activate', [App\Http\Controllers\Admin\UserController::class, 'activate'])->name('users.activate');
+        Route::post('/users/{id}/toggle-verify', [App\Http\Controllers\Admin\UserController::class, 'toggleVerify'])->name('users.toggleVerify');
         Route::delete('/users/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
 
         // Global Trash
@@ -148,6 +204,16 @@ Route::prefix('admin')
         Route::post('/trash/collections/{id}/restore', [App\Http\Controllers\Admin\TrashController::class, 'restoreCollection'])->name('trash.collections.restore');
         Route::delete('/trash/collections/{id}', [App\Http\Controllers\Admin\TrashController::class, 'destroyCollection'])->name('trash.collections.destroy');
         Route::post('/trash/prune', [App\Http\Controllers\Admin\TrashController::class, 'pruneNow'])->name('trash.prune');
+
+        // Curated Tags (Artistic Disciplines & Software Toolkit)
+        Route::get('/skills-software', [App\Http\Controllers\Admin\TaxonomyController::class, 'index'])->name('taxonomy.index');
+        Route::post('/skills-software', [App\Http\Controllers\Admin\TaxonomyController::class, 'store'])->name('taxonomy.store');
+        Route::put('/skills-software/{tag}', [App\Http\Controllers\Admin\TaxonomyController::class, 'update'])->name('taxonomy.update');
+        Route::delete('/skills-software/{tag}', [App\Http\Controllers\Admin\TaxonomyController::class, 'destroy'])->name('taxonomy.destroy');
+        Route::post('/skills-software/{tag}/toggle-suggested', [App\Http\Controllers\Admin\TaxonomyController::class, 'toggleSuggested'])->name('taxonomy.toggleSuggested');
+
+        // Audit Logs (separated admin vs user activity)
+        Route::get('/audit-logs', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
     });
 
 // ── Rutas de Autenticación (Breeze) ─────────────────────────────────────────

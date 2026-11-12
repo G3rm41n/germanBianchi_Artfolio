@@ -56,10 +56,25 @@ class ProfileUpdateRequest extends FormRequest
             'hiring_types.*' => ['in:full-time,contract,freelance'],
             'public_email_enabled' => ['nullable', 'boolean'],
             'contact_email' => ['nullable', 'email', 'max:255'],
+            'mature_filter_preference' => ['nullable', 'string', 'in:blur,hide,show'],
             'show_mature_content' => ['nullable', 'boolean'],
             'hide_ai_content' => ['nullable', 'boolean'],
             'notify_new_artworks' => ['nullable', 'boolean'],
             'notify_messages' => ['nullable', 'boolean'],
+            'social_links' => ['nullable', 'array'],
+            'social_links.artstation' => ['nullable', 'url', 'max:255'],
+            'social_links.instagram' => ['nullable', 'url', 'max:255'],
+            'social_links.behance' => ['nullable', 'url', 'max:255'],
+            'social_links.twitter' => ['nullable', 'url', 'max:255'],
+            'social_links.linkedin' => ['nullable', 'url', 'max:255'],
+            'social_links.website' => ['nullable', 'url', 'max:255'],
+            'commission_services' => ['nullable', 'array', 'max:10'],
+            'commission_services.*.title' => ['required_with:commission_services', 'string', 'max:100'],
+            'commission_services.*.description' => ['nullable', 'string', 'max:500'],
+            'commission_services.*.price_starting_at' => ['nullable', 'string', 'max:50'],
+            'commission_services.*.currency' => ['nullable', 'string', 'max:10'],
+            'commission_services.*.turnaround_time' => ['nullable', 'string', 'max:50'],
+            'commission_services.*.is_active' => ['nullable', 'boolean'],
         ];
     }
 
@@ -71,6 +86,14 @@ class ProfileUpdateRequest extends FormRequest
             ]);
         }
 
+        if ($this->has('commission_services') && is_string($this->input('commission_services'))) {
+            $decoded = json_decode($this->input('commission_services'), true);
+            if (is_array($decoded)) {
+                $clean = array_values(array_filter($decoded, fn($item) => !empty(trim($item['title'] ?? ''))));
+                $this->merge(['commission_services' => array_slice($clean, 0, 10)]);
+            }
+        }
+
         $booleans = [
             'public_email_enabled',
             'show_mature_content',
@@ -80,6 +103,11 @@ class ProfileUpdateRequest extends FormRequest
         ];
 
         $merge = [];
+        if ($this->has('mature_filter_preference')) {
+            $merge['mature_filter_preference'] = $this->input('mature_filter_preference');
+            // Keep show_mature_content synchronized for backward compatibility
+            $merge['show_mature_content'] = ($this->input('mature_filter_preference') === 'show');
+        }
         foreach ($booleans as $field) {
             if ($this->has($field)) {
                 $merge[$field] = $this->boolean($field);

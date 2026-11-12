@@ -123,9 +123,16 @@
                                     <div class="flex items-center space-x-3">
                                         <x-user-avatar :user="$user" size="md" />
                                         <div class="min-w-0">
-                                            <span class="font-bold text-gray-900 dark:text-white block text-sm truncate">
-                                                {{ $user->name }}
-                                            </span>
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="font-bold text-gray-900 dark:text-white block text-sm truncate">
+                                                    {{ $user->name }}
+                                                </span>
+                                                @if($user->is_verified)
+                                                    <span class="inline-flex items-center text-blue-500" title="Verified Artist" aria-label="Verified Artist">
+                                                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.25 14.5l-3.5-3.5 1.41-1.41 2.09 2.09 5.67-5.67 1.41 1.41-7.08 7.08z"/></svg>
+                                                    </span>
+                                                @endif
+                                            </div>
                                             <span class="text-xs text-gray-400 block truncate">
                                                 {{ $user->email }}
                                             </span>
@@ -184,6 +191,18 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                         </a>
 
+                                        <!-- Toggle Verified Status -->
+                                        <form method="POST" action="{{ route('admin.users.toggleVerify', $user->id) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" 
+                                                    class="p-1.5 rounded-lg {{ $user->is_verified ? 'text-blue-600 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60' : 'text-gray-400 hover:text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-800' }} transition-colors"
+                                                    title="{{ $user->is_verified ? 'Revoke Verified Artist Badge' : 'Grant Verified Artist Badge' }}">
+                                                <svg class="w-4 h-4 {{ $user->is_verified ? 'fill-current' : 'fill-none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </button>
+                                        </form>
+
                                         <!-- Export Individual Artist Data (JSON) -->
                                         <a href="{{ route('admin.users.exportOne', $user->id) }}"
                                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 border border-indigo-200/60 dark:border-indigo-800/60 transition-colors"
@@ -197,9 +216,17 @@
                                         @if($user->id !== auth()->id())
                                             <!-- Suspend / Activate -->
                                             @if($user->status === 'active')
-                                                <form method="POST" action="{{ route('admin.users.suspend', $user->id) }}" onsubmit="return confirm('Suspend {{ $user->name }}\'s account?\nThe user will not be able to create or edit artworks while suspended.');">
+                                                <form method="POST" action="{{ route('admin.users.suspend', $user->id) }}">
                                                     @csrf
-                                                    <button type="submit" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors" title="Suspend Account">
+                                                    <button type="button"
+                                                            @click.prevent="$dispatch('open-confirm', {
+                                                                title: 'Suspend User Account',
+                                                                message: 'Suspend {{ addslashes($user->name) }}\'s account? The user will not be able to create, edit or access their dashboard while suspended.',
+                                                                form: $el.closest('form'),
+                                                                confirmText: 'Suspend Account',
+                                                                isDanger: true
+                                                            })"
+                                                            class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900 transition-colors" title="Suspend Account">
                                                         Suspend
                                                     </button>
                                                 </form>
@@ -213,10 +240,18 @@
                                             @endif
 
                                             <!-- Soft Delete -->
-                                            <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" onsubmit="return confirm('Delete {{ $user->name }}\'s account?');">
+                                            <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors" title="Delete User">
+                                                <button type="button"
+                                                        @click.prevent="$dispatch('open-confirm', {
+                                                            title: 'Delete User Account',
+                                                            message: 'Are you sure you want to delete {{ addslashes($user->name) }}\'s account? Their profile and artworks will be moved to trash.',
+                                                            form: $el.closest('form'),
+                                                            confirmText: 'Delete User',
+                                                            isDanger: true
+                                                        })"
+                                                        class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors" title="Delete User">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 </button>
                                             </form>

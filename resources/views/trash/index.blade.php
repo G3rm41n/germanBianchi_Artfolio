@@ -167,10 +167,18 @@
                                         </form>
                                         
                                         <!-- Delete permanently -->
-                                        <form action="{{ route('trash.artworks.destroy', $artwork->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this artwork? This action cannot be undone.');">
+                                        <form action="{{ route('trash.artworks.destroy', $artwork->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center px-3.5 py-2 border border-rose-200 dark:border-rose-900 text-xs font-semibold rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50 transition">
+                                            <button type="button"
+                                                    @click.prevent="$dispatch('open-confirm', {
+                                                        title: 'Permanent Deletion',
+                                                        message: 'Are you sure you want to permanently delete \'{{ addslashes($artwork->title) }}\'? This action cannot be undone.',
+                                                        form: $el.closest('form'),
+                                                        confirmText: 'Delete Permanently',
+                                                        isDanger: true
+                                                    })"
+                                                    class="inline-flex items-center px-3.5 py-2 border border-rose-200 dark:border-rose-900 text-xs font-semibold rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50 transition">
                                                 <svg class="w-4 h-4 mr-1 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                 Delete Permanently
                                             </button>
@@ -221,6 +229,8 @@
                                             @endif
 
                                             <div class="mt-2 flex flex-wrap items-center gap-2.5 text-xs text-gray-500 dark:text-gray-400">
+                                                <span>{{ $collection->artworks_count }} {{ Str::plural('artwork', $collection->artworks_count) }}</span>
+                                                <span class="text-gray-300 dark:text-gray-600">•</span>
                                                 <span>Deleted on {{ $collection->deleted_at->format('M d, Y H:i') }}</span>
 
                                                 <!-- Remaining Days Counter -->
@@ -252,10 +262,18 @@
                                         </form>
                                         
                                         <!-- Delete permanently -->
-                                        <form action="{{ route('trash.collections.destroy', $collection->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this collection? This action cannot be undone.');">
+                                        <form action="{{ route('trash.collections.destroy', $collection->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center px-3.5 py-2 border border-rose-200 dark:border-rose-900 text-xs font-semibold rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50 transition">
+                                            <button type="button"
+                                                    @click.prevent="$dispatch('open-confirm', {
+                                                        title: 'Permanent Deletion',
+                                                        message: 'Are you sure you want to permanently delete collection \'{{ addslashes($collection->name) }}\'? This action cannot be undone.',
+                                                        form: $el.closest('form'),
+                                                        confirmText: 'Delete Permanently',
+                                                        isDanger: true
+                                                    })"
+                                                    class="inline-flex items-center px-3.5 py-2 border border-rose-200 dark:border-rose-900 text-xs font-semibold rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50 transition">
                                                 <svg class="w-4 h-4 mr-1 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                 Delete Permanently
                                             </button>

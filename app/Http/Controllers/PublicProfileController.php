@@ -16,12 +16,20 @@ class PublicProfileController extends Controller
         $viewer = auth()->user();
         $isOwner = $viewer && $viewer->id === $user->id;
 
-        // Load visible collections for tabs
-        $collectionsQuery = $user->collections()->has('artworks');
+        // Load visible collections with artworks for preview cards
+        $collectionsQuery = $user->collections()
+            ->has('artworks')
+            ->withCount('artworks')
+            ->with(['artworks' => function ($q) {
+                $q->published();
+            }]);
+
         if (!$isOwner) {
             $collectionsQuery->where('visibility', 'public');
         }
-        $collections = $collectionsQuery->get();
+
+        // Default sort by custom order, then recent
+        $collections = $collectionsQuery->orderBy('sort_order', 'asc')->orderBy('updated_at', 'desc')->get();
 
         $selectedCollectionId = request('collection_id');
         $selectedCollection = null;
@@ -40,8 +48,10 @@ class PublicProfileController extends Controller
         }
 
         $query = $user->artworks()
-            ->with(['user', 'collections'])
+            ->with(['user', 'collections', 'tags'])
             ->where('status', 'published')
+            ->orderByDesc('is_pinned')
+            ->latest('pinned_at')
             ->latest();
 
         if ($selectedCollectionId) {

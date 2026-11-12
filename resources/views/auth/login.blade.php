@@ -50,6 +50,15 @@
             </label>
         </div>
 
+        <!-- Cloudflare Turnstile CAPTCHA (Bot Protection) -->
+        @if(config('services.turnstile.enabled'))
+            <div class="mt-5 flex flex-col items-center justify-center">
+                <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="auto"></div>
+                <x-input-error :messages="$errors->get('cf-turnstile-response')" class="mt-2 text-center" />
+            </div>
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        @endif
+
         <!-- Action Buttons: Register & Log In -->
         <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-100 dark:border-gray-700/60">
             @if (Route::has('register'))

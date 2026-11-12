@@ -135,6 +135,25 @@
                             @enderror
                         </div>
 
+                        <!-- Tags / Hashtags (Up to 15) -->
+                        <div class="mb-6">
+                            <label for="tags" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                                Tags / Hashtags <span class="text-xs text-gray-400 font-normal">(Optional, comma separated, up to 15)</span>
+                            </label>
+                            <input type="text" 
+                                   id="tags" 
+                                   name="tags" 
+                                   value="{{ old('tags', $artworkTags ?? '') }}" 
+                                   placeholder="e.g. #blender, conceptart, characterdesign, 3d, fantasy" 
+                                   class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Separate tags with commas. Helps users discover your work in search and tag filters.
+                            </p>
+                            @error('tags')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Price / Category / Subcategory / Visibility -->
                         <div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
@@ -144,7 +163,7 @@
                                     <option value="video" {{ old('category', $artwork->category) == 'video' ? 'selected' : '' }}>Animation / Video</option>
                                     <option value="3d" {{ old('category', $artwork->category) == '3d' ? 'selected' : '' }}>3D Modeling</option>
                                     <option value="audio" {{ old('category', $artwork->category) == 'audio' ? 'selected' : '' }}>Music / Audio</option>
-                                    <option value="doc" {{ old('category', $artwork->category) == 'doc' ? 'selected' : '' }}>Document / Comic</option>
+                                    <option value="doc" {{ old('category', $artwork->category) == 'doc' ? 'selected' : '' }}>Document / Code / Comic</option>
                                 </select>
                                 @error('category')
                                     <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
@@ -179,9 +198,46 @@
                             </div>
                         </div>
 
+                        <!-- Software Used & License Grid -->
+                        <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="software_used" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                                    Software / Tools Used <span class="text-xs text-gray-400 font-normal">(Optional, comma separated)</span>
+                                </label>
+                                <input type="text"
+                                       id="software_used"
+                                       name="software_used"
+                                       value="{{ is_array(old('software_used', $artwork->software_used)) ? implode(', ', old('software_used', $artwork->software_used ?? [])) : old('software_used', $artwork->software_used) }}"
+                                       placeholder="e.g. Blender, Photoshop, ZBrush, Procreate, Unreal Engine"
+                                       class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Highlighted badges will show in artwork viewer details.</p>
+                                @error('software_used')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="license" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                                    License / Usage Rights
+                                </label>
+                                <select id="license" name="license" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+                                    <option value="all_rights_reserved" {{ old('license', $artwork->license ?? 'all_rights_reserved') == 'all_rights_reserved' ? 'selected' : '' }}>All Rights Reserved (Todos los derechos reservados)</option>
+                                    <option value="cc_by" {{ old('license', $artwork->license) == 'cc_by' ? 'selected' : '' }}>Creative Commons CC BY (Attribution)</option>
+                                    <option value="cc_by_sa" {{ old('license', $artwork->license) == 'cc_by_sa' ? 'selected' : '' }}>Creative Commons CC BY-SA (ShareAlike)</option>
+                                    <option value="cc_by_nc" {{ old('license', $artwork->license) == 'cc_by_nc' ? 'selected' : '' }}>Creative Commons CC BY-NC (NonCommercial)</option>
+                                    <option value="cc_by_nc_nd" {{ old('license', $artwork->license) == 'cc_by_nc_nd' ? 'selected' : '' }}>Creative Commons CC BY-NC-ND (NoDerivatives)</option>
+                                    <option value="cc0" {{ old('license', $artwork->license) == 'cc0' ? 'selected' : '' }}>Public Domain (CC0)</option>
+                                </select>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Informs visitors and clients how they may use or reference your work.</p>
+                                @error('license')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- AI Content Disclosure Button / Toggle -->
                         <div x-data="{ isAi: {{ old('is_ai_generated', $artwork->is_ai_generated) ? 'true' : 'false' }} }"
-                             class="mb-6 p-4 rounded-xl border transition-all"
+                             class="mb-4 p-4 rounded-2xl border transition-all"
                              :class="isAi ? 'bg-purple-50/70 dark:bg-purple-950/20 border-purple-300 dark:border-purple-800' : 'bg-gray-50/70 dark:bg-gray-800/40 border-gray-200 dark:border-gray-700'">
                             <div class="flex items-center justify-between gap-4">
                                 <div class="flex items-center gap-3">
@@ -208,6 +264,38 @@
                             <div x-show="isAi" x-transition class="mt-2.5 pt-2.5 border-t border-purple-200 dark:border-purple-900/50 flex items-center gap-2 text-xs text-purple-700 dark:text-purple-300 font-semibold" style="display: none;">
                                 <span class="px-2 py-0.5 rounded bg-purple-200/80 dark:bg-purple-900 text-[10px] font-bold tracking-wider uppercase">AI Label Active</span>
                                 <span>This artwork will display an AI badge for community transparency.</span>
+                            </div>
+                        </div>
+
+                        <!-- Mature / 18+ Content Disclosure Button / Toggle -->
+                        <div x-data="{ isMature: {{ old('is_mature', $artwork->is_mature) ? 'true' : 'false' }} }"
+                             class="mb-6 p-4 rounded-2xl border transition-all"
+                             :class="isMature ? 'bg-rose-50/70 dark:bg-rose-950/20 border-rose-300 dark:border-rose-800' : 'bg-gray-50/70 dark:bg-gray-800/40 border-gray-200 dark:border-gray-700'">
+                            <div class="flex items-center justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors shrink-0"
+                                         :class="isMature ? 'bg-rose-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'">
+                                        <span class="font-black text-xs">18+</span>
+                                    </div>
+                                    <div>
+                                        <span class="block font-bold text-sm text-gray-900 dark:text-white">
+                                            Mature & Sensitive Content (+18)
+                                        </span>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                                            Flag this artwork if it contains adult themes, graphic elements, artistic nudity, or sensitive material.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <label class="relative inline-flex items-center cursor-pointer select-none">
+                                    <input type="checkbox" name="is_mature" value="1" x-model="isMature" class="sr-only">
+                                    <div class="w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full peer transition-colors" :class="isMature ? '!bg-rose-600' : ''"></div>
+                                    <div class="absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform" :class="isMature ? 'transform translate-x-5' : ''"></div>
+                                </label>
+                            </div>
+                            <div x-show="isMature" x-transition class="mt-2.5 pt-2.5 border-t border-rose-200 dark:border-rose-900/50 flex items-center gap-2 text-xs text-rose-700 dark:text-rose-300 font-semibold" style="display: none;">
+                                <span class="px-2 py-0.5 rounded bg-rose-200/80 dark:bg-rose-900 text-[10px] font-bold tracking-wider uppercase">18+ Sensitive Active</span>
+                                <span>This artwork will respect user safety preferences (blurred, hidden, or shown).</span>
                             </div>
                         </div>
 

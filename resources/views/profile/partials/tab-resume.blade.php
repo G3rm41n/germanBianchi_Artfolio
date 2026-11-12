@@ -1,4 +1,23 @@
 <section>
+    @php
+        $curatedDisciplines = \App\Models\CuratedTag::disciplines()->suggested()->orderBy('sort_order')->orderBy('name')->pluck('name')->all();
+        if (empty($curatedDisciplines)) {
+            $curatedDisciplines = [
+                '3D Modeling', 'Concept Art', 'Illustration', 'Character Design',
+                'Environment Art', 'Animation', 'Matte Painting', 'Storyboarding',
+                'UI / UX Art', 'Digital Painting', 'Texturing', 'Lighting', 'Sculpting'
+            ];
+        }
+
+        $curatedSoftware = \App\Models\CuratedTag::software()->suggested()->orderBy('sort_order')->orderBy('name')->pluck('name')->all();
+        if (empty($curatedSoftware)) {
+            $curatedSoftware = [
+                'Blender', 'Photoshop', 'ZBrush', 'Unreal Engine', 'Maya',
+                'Substance 3D Painter', 'Procreate', 'Cinema 4D', 'After Effects',
+                'Houdini', 'Figma', 'Illustrator', 'Unity', 'Marvelous Designer'
+            ];
+        }
+    @endphp
     <div class="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700/60">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">
             Resume & Professional Profile
@@ -141,11 +160,7 @@
         <div x-data="{
             skills: {{ json_encode(old('skills', $user->skills ?? [])) }},
             newSkill: '',
-            suggestions: [
-                '3D Modeling', 'Concept Art', 'Illustration', 'Character Design',
-                'Environment Art', 'Animation', 'Matte Painting', 'Storyboarding',
-                'UI / UX Art', 'Digital Painting', 'Texturing', 'Lighting', 'Sculpting'
-            ],
+            suggestions: {{ json_encode($curatedDisciplines) }},
             addSkill(tag) {
                 const clean = (tag || this.newSkill).trim();
                 if (clean && !this.skills.includes(clean) && this.skills.length < 15) {
@@ -205,11 +220,7 @@
         <div x-data="{
             software: {{ json_encode(old('software', $user->software ?? [])) }},
             newTool: '',
-            toolsSuggestions: [
-                'Blender', 'Photoshop', 'ZBrush', 'Unreal Engine', 'Maya',
-                'Substance 3D Painter', 'Procreate', 'Cinema 4D', 'After Effects',
-                'Houdini', 'Figma', 'Illustrator', 'Unity', 'Marvelous Designer'
-            ],
+            toolsSuggestions: {{ json_encode($curatedSoftware) }},
             addTool(tool) {
                 const clean = (tool || this.newTool).trim();
                 if (clean && !this.software.includes(clean) && this.software.length < 15) {
@@ -320,6 +331,125 @@
                 </button>
             </div>
             <x-input-error class="mt-2" :messages="$errors->get('commission_status')" />
+        </div>
+
+        <!-- 5b. Commission Sheet & Packages (Tarifas - Up to 10) -->
+        <div x-data="{
+            services: {{ json_encode(old('commission_services', $user->commission_services ?? [])) }},
+            addService() {
+                if (this.services.length < 10) {
+                    this.services.push({
+                        title: '',
+                        description: '',
+                        price_starting_at: '',
+                        currency: 'USD',
+                        turnaround_time: '',
+                        is_active: true
+                    });
+                }
+            },
+            removeService(index) {
+                this.services.splice(index, 1);
+            }
+        }" class="p-5 rounded-2xl bg-gray-50/70 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700/60 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        Commission Sheet & Service Packages
+                        <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300" x-text="`${services.length}/10`"></span>
+                    </h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Define structured packages with starting prices, delivery times, and descriptions shown in your public portfolio.
+                    </p>
+                </div>
+                <button type="button"
+                        @click="addService()"
+                        :disabled="services.length >= 10"
+                        class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0">
+                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Add Package
+                </button>
+            </div>
+
+            <!-- Hidden serialized field for form submission -->
+            <input type="hidden" name="commission_services" :value="JSON.stringify(services)">
+
+            <!-- Empty State -->
+            <div x-show="services.length === 0" class="p-6 text-center rounded-xl border border-dashed border-gray-300 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+                <p class="font-medium text-gray-700 dark:text-gray-300">No commission packages added yet.</p>
+                <p class="mt-1">Click "Add Package" above to publish your commission offerings and base rates.</p>
+            </div>
+
+            <!-- Services Cards List -->
+            <div class="space-y-3" x-show="services.length > 0">
+                <template x-for="(service, index) in services" :key="index">
+                    <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xs space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 flex-1 min-w-0">
+                                <span class="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-[10px] font-bold shrink-0" x-text="index + 1"></span>
+                                <input type="text"
+                                       x-model="service.title"
+                                       placeholder="Package title (e.g. Bust Portrait, 3D Character Rig)"
+                                       required
+                                       class="block w-full text-xs font-semibold rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+
+                            <div class="flex items-center gap-2 shrink-0">
+                                <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs text-gray-500 dark:text-gray-400 select-none">
+                                    <input type="checkbox" x-model="service.is_active" class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500">
+                                    <span class="text-[11px]" x-text="service.is_active ? 'Active' : 'Paused'"></span>
+                                </label>
+                                <button type="button"
+                                        @click="removeService(index)"
+                                        class="p-1 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                                        title="Remove Package">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Price and Turnaround -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Starting Price</label>
+                                <input type="text"
+                                       x-model="service.price_starting_at"
+                                       placeholder="e.g. 50, 120"
+                                       class="block w-full text-xs rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Currency</label>
+                                <select x-model="service.currency" class="block w-full text-xs rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="ARS">ARS ($)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="MXN">MXN ($)</option>
+                                    <option value="CAD">CAD ($)</option>
+                                    <option value="JPY">JPY (¥)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Estimated Turnaround</label>
+                                <input type="text"
+                                       x-model="service.turnaround_time"
+                                       placeholder="e.g. 3-5 business days"
+                                       class="block w-full text-xs rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <!-- Description Details -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Included Deliverables & Scope</label>
+                            <textarea x-model="service.description"
+                                      rows="2"
+                                      placeholder="e.g. Includes sketch review, full shading, and high-res 300dpi PNG + PSD export."
+                                      class="block w-full text-xs rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <x-input-error class="mt-2" :messages="$errors->get('commission_services')" />
         </div>
 
         <!-- 6. Hiring Types / Work Opportunities -->

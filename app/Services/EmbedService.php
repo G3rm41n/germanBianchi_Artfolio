@@ -29,6 +29,8 @@ class EmbedService
         'docs.google.com',
         'imgur.com',
         'i.imgur.com',
+        'codepen.io',
+        'bandcamp.com',
     ];
 
     /**
@@ -59,7 +61,16 @@ class EmbedService
         $isSpotifyHost = $host === 'spotify.com' || str_ends_with($host, '.spotify.com');
         $isYouTubeHost = in_array($host, ['youtube.com', 'youtu.be']) || str_ends_with($host, '.youtube.com');
         $isSketchfabHost = $host === 'sketchfab.com' || str_ends_with($host, '.sketchfab.com');
-        if (!in_array($host, $this->allowedDomains) && !$isPinterestHost && !$isDeviantArtHost && !$isSpotifyHost && !$isYouTubeHost && !$isSketchfabHost) {
+        $isVimeoHost = $host === 'vimeo.com' || str_ends_with($host, '.vimeo.com');
+        $isSoundCloudHost = $host === 'soundcloud.com' || str_ends_with($host, '.soundcloud.com');
+        $isArtStationHost = $host === 'artstation.com' || str_ends_with($host, '.artstation.com');
+        $isCodePenHost = $host === 'codepen.io' || str_ends_with($host, '.codepen.io');
+        $isBandcampHost = $host === 'bandcamp.com' || str_ends_with($host, '.bandcamp.com');
+
+        if (!in_array($host, $this->allowedDomains)
+            && !$isPinterestHost && !$isDeviantArtHost && !$isSpotifyHost
+            && !$isYouTubeHost && !$isSketchfabHost && !$isVimeoHost
+            && !$isSoundCloudHost && !$isArtStationHost && !$isCodePenHost && !$isBandcampHost) {
             return null;
         }
 
@@ -111,6 +122,36 @@ class EmbedService
             $title = $spotifyData['title'] ?? null;
             $embedHtml = $spotifyData['embed_html'] ?? null;
             $renderType = 'iframe';
+        } elseif ($provider === 'vimeo') {
+            $vimeoData = $this->fetchVimeoData($url);
+            $thumbnailUrl = $vimeoData['image_url'] ?? null;
+            $title = $vimeoData['title'] ?? null;
+            $embedHtml = $vimeoData['embed_html'] ?? null;
+            $renderType = 'iframe';
+        } elseif ($provider === 'soundcloud') {
+            $scData = $this->fetchSoundCloudData($url);
+            $thumbnailUrl = $scData['image_url'] ?? null;
+            $title = $scData['title'] ?? null;
+            $embedHtml = $scData['embed_html'] ?? null;
+            $renderType = 'iframe';
+        } elseif ($provider === 'codepen') {
+            $cpData = $this->fetchCodePenData($url);
+            $thumbnailUrl = $cpData['image_url'] ?? null;
+            $title = $cpData['title'] ?? null;
+            $embedHtml = $cpData['embed_html'] ?? null;
+            $renderType = 'iframe';
+        } elseif ($provider === 'bandcamp') {
+            $bcData = $this->fetchBandcampData($url);
+            $thumbnailUrl = $bcData['image_url'] ?? null;
+            $title = $bcData['title'] ?? null;
+            $embedHtml = $bcData['embed_html'] ?? null;
+            $renderType = 'iframe';
+        } elseif ($provider === 'artstation') {
+            $asData = $this->fetchArtStationData($url);
+            $thumbnailUrl = $asData['image_url'] ?? null;
+            $title = $asData['title'] ?? null;
+            $renderType = 'image';
+            $embedHtml = null;
         } elseif (in_array($provider, ['google_docs', 'google_drive'])) {
             $docsData = $this->fetchGoogleDocsData($url);
             $thumbnailUrl = $docsData['image_url'] ?? null;
@@ -566,11 +607,13 @@ class EmbedService
     {
         return match (true) {
             in_array($host, ['youtube.com', 'youtu.be']) => 'youtube',
-            $host === 'vimeo.com' => 'vimeo',
+            $host === 'vimeo.com' || str_ends_with($host, '.vimeo.com') => 'vimeo',
             $host === 'sketchfab.com' || str_ends_with($host, '.sketchfab.com') => 'sketchfab',
-            $host === 'artstation.com' => 'artstation',
+            $host === 'artstation.com' || str_ends_with($host, '.artstation.com') => 'artstation',
             $host === 'spotify.com' || str_ends_with($host, '.spotify.com') => 'spotify',
             $host === 'soundcloud.com' || str_ends_with($host, '.soundcloud.com') => 'soundcloud',
+            $host === 'codepen.io' || str_ends_with($host, '.codepen.io') => 'codepen',
+            $host === 'bandcamp.com' || str_ends_with($host, '.bandcamp.com') => 'bandcamp',
             // Página de Pinterest (pin)
             $host === 'pin.it' || $host === 'pinterest.com' || str_ends_with($host, '.pinterest.com') => 'pinterest',
             // Página de DeviantArt
@@ -590,8 +633,8 @@ class EmbedService
         return match ($provider) {
             'youtube', 'vimeo' => 'video',
             'sketchfab' => '3d',
-            'spotify', 'soundcloud', 'audio_provider' => 'audio',
-            'google_docs', 'google_drive' => 'doc',
+            'spotify', 'soundcloud', 'bandcamp', 'audio_provider' => 'audio',
+            'codepen', 'google_docs', 'google_drive' => 'doc',
             default => 'image',
         };
     }
@@ -602,9 +645,239 @@ class EmbedService
     protected function determineRenderType(string $category): string
     {
         return match ($category) {
-            'video', '3d', 'audio', 'doc' => 'iframe',
+            'video', '3d', 'audio', 'doc', 'code' => 'iframe',
             default => 'image',
         };
+    }
+
+    /**
+     * Extrae metadatos, miniatura oficial y reproductor iframe de Vimeo.
+     * Retorna ['image_url' => string|null, 'title' => string|null, 'embed_html' => string|null]
+     */
+    protected function fetchVimeoData(string $url): array
+    {
+        $vimeoId = null;
+        if (preg_match('#vimeo\.com/(?:channels/(?:\w+/)?|groups/[^/]+/videos/|album/(?:\d+)/video/|video/|)(\d+)#i', $url, $m)) {
+            $vimeoId = $m[1];
+        }
+
+        $thumbnailUrl = null;
+        $title = null;
+        $embedHtml = null;
+
+        try {
+            $response = Http::timeout(4)->get('https://vimeo.com/api/oembed.json', [
+                'url' => $vimeoId ? "https://vimeo.com/{$vimeoId}" : $url,
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $thumbnailUrl = $data['thumbnail_url'] ?? null;
+                $titleCandidate = !empty(trim($data['title'] ?? '')) ? trim($data['title']) : null;
+                $author = !empty(trim($data['author_name'] ?? '')) ? trim($data['author_name']) : null;
+                $title = ($titleCandidate && $author) ? "{$titleCandidate} - por {$author}" : $titleCandidate;
+                $embedHtml = $data['html'] ?? null;
+            }
+        } catch (\Exception $e) {
+            // Silencioso
+        }
+
+        if (!$embedHtml && $vimeoId) {
+            $sandbox = 'sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"';
+            $embedHtml = '<iframe src="https://player.vimeo.com/video/' . htmlspecialchars($vimeoId) . '" ' . $sandbox . ' frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen class="w-full h-full aspect-video rounded-lg"></iframe>';
+        }
+
+        return [
+            'image_url'  => $thumbnailUrl,
+            'title'      => $title,
+            'embed_html' => $embedHtml,
+        ];
+    }
+
+    /**
+     * Extrae metadatos, carátula y widget de SoundCloud.
+     * Retorna ['image_url' => string|null, 'title' => string|null, 'embed_html' => string|null]
+     */
+    protected function fetchSoundCloudData(string $url): array
+    {
+        $thumbnailUrl = null;
+        $title = null;
+        $embedHtml = null;
+
+        try {
+            $response = Http::timeout(4)->get('https://soundcloud.com/oembed', [
+                'format' => 'json',
+                'url' => $url,
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $thumbnailUrl = $data['thumbnail_url'] ?? null;
+                if ($thumbnailUrl && str_contains($thumbnailUrl, 't300x300')) {
+                    $thumbnailUrl = str_replace('t300x300', 't500x500', $thumbnailUrl);
+                }
+                $titleCandidate = !empty(trim($data['title'] ?? '')) ? trim($data['title']) : null;
+                $author = !empty(trim($data['author_name'] ?? '')) ? trim($data['author_name']) : null;
+                $title = ($titleCandidate && $author) ? "{$titleCandidate} - {$author}" : $titleCandidate;
+                $embedHtml = $data['html'] ?? null;
+            }
+        } catch (\Exception $e) {
+            // Silencioso
+        }
+
+        if (!$embedHtml) {
+            $embedUrl = 'https://w.soundcloud.com/player/?url=' . urlencode($url) . '&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false';
+            $embedHtml = '<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" sandbox="allow-scripts allow-same-origin allow-presentation" src="' . htmlspecialchars($embedUrl) . '" class="w-full rounded-lg"></iframe>';
+        }
+
+        return [
+            'image_url'  => $thumbnailUrl,
+            'title'      => $title,
+            'embed_html' => $embedHtml,
+        ];
+    }
+
+    /**
+     * Extrae metadatos y visor incrustado interactivo de CodePen.
+     * Retorna ['image_url' => string|null, 'title' => string|null, 'embed_html' => string|null]
+     */
+    protected function fetchCodePenData(string $url): array
+    {
+        $penUser = null;
+        $penSlug = null;
+        if (preg_match('~codepen\.io/([^/]+)/(?:pen|details|full)/([^/?#]+)~i', $url, $m)) {
+            $penUser = $m[1];
+            $penSlug = $m[2];
+        }
+
+        $thumbnailUrl = null;
+        $title = null;
+        $embedHtml = null;
+
+        try {
+            $response = Http::timeout(4)->get('https://codepen.io/api/oembed', [
+                'format' => 'json',
+                'url' => $url,
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $thumbnailUrl = $data['thumbnail_url'] ?? null;
+                $title = !empty(trim($data['title'] ?? '')) ? trim($data['title']) : null;
+                $embedHtml = $data['html'] ?? null;
+            }
+        } catch (\Exception $e) {
+            // Silencioso
+        }
+
+        if (!$embedHtml && $penUser && $penSlug) {
+            $embedSrc = "https://codepen.io/{$penUser}/embed/{$penSlug}?default-tab=result";
+            $embedHtml = '<iframe height="500" style="width: 100%;" scrolling="no" title="CodePen Embed" src="' . htmlspecialchars($embedSrc) . '" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true" sandbox="allow-scripts allow-same-origin" class="w-full min-h-[480px] rounded-lg"></iframe>';
+        }
+
+        return [
+            'image_url'  => $thumbnailUrl,
+            'title'      => $title,
+            'embed_html' => $embedHtml,
+        ];
+    }
+
+    /**
+     * Extrae metadatos, arte de portada y reproductor de Bandcamp.
+     * Retorna ['image_url' => string|null, 'title' => string|null, 'embed_html' => string|null]
+     */
+    protected function fetchBandcampData(string $url): array
+    {
+        $thumbnailUrl = null;
+        $title = null;
+        $embedHtml = null;
+
+        try {
+            $response = Http::timeout(5)->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            ])->get($url);
+
+            if ($response->successful()) {
+                $html = $response->body();
+
+                if (preg_match('/<meta[^>]+(?:property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']|content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\'])/i', $html, $m)) {
+                    $thumbnailUrl = !empty($m[1]) ? $m[1] : (!empty($m[2]) ? $m[2] : null);
+                }
+
+                if (preg_match('/<meta[^>]+(?:property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']|content=["\']([^"\']+)["\'][^>]+property=["\']og:title["\'])/i', $html, $m)) {
+                    $title = trim(html_entity_decode(!empty($m[1]) ? $m[1] : $m[2], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                }
+
+                if (preg_match('/<meta[^>]+(?:property=["\']og:video["\'][^>]+content=["\']([^"\']+)["\']|content=["\']([^"\']+)["\'][^>]+property=["\']og:video["\'])/i', $html, $m)) {
+                    $playerSrc = !empty($m[1]) ? $m[1] : $m[2];
+                    if ($playerSrc) {
+                        $embedHtml = '<iframe style="border: 0; width: 100%; height: 420px;" src="' . htmlspecialchars($playerSrc) . '" seamless sandbox="allow-scripts allow-same-origin allow-popups" class="w-full rounded-lg"></iframe>';
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Silencioso
+        }
+
+        return [
+            'image_url'  => $thumbnailUrl,
+            'title'      => $title,
+            'embed_html' => $embedHtml,
+        ];
+    }
+
+    /**
+     * Extrae arte en alta resolución y metadatos de ArtStation.
+     * Retorna ['image_url' => string|null, 'title' => string|null]
+     */
+    protected function fetchArtStationData(string $url): array
+    {
+        $imageUrl = null;
+        $title = null;
+
+        // 1. oEmbed de ArtStation
+        try {
+            $response = Http::timeout(4)->get('https://www.artstation.com/oembed', ['url' => $url]);
+            if ($response->successful()) {
+                $data = $response->json();
+                $imageUrl = $data['thumbnail_url'] ?? null;
+                $titleCandidate = !empty(trim($data['title'] ?? '')) ? trim($data['title']) : null;
+                $author = !empty(trim($data['author_name'] ?? '')) ? trim($data['author_name']) : null;
+                $title = ($titleCandidate && $author) ? "{$titleCandidate} - por {$author}" : $titleCandidate;
+            }
+        } catch (\Exception $e) {
+            // Silencioso
+        }
+
+        // 2. OpenGraph fallback
+        if (!$imageUrl) {
+            try {
+                $response = Http::timeout(5)->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                ])->get($url);
+
+                if ($response->successful()) {
+                    $html = $response->body();
+
+                    if (preg_match('/<meta[^>]+(?:property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']|content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\'])/i', $html, $m)) {
+                        $imageUrl = !empty($m[1]) ? $m[1] : (!empty($m[2]) ? $m[2] : null);
+                    }
+
+                    if (!$title && preg_match('/<meta[^>]+(?:property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']|content=["\']([^"\']+)["\'][^>]+property=["\']og:title["\'])/i', $html, $m)) {
+                        $title = trim(html_entity_decode(!empty($m[1]) ? $m[1] : $m[2], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+                    }
+                }
+            } catch (\Exception $e) {
+                // Silencioso
+            }
+        }
+
+        return [
+            'image_url' => $imageUrl,
+            'title'     => $title,
+        ];
     }
 
     /**
@@ -620,9 +893,29 @@ class EmbedService
             return $yt['embed_html'] ?? null;
         }
 
+        if ($provider === 'vimeo') {
+            $vim = $this->fetchVimeoData($url);
+            return $vim['embed_html'] ?? null;
+        }
+
         if ($provider === 'spotify') {
             $sp = $this->fetchSpotifyData($url);
             return $sp['embed_html'] ?? null;
+        }
+
+        if ($provider === 'soundcloud') {
+            $sc = $this->fetchSoundCloudData($url);
+            return $sc['embed_html'] ?? null;
+        }
+
+        if ($provider === 'codepen') {
+            $cp = $this->fetchCodePenData($url);
+            return $cp['embed_html'] ?? null;
+        }
+
+        if ($provider === 'bandcamp') {
+            $bc = $this->fetchBandcampData($url);
+            return $bc['embed_html'] ?? null;
         }
 
         if (in_array($provider, ['google_docs', 'google_drive'])) {
@@ -630,7 +923,7 @@ class EmbedService
             return $doc['embed_html'] ?? null;
         }
 
-        if (in_array($provider, ['vimeo', 'sketchfab'])) {
+        if ($provider === 'sketchfab') {
             return '<iframe src="' . htmlspecialchars($url) . '" ' . $sandbox . ' frameborder="0" allowfullscreen></iframe>';
         }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Artwork;
 use App\Models\Collection;
+use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -65,6 +66,14 @@ class TrashController extends Controller
 
         $artwork->restore();
 
+        AuditLogger::log(
+            'admin.trash_artwork_restored',
+            $artwork,
+            $artwork->title,
+            null,
+            "Admin restored artwork '{$artwork->title}' from trash"
+        );
+
         return back()->with('success', "Artwork \"{$artwork->title}\" restored successfully.");
     }
 
@@ -78,6 +87,14 @@ class TrashController extends Controller
 
         $artwork->forceDelete();
 
+        AuditLogger::log(
+            'admin.trash_artwork_purged',
+            null,
+            $title,
+            ['artwork_id' => $id],
+            "Admin permanently deleted artwork '{$title}'"
+        );
+
         return back()->with('success', "Artwork \"{$title}\" permanently deleted.");
     }
 
@@ -88,6 +105,14 @@ class TrashController extends Controller
     {
         $collection = Collection::onlyTrashed()->findOrFail($id);
         $collection->restore();
+
+        AuditLogger::log(
+            'admin.trash_collection_restored',
+            $collection,
+            $collection->name,
+            null,
+            "Admin restored collection '{$collection->name}' from trash"
+        );
 
         return back()->with('success', "Collection \"{$collection->name}\" restored successfully.");
     }
@@ -102,6 +127,14 @@ class TrashController extends Controller
 
         $collection->forceDelete();
 
+        AuditLogger::log(
+            'admin.trash_collection_purged',
+            null,
+            $name,
+            ['collection_id' => $id],
+            "Admin permanently deleted collection '{$name}'"
+        );
+
         return back()->with('success', "Collection \"{$name}\" permanently deleted.");
     }
 
@@ -111,6 +144,14 @@ class TrashController extends Controller
     public function pruneNow(): RedirectResponse
     {
         Artisan::call('model:prune');
+
+        AuditLogger::log(
+            'admin.trash_auto_purged',
+            null,
+            'Global 30-day Trash Cleanup',
+            null,
+            "Admin manually triggered automatic 30-day trash purge"
+        );
 
         return back()->with('success', 'Global 30-day trash purge executed successfully.');
     }

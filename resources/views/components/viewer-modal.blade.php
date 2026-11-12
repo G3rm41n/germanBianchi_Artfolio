@@ -67,9 +67,50 @@
                 this.reportLoading = false;
                 this.reportError = err.message;
             });
+        },
+
+        recordView() {
+            if (!this.artwork || !this.artwork.id) return;
+            fetch('/artworks/' + this.artwork.id + '/view', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.views_count !== undefined) {
+                    this.artwork.views_count = data.views_count;
+                }
+            })
+            .catch(() => {});
+        },
+
+        togglePin() {
+            if (!this.artwork || !this.artwork.id) return;
+            fetch('/artworks/' + this.artwork.id + '/toggle-pin', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    this.artwork.is_pinned = data.is_pinned;
+                    window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'success', message: data.message } }));
+                } else if (data.message) {
+                    window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'error', message: data.message } }));
+                }
+            })
+            .catch(() => {
+                window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'error', message: 'Error updating pinned status.' } }));
+            });
         }
     }" 
-    @open-viewer.window="artwork = $event.detail; isOpen = true; document.body.style.overflow = 'hidden';"
+    @open-viewer.window="artwork = $event.detail; isOpen = true; document.body.style.overflow = 'hidden'; recordView();"
     @keydown.escape.window="close(); document.body.style.overflow = 'auto';"
     class="relative z-50"
     aria-labelledby="modal-title" 
@@ -170,7 +211,7 @@
                 <!-- Info Sidebar (Right Side) -->
                 <div class="w-full sm:w-1/3 flex flex-col h-auto sm:h-auto overflow-y-auto bg-white dark:bg-gray-900 p-6 sm:p-8">
                     <!-- Close button -->
-                    <button @click="close(); document.body.style.overflow = 'auto';" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors bg-white dark:bg-gray-800 rounded-full p-2 shadow-sm z-10 border border-gray-100 dark:border-gray-700">
+                    <button @click="close(); document.body.style.overflow = 'auto';" aria-label="Close media viewer" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors bg-white dark:bg-gray-800 rounded-full p-2 shadow-sm z-10 border border-gray-100 dark:border-gray-700">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -180,7 +221,7 @@
                         <div class="mt-4 sm:mt-0 pt-4 flex flex-col h-full">
                             <div class="flex justify-between items-start mb-3">
                                 <div>
-                                    <!-- Badges: Category, Subcategory, AI -->
+                                    <!-- Badges: Category, Subcategory, AI, Views -->
                                     <div class="flex flex-wrap items-center gap-1.5 mb-2">
                                         <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400" x-text="artwork.category"></span>
                                         <template x-if="artwork.subcategory">
@@ -192,23 +233,99 @@
                                                 <span>AI Generated</span>
                                             </span>
                                         </template>
+                                        <template x-if="artwork.is_pinned">
+                                            <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 flex items-center space-x-1" title="Pinned Artwork">
+                                                <span>📌 Pinned</span>
+                                            </span>
+                                        </template>
+                                        <!-- Views Count -->
+                                        <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center gap-1" title="Views">
+                                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            <span x-text="artwork.views_count || 0"></span>
+                                        </span>
+
+                                        <!-- License Badge (#14) -->
+                                        <template x-if="artwork.license">
+                                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60" x-text="
+                                                artwork.license === 'cc0' ? 'Public Domain (CC0)' :
+                                                (artwork.license === 'cc_by' ? 'CC BY' :
+                                                (artwork.license === 'cc_by_sa' ? 'CC BY-SA' :
+                                                (artwork.license === 'cc_by_nc' ? 'CC BY-NC' :
+                                                (artwork.license === 'cc_by_nc_nd' ? 'CC BY-NC-ND' : 'All Rights Reserved'))))
+                                            "></span>
+                                        </template>
                                     </div>
-                                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="artwork.title"></h2>
+                                    <h2 id="modal-title" class="text-2xl font-bold text-gray-900 dark:text-white" x-text="artwork.title"></h2>
                                 </div>
                                 
-                                <div class="flex items-center space-x-1 ml-4 flex-shrink-0">
+                                <div class="flex items-center space-x-1.5 ml-4 flex-shrink-0">
+                                    <!-- Like / Appreciation Button (#9) -->
+                                    @auth
+                                        <button type="button"
+                                                @click.stop="
+                                                    fetch('/artworks/' + artwork.id + '/like', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                                            'Accept': 'application/json'
+                                                        }
+                                                    }).then(res => res.json()).then(data => {
+                                                        artwork.is_liked = data.is_liked;
+                                                        artwork.likes_count = data.likes_count;
+                                                        window.dispatchEvent(new CustomEvent('artwork-like-updated', { detail: { id: artwork.id, is_liked: data.is_liked, likes_count: data.likes_count } }));
+                                                    })
+                                                "
+                                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all focus:outline-none"
+                                                :class="artwork.is_liked ? 'bg-pink-500 text-white shadow-sm hover:bg-pink-600' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:text-pink-500 dark:hover:text-pink-400'"
+                                                title="Appreciate this artwork">
+                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                            <span x-text="artwork.likes_count || 0"></span>
+                                        </button>
+                                    @else
+                                        <button type="button"
+                                                @click.stop="$dispatch('open-guest-modal', { context: 'aprecio' })"
+                                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:text-pink-500 transition-colors focus:outline-none"
+                                                title="Appreciate this artwork">
+                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                            <span x-text="artwork.likes_count || 0"></span>
+                                        </button>
+                                    @endauth
+
+                                    <!-- Share Artwork Button -->
+                                    <button type="button" 
+                                            @click.stop="$dispatch('open-share-modal', { title: artwork.title + ' by ' + artwork.author_name, url: artwork.author_url })" 
+                                            class="p-2 rounded-full text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" 
+                                            title="Share Artwork" 
+                                            aria-label="Share Artwork">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                                    </button>
+
+                                    <!-- Pin/Unpin (Only if owner) -->
+                                    <template x-if="artwork.is_owner">
+                                        <button type="button" 
+                                                @click.stop="togglePin()" 
+                                                :class="artwork.is_pinned ? 'text-amber-500 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100' : 'text-gray-400 hover:text-amber-500 hover:bg-gray-100 dark:hover:bg-gray-800'" 
+                                                class="p-2 rounded-full transition-colors focus:outline-none" 
+                                                :title="artwork.is_pinned ? 'Unpin from Top of Portfolio' : 'Pin to Top of Portfolio'" 
+                                                aria-label="Pin artwork">
+                                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
+                                            </svg>
+                                        </button>
+                                    </template>
+
                                     <!-- Add to Collection Picker Button -->
                                     <x-collection-picker artwork-id-expr="artwork ? artwork.id : null" size="lg" placement="bottom" align="modal" />
 
                                     <!-- Report Artwork Button -->
                                     @auth
-                                        <button type="button" @click.stop="openReport()" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Report Artwork">
+                                        <button type="button" @click.stop="openReport()" aria-label="Report Artwork" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Report Artwork">
                                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                                             </svg>
                                         </button>
                                     @else
-                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'reporte' })" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Report Artwork">
+                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'reporte' })" aria-label="Report Artwork" class="p-2 rounded-full text-gray-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none" title="Report Artwork">
                                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                                             </svg>
@@ -217,7 +334,7 @@
 
                                     <!-- Favorite Button -->
                                     @auth
-                                        <button type="button" @click.stop="
+                                        <button type="button" :aria-label="artwork && artwork.is_bookmarked ? 'Remove from favorites' : 'Save to favorites'" @click.stop="
                                             fetch('/obras/' + artwork.id + '/bookmark', {
                                                 method: 'POST',
                                                 headers: {
@@ -234,7 +351,7 @@
                                             </svg>
                                         </button>
                                     @else
-                                        <button type="button" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="p-1 text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Save to Favorites">
+                                        <button type="button" aria-label="Save to favorites" @click.stop="$dispatch('open-guest-modal', { context: 'favorito' })" class="p-1 text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors focus:outline-none" title="Save to Favorites">
                                             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                             </svg>
@@ -257,13 +374,47 @@
                                 </template>
                                 <div>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Published by</p>
-                                    <a :href="artwork.author_url" class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 hover:underline" x-text="artwork.author_name"></a>
+                                    <div class="flex items-center gap-1.5">
+                                        <a :href="artwork.author_url" class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 hover:underline" x-text="artwork.author_name"></a>
+                                        <template x-if="artwork.author_is_verified">
+                                            <span class="inline-flex items-center text-blue-500 shrink-0" title="Verified Artist" aria-label="Verified Artist">
+                                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.25 14.5l-3.5-3.5 1.41-1.41 2.09 2.09 5.67-5.67 1.41 1.41-7.08 7.08z"/></svg>
+                                            </span>
+                                        </template>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="flex-grow">
                                 <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-2">Description</h4>
                                 <p class="text-gray-600 dark:text-gray-400 text-sm whitespace-pre-line" x-text="artwork.description || 'No description provided.'"></p>
+
+                                <!-- Tags / Hashtags List -->
+                                <template x-if="artwork.tags && artwork.tags.length">
+                                    <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                                        <h5 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Tags</h5>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <template x-for="tag in artwork.tags" :key="tag.slug">
+                                                <a :href="'/?tag=' + tag.slug" 
+                                                   class="inline-flex items-center text-xs px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 font-medium transition" 
+                                                   x-text="'#' + tag.name"></a>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- Software / Tools Used List (#10) -->
+                                <template x-if="artwork.software_used && artwork.software_used.length">
+                                    <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                                        <h5 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Software Used</h5>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <template x-for="tool in artwork.software_used" :key="tool">
+                                                <span class="inline-flex items-center text-xs px-2.5 py-1 rounded-md bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 font-semibold"
+                                                      x-text="tool"></span>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                             
                             <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
@@ -287,7 +438,11 @@
                      style="display: none;"
                      @click.stop>
                     
-                    <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md p-6 overflow-hidden transform transition-all">
+                    <div @click.stop 
+                         role="dialog"
+                         aria-modal="true"
+                         aria-labelledby="report-modal-title"
+                         class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md p-6 overflow-hidden transform transition-all">
                         <!-- Modal header -->
                         <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
                             <div class="flex items-center space-x-2">
@@ -296,9 +451,9 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Report Artwork</h3>
+                                <h3 id="report-modal-title" class="text-lg font-bold text-gray-900 dark:text-white">Report Artwork</h3>
                             </div>
-                            <button @click="closeReport()" type="button" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                            <button @click="closeReport()" type="button" aria-label="Close report dialog" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>

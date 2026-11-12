@@ -49,7 +49,11 @@
             </main>
         </div>
         
+        <x-flash-alert />
+        <x-confirm-dialog />
         <x-guest-modal />
+        <x-share-modal />
         <x-session-timeout-modal />
+        <x-slideshow-modal />
     </body>
 </html>

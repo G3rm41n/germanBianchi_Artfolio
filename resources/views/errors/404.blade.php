@@ -19,9 +19,6 @@
         <a href="{{ route('home') }}" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase tracking-wider transition shadow-md">
             Back to Gallery
         </a>
-        <a href="javascript:history.back()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold transition">
-            Go Back
-        </a>
     </div>
 @endsection
 

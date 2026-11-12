@@ -40,7 +40,7 @@
 
         toggleDropdown() {
             @if(!$isAuth)
-                $dispatch('open-guest-modal', { context: 'coleccion' });
+                this.$dispatch('open-guest-modal', { context: 'coleccion' });
                 return;
             @endif
 
@@ -168,7 +168,7 @@
             @click.stop="toggleDropdown()"
             class="transition-colors focus:outline-none rounded-lg p-1 hover:bg-gray-100 dark:hover:bg-gray-700/60 {{ $size === 'lg' ? 'text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400' : 'text-gray-300 dark:text-gray-600 hover:text-indigo-600 dark:hover:text-indigo-400' }}"
             title="Add to Collection">
-        <svg class="{{ $size === 'lg' ? 'w-7 h-7' : 'w-6 h-6' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="{{ $size === 'lg' ? 'w-7 h-7' : ($size === 'sm' ? 'w-4 h-4' : 'w-6 h-6') }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
     </button>

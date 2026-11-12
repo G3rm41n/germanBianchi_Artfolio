@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Artwork;
 use App\Models\Collection;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -564,6 +565,14 @@ class UserController extends Controller
 
         $user->update(['status' => 'suspended']);
 
+        AuditLogger::log(
+            'admin.user_suspended',
+            $user,
+            $user->name,
+            ['status' => ['old' => 'active', 'new' => 'suspended']],
+            "Admin suspended user account {$user->name} ({$user->email})"
+        );
+
         return back()->with('success', "User \"{$user->name}\" has been suspended.");
     }
 
@@ -576,7 +585,41 @@ class UserController extends Controller
 
         $user->update(['status' => 'active']);
 
+        AuditLogger::log(
+            'admin.user_activated',
+            $user,
+            $user->name,
+            ['status' => ['old' => 'suspended', 'new' => 'active']],
+            "Admin reactivated user account {$user->name} ({$user->email})"
+        );
+
         return back()->with('success', "User \"{$user->name}\" has been reactivated.");
+    }
+
+    /**
+     * Toggle verified artist status.
+     */
+    public function toggleVerify(int|string $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        $oldState = (bool) $user->is_verified;
+        $user->update(['is_verified' => ! $oldState]);
+
+        AuditLogger::log(
+            $user->is_verified ? 'admin.user_verified' : 'admin.user_unverified',
+            $user,
+            $user->name,
+            ['is_verified' => ['old' => $oldState, 'new' => (bool) $user->is_verified]],
+            $user->is_verified
+                ? "Admin granted Verified Artist badge to {$user->name}"
+                : "Admin revoked Verified Artist badge from {$user->name}"
+        );
+
+        $message = $user->is_verified
+            ? "User \"{$user->name}\" has been marked as a Verified Artist."
+            : "Verification badge removed for user \"{$user->name}\".";
+
+        return back()->with('success', $message);
     }
 
     /**
@@ -590,7 +633,17 @@ class UserController extends Controller
             return back()->with('error', 'You cannot delete your own admin account.');
         }
 
+        $userName = $user->name;
+        $userEmail = $user->email;
         $user->delete();
+
+        AuditLogger::log(
+            'admin.user_deleted',
+            $user,
+            $userName,
+            null,
+            "Admin deleted user account {$userName} ({$userEmail})"
+        );
 
         return back()->with('success', "User \"{$user->name}\" has been deleted.");
     }

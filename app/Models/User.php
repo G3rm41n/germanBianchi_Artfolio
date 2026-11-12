@@ -17,8 +17,9 @@ use Illuminate\Support\Str;
     'is_admin', 'status', 'avatar_url', 'crop_x', 'crop_y', 'crop_zoom',
     'banner_url', 'banner_crop_x', 'banner_crop_y', 'banner_crop_zoom',
     'headline', 'city', 'country', 'skills', 'software', 'hiring_types',
-    'public_email_enabled', 'contact_email', 'show_mature_content', 'hide_ai_content',
-    'notify_new_artworks', 'notify_messages', 'onboarding_step', 'onboarding_completed_at'
+    'public_email_enabled', 'contact_email', 'mature_filter_preference', 'show_mature_content', 'hide_ai_content',
+    'notify_new_artworks', 'notify_messages', 'onboarding_step', 'onboarding_completed_at',
+    'social_links', 'is_verified', 'commission_services'
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
@@ -45,6 +46,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'notify_messages'         => 'boolean',
             'onboarding_step'         => 'integer',
             'onboarding_completed_at' => 'datetime',
+            'social_links'            => 'array',
+            'is_verified'             => 'boolean',
+            'commission_services'     => 'array',
         ];
     }
 
@@ -100,6 +104,21 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->status === 'suspended';
     }
 
+    public function wantsMatureHidden(): bool
+    {
+        return $this->mature_filter_preference === 'hide';
+    }
+
+    public function wantsMatureBlurred(): bool
+    {
+        return ($this->mature_filter_preference ?? 'blur') === 'blur';
+    }
+
+    public function wantsMatureShown(): bool
+    {
+        return $this->mature_filter_preference === 'show';
+    }
+
     // ── Relaciones ───────────────────────────────────────────────────────────────
     public function artworks()
     {
@@ -119,6 +138,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function bookmarks()
     {
         return $this->belongsToMany(Artwork::class, 'bookmarks')
+                    ->withTimestamps();
+    }
+
+    public function likedArtworks()
+    {
+        return $this->belongsToMany(Artwork::class, 'artwork_likes')
                     ->withTimestamps();
     }
 

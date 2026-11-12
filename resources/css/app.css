@@ -9,3 +9,14 @@
         font-family: 'Outfit', sans-serif;
     }
 }
+
+/* Performance optimizations for low-end GPUs and smooth scroll */
+.artwork-card-contain {
+    content-visibility: auto;
+    contain-intrinsic-size: 280px 420px;
+}
+
+.collection-card-contain {
+    content-visibility: auto;
+    contain-intrinsic-size: 280px 320px;
+}

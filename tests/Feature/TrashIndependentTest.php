@@ -29,7 +29,7 @@ class TrashIndependentTest extends TestCase
         $this->assertDatabaseHas('artworks', ['id' => $artwork->id]);
 
         // Appears in artist trash view
-        $trashResponse = $this->actingAs($artist)->get('/papelera');
+        $trashResponse = $this->actingAs($artist)->get(route('trash.index'));
         $trashResponse->assertStatus(200);
         $trashResponse->assertSee('Obra a Papelera');
     }

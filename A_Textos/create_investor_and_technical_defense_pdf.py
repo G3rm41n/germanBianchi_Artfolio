@@ -148,7 +148,7 @@ def add_h1(doc, text):
     run = p.add_run(text)
     run.bold = True
     run.font.name = "Calibri"
-    run.font.size = Pt(14.5)
+    run.font.size = Pt(14)
     run.font.color.rgb = RGBColor(30, 27, 75)
     return p
 
@@ -161,7 +161,7 @@ def add_h2(doc, text):
     run = p.add_run(text)
     run.bold = True
     run.font.name = "Calibri"
-    run.font.size = Pt(12)
+    run.font.size = Pt(11.5)
     run.font.color.rgb = RGBColor(67, 56, 202)
     return p
 
@@ -279,7 +279,7 @@ def build_document():
         p_foot = footer.paragraphs[0]
         p_foot.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p_foot.paragraph_format.space_before = Pt(2)
-        run_f = p_foot.add_run("Dossier Ejecutivo para Evaluación Cliente/Inversor y Defensa de Arquitectura — Proyecto Artfolio")
+        run_f = p_foot.add_run("Dossier Ejecutivo Actualizado — Arquitectura, Innovaciones de Plataforma y Guía Técnica — Artfolio")
         run_f.font.name = "Calibri"
         run_f.font.size = Pt(8.5)
         run_f.font.color.rgb = RGBColor(148, 163, 184)
@@ -301,7 +301,7 @@ def build_document():
     p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_sub.paragraph_format.space_before = Pt(0)
     p_sub.paragraph_format.space_after = Pt(10)
-    r_sub = p_sub.add_run("Dossier de Inversión (< 10 Minutos) y Manual Técnico de Arquitectura y Ubicación de Archivos")
+    r_sub = p_sub.add_run("Dossier de Inversión (< 10 Minutos) y Manual de Defensa Técnica de Arquitectura, Innovaciones y Código")
     r_sub.bold = True
     r_sub.font.name = "Calibri"
     r_sub.font.size = Pt(13)
@@ -313,18 +313,18 @@ def build_document():
         [
             [
                 "PARTE I: Pitch de Inversión (< 10 min)",
-                "Presentar Artfolio paso a paso por categorías (Origen, Objetivo, Modelo Zero-Storage, Comparativa Competitiva y Demo Funcional).",
-                "Exposición directa al Profesor en rol de Cliente / Inversor."
+                "Presentación comercial ejecutiva de Artfolio por categorías (Origen, Zero-Storage, Comparativa de Mercado, Recorrido Funcional y Gobernanza/Escalabilidad).",
+                "Exposición directa al Profesor en rol de Cliente / Inversor de Capital de Riesgo."
             ],
             [
                 "PARTE II: Defensa de Proveedores y Whitelists",
-                "Explicación profunda de Whitelists, YouTube, Pinterest, DeviantArt y Google Docs, detallando cómo extraen imágenes/embeds y sus archivos.",
-                "Respaldo técnico ante preguntas sobre integraciones externas."
+                "Ingeniería inversa de Whitelists, Anti-SSRF, enlaces reales y funcionales de Pinterest, DeviantArt, Sketchfab, YouTube, Spotify y Google Docs.",
+                "Respaldo técnico ante preguntas sobre integraciones externas y scraping ético."
             ],
             [
-                "PARTE III: Anexo Q&A de Arquitectura Interna",
-                "Servicio de Mail/Confirmación y cómo acceder a él, Base de Datos, Acceso de Visitantes sin cuenta, API de Países y Seguridad.",
-                "Sección independiente para el interrogatorio técnico del evaluador."
+                "PARTE III: Anexo Q&A de Arquitectura e Innovaciones",
+                "Servicio de Mail, MySQL, Visitantes, Países, Directorio de Artistas, Buscador Facetado, Vista Pinterest de Obra, Tableros de Colecciones, Moderación, Auditoría y +18.",
+                "Interrogatorio técnico exhaustivo con ubicación exacta de archivos y líneas clave."
             ]
         ],
         col_widths=[2.1, 2.7, 2.0]
@@ -337,7 +337,7 @@ def build_document():
         doc,
         "PARTE I — EXPOSICIÓN EJECUTIVA CRONOMETRADA (DURACIÓN TOTAL: 9 MINUTOS)",
         "Presentación Comercial y de Producto para el Cliente / Inversor",
-        "Guion estructurado en 5 categorías progresivas para presentar el valor comercial, financiero y funcional de Artfolio en menos de 10 minutos."
+        "Estructura en 5 categorías progresivas para demostrar el valor comercial, la viabilidad financiera y la experiencia interactiva de Artfolio en menos de 10 minutos."
     )
 
     add_styled_table(
@@ -347,8 +347,8 @@ def build_document():
             ["Categoría 1: Origen, Problema y Objetivo", "Min 0:00 – 1:45 (1m 45s)", "Unificar el portafolio creativo multidisciplinario sin pagar costos millonarios de almacenamiento en la nube."],
             ["Categoría 2: Modelo 'Zero-Binary Storage'", "Min 1:45 – 3:15 (1m 30s)", "Márgenes operativos >95%: las CDNs gigantes pagan el ancho de banda; Artfolio aporta la curaduría e inteligencia."],
             ["Categoría 3: Comparativa Competitiva", "Min 3:15 – 5:00 (1m 45s)", "Superior a Linktree en inmersión visual y más versátil que ArtStation/Behance en soporte multi-formato y ética IA."],
-            ["Categoría 4: Recorrido de Funciones Clave", "Min 5:00 – 7:45 (2m 45s)", "Visor 5-en-1, Filtro Anti-IA, Perfiles con Recorte de Avatar/Banner, Colecciones Privadas/No-Listadas y Dashboard KPI."],
-            ["Categoría 5: Seguridad y Cierre de Inversión", "Min 7:45 – 9:00 (1m 15s)", "Plataforma autolimpiante (auditoría de enlaces, moderación, sesiones seguras) lista para escalar con riesgo mínimo."]
+            ["Categoría 4: Recorrido de Funciones Clave", "Min 5:00 – 7:45 (2m 45s)", "Directorio de Artistas, Buscador Facetado, Vista Detalle Pinterest, Tableros Slideshow, Onboarding y Filtro +18."],
+            ["Categoría 5: Seguridad y Cierre de Inversión", "Min 7:45 – 9:00 (1m 15s)", "Auditoría integral del sistema, moderación activa, catálogo autolimpiante y 173 tests automatizados listos para escalar."]
         ],
         col_widths=[2.2, 1.5, 3.1]
     )
@@ -357,7 +357,7 @@ def build_document():
     add_h1(doc, "Categoría 1: El Origen, el Problema de Mercado y el Objetivo (Min 0:00 – 1:45)")
     add_p(
         doc,
-        "Hoy en día, el creador digital moderno es multidisciplinario: un mismo profesional publica ilustraciones en Pinterest o DeviantArt, sube sus reels de animación a YouTube, aloja modelos 3D interactivos en Sketchfab, compone bandas sonoras en Spotify y redacta guiones o casos de estudio en Google Docs.",
+        "Hoy en día, el creador digital moderno es multidisciplinario: un mismo profesional publica ilustraciones en Pinterest o DeviantArt, sube reels de animación a YouTube, aloja modelos 3D interactivos en Sketchfab, compone bandas sonoras en Spotify y redacta guiones o casos de estudio en Google Docs.",
         bold_prefix="1. El Origen del Proyecto (El Dolor del Creador): "
     )
     add_p(
@@ -368,131 +368,101 @@ def build_document():
     add_p(
         doc,
         "Artfolio nace para resolver ambos problemas simultáneamente: es un Hub de Curaduría Multimedia Universal que unifica imágenes, video, 3D, audio y documentos interactivos dentro de una sola galería profesional con estética de cine, operando bajo una arquitectura 'Zero-Binary Storage' (Cero Almacenamiento Binario Pesado).",
-        bold_prefix="3. El Objetivo de Artfolio: "
+        bold_prefix="3. La Solución y Objetivo de Negocio: "
     )
 
     add_callout(
         doc,
-        "«Artfolio no compite contra YouTube, Pinterest o Sketchfab alojando archivos pesados; los convierte en nuestros proveedores gratuitos de infraestructura CDN mientras nosotros somos dueños de la identidad profesional, la curaduría y el descubrimiento del talento.»",
-        title="FRASE DE APERTURA PARA EL CLIENTE / INVERSOR"
+        "El creador digital actual no quiere otra red social donde resubir gigabytes de trabajo; quiere un escaparate unificado que exhiba su talento donde ya está alojado con máxima fidelidad visual y cero fricción.",
+        title="TESIS DE INVERSIÓN CENTRAL"
     )
 
     # --- CATEGORÍA 2 ---
-    add_h1(doc, "Categoría 2: Innovación Financiera — Arquitectura 'Zero-Binary Storage' (Min 1:45 – 3:15)")
-    add_bullet(
+    add_h1(doc, "Categoría 2: Modelo de Negocio 'Zero-Binary Storage' (Min 1:45 – 3:15)")
+    add_p(
         doc,
-        "En lugar de almacenar gigabytes de video o texturas en servidores propios, el motor de Artfolio recibe únicamente el enlace original de la obra, verifica su autenticidad y extrae sus metadatos oficiales mediante protocolos oEmbed y OpenGraph.",
-        bold_prefix="Delegación Inteligente de Ancho de Banda: "
+        "En lugar de permitir que los usuarios carguen videos de 500 MB o imágenes RAW que colapsarían la factura mensual de AWS S3 y Cloudflare, Artfolio almacena únicamente la URL original del proveedor (YouTube, Pinterest, DeviantArt, Sketchfab, Google Docs, Spotify). En el momento en que se ingresa el enlace, nuestro backend analiza la URL, consulta el protocolo oEmbed o extrae los metadatos necesarios y guarda en la base de datos relacional MySQL solamente cadenas de texto (título, descripción, autor, miniatura optimizada y código embebible).",
+        bold_prefix="1. ¿Cómo funciona técnicamente 'Zero-Binary Storage'?: "
     )
-    add_bullet(
+    add_p(
         doc,
-        "Almacenar 100.000 obras multimedia en Artfolio ocupa menos de 150 MB en nuestra base de datos relacional MySQL. Una plataforma tradicional requeriría varios Terabytes en S3 y miles de dólares mensuales en tráfico de red.",
-        bold_prefix="Escalabilidad Financiera Inmediata: "
-    )
-    add_bullet(
-        doc,
-        "El artista no tiene que volver a renderizar, comprimir ni resubir sus obras; pega el enlace de su plataforma habitual y en menos de 1.5 segundos Artfolio genera su tarjeta visual e integra el reproductor nativo.",
-        bold_prefix="Fricción Cero en Adopción de Usuarios: "
+        "El costo marginal por cada 10,000 obras nuevas registradas en Artfolio es prácticamente cero dólares en almacenamiento binario (unos pocos megabytes en MySQL para registros alfanuméricos). El ancho de banda de transmitir el video 4K o el modelo 3D con texturas lo paga Google (YouTube), Pinterest o Sketchfab. Artfolio captura el 100% de la experiencia visual y los datos de interacción con un margen bruto superior al 95%.",
+        bold_prefix="2. Ventaja Financiera Radical para el Inversor: "
     )
 
     # --- CATEGORÍA 3 ---
-    add_h1(doc, "Categoría 3: Comparativa con Plataformas Similares (Min 3:15 – 5:00)")
-    add_p(
-        doc,
-        "Si el inversor pregunta por qué un artista elegiría Artfolio frente a alternativas existentes, esta matriz demuestra nuestro posicionamiento único en el mercado:"
-    )
-
+    add_h1(doc, "Categoría 3: Comparativa Competitiva de Mercado (Min 3:15 – 5:00)")
     add_styled_table(
         doc,
-        ["Criterio / Capacidad", "ArtStation / Behance", "DeviantArt / Pinterest", "Linktree / Beacons", "ARTFOLIO (Nuestra Propuesta)"],
+        ["Criterio de Evaluación", "Artfolio", "Linktree / Beacons", "ArtStation / Behance"],
         [
-            [
-                "Soporte Nativo Multi-Formato (5 en 1)",
-                "Limitado (Enfocado en imagen/video propio; débil en audio/docs).",
-                "No (Enfocados casi exclusivamente en imagen 2D).",
-                "No (Solo muestra botones de texto que sacan al usuario del sitio).",
-                "SÍ: Imagen HD, Video, Audio (Spotify), 3D (Sketchfab) y Docs en un solo visor."
-            ],
-            [
-                "Costo de Infraestructura por Usuario",
-                "Muy Alto (Alojamiento binario pesado en nube propia).",
-                "Muy Alto (Millones de imágenes alojadas en CDN propia).",
-                "Bajo (Solo enlaces planos sin reproductor multimedia).",
-                "Ultra Bajo: Experiencia rica tipo ArtStation con el costo ligero de Linktree."
-            ],
-            [
-                "Transparencia y Filtro de IA Generativa",
-                "Polémico / Configuración compleja y rechazada por artistas.",
-                "Saturado de contenido IA sin filtrado claro para clientes.",
-                "Inexistente (No clasifica obras creativas).",
-                "Nativo desde publicación: Sello 'Con IA' y filtro en 1 clic ('Sin IA' / 'Con IA')."
-            ],
-            [
-                "Colecciones con Privacidad de 3 Niveles",
-                "Básico (Portafolio público o borradores privados).",
-                "Tableros públicos o secretos simples.",
-                "No aplica.",
-                "Pública, No-Listada (enlace exclusivo para clientes con token) y Privada."
-            ],
-            [
-                "Personalización Visual sin Subir Archivos",
-                "Requiere subir avatares y banners pesados al servidor.",
-                "Requiere subida de archivos locales.",
-                "Subida local limitada o plantillas de pago.",
-                "Editor interactivo de encuadre y zoom (X, Y, Zoom) para Avatar y Banner por URL."
-            ]
+            ["Experiencia Multimedia", "Embebido interactivo nativo (video, audio, 3D y docs en vivo).", "Botones de texto plano y enlaces externos salientes.", "Centrado casi exclusivamente en imágenes fijas 2D."],
+            ["Costo de Almacenamiento", "Zero-Binary (almacena metadatos y vectores).", "Bajo, pero sin inmersión visual.", "Altísimo (subida binaria pesada)."],
+            ["Curaduría por Colecciones", "Colecciones públicas, no-listadas con token y privadas.", "Listas estáticas de enlaces.", "Carpetas rígidas orientadas solo a venta."],
+            ["Buscador y Directorio", "Buscador global facetado + Directorio B2B de Artistas.", "Inexistente (cada usuario es una isla aislada).", "Explorador general saturado de publicidad."],
+            ["Gobernanza y Ética IA", "Declaración ética de IA por obra y filtros de contenido sensible.", "Sin control ni declaración de contenidos.", "Controversia constante por scraping masivo de IA."]
         ],
-        col_widths=[1.4, 1.35, 1.35, 1.25, 1.45]
+        col_widths=[1.5, 1.8, 1.7, 1.8]
     )
 
     # --- CATEGORÍA 4 ---
-    add_h1(doc, "Categoría 4: Demostración de Funciones por Módulos (Min 5:00 – 7:45)")
+    add_h1(doc, "Categoría 4: Recorrido de Funciones Clave del Producto (Min 5:00 – 7:45)")
     add_p(
         doc,
-        "Durante este bloque de la presentación, se muestra al cliente cómo interactúan los usuarios dentro de la aplicación dividida en 6 pilares funcionales:"
+        "Durante este bloque de la presentación, se demuestra al evaluador cómo interactúan los usuarios en la plataforma a través de sus pilares funcionales de última generación:"
     )
     add_bullet(
         doc,
-        "Búsqueda en tiempo real con debounce de 400ms, filtrado por las 5 categorías (Imagen, Video, Audio, 3D, Docs), ordenamiento por popularidad (favoritos) o recencia, y selector de Transparencia de Inteligencia Artificial (Todas / Solo talento humano 'Sin IA' / 'Con IA').",
-        bold_prefix="1. Explorador Público Inteligente y Filtro Ético de IA: "
+        "Directorio profesional B2B para reclutadores y estudios que permite filtrar artistas por habilidades técnicas, software de dominio (Photoshop, Blender, Unreal, etc.), país de residencia, disponibilidad para comisiones/contratación y artistas verificados, con ordenamiento por impacto (más seguidos, más apreciados o recientes).",
+        bold_prefix="1. Directorio Global de Artistas (/artists): "
     )
     add_bullet(
         doc,
-        "Al hacer clic en cualquier obra, se abre un modal cinematográfico sin recargar la página que adapta su motor según el formato: renderiza imágenes en resolución original para Pinterest/DeviantArt, o despliega un reproductor interactivo 16:9 seguro para YouTube, Sketchfab, Spotify y Google Docs.",
-        bold_prefix="2. Visor Multimedia Adaptativo 5-en-1: "
+        "Explorador de obras facetado y consistente con el diseño de artistas, que incluye dropdowns de ordenamiento (recientes, populares, más vistas, más apreciadas), filtrado por tipo de medio (imagen, video, 3D, audio, doc), software, habilidades curadas y conmutador discreto de contenido maduro (+18) en una grilla limpia y responsiva.",
+        bold_prefix="2. Buscador Avanzado de Obras con Taxonomía Curada (/explore): "
     )
     add_bullet(
         doc,
-        "Cada tarjeta del explorador y el visor modal cuentan con un botón desplegable de Colecciones (para usuarios registrados). Si el usuario aún no tiene colecciones, el menú ofrece la acción instantánea 'Create collection' que crea la colección y guarda la obra en el mismo paso. Además, cada colección puede configurarse como Pública, No-Listada (accesible solo mediante enlace secreto para enviar un pitch privado a un cliente) o Privada.",
-        bold_prefix="3. Curaduría en Colecciones (Públicas, No-Listadas y Privadas): "
+        "Página dedicada con estética Behance/Pinterest que complementa el modal rápido. Presenta la obra en máxima fidelidad, estadísticas en tiempo real (visitas únicas y likes asincrónicos), badges estandarizados (formato, 18+, IA), herramientas utilizadas, autor con biografía e insignia de verificación, comentarios comunitarios y selector rápido de colecciones.",
+        bold_prefix="3. Vista Detalle de Obra al Estilo Pinterest (/artworks/{id}): "
     )
     add_bullet(
         doc,
-        "Cuando un artista se registra, un asistente de 3 pasos guía su configuración inicial (identidad artística, ubicación con selector inteligente de países con banderas, habilidades y disponibilidad laboral). Posteriormente, en su Centro de Configuración dispone de un editor interactivo de arrastrar y hacer zoom tanto para su Avatar circular como para su Banner rectangular panorámico, guardando coordenadas matemáticas (X, Y, Zoom) que se reflejan en la cabecera superior de su Public Profile.",
-        bold_prefix="4. Onboarding Guiado y Perfil Público con Encuadre de Avatar y Banner: "
+        "Las colecciones del usuario cuentan con cabeceras visuales tipo mosaico de portadas destacadas (preview_artwork_ids), reordenamiento personalizado de piezas (sort_order), compartición segura de colecciones no-listadas mediante share_token aleatorio de 32 caracteres, y un Modo Presentación (Slideshow) a pantalla completa ideal para pitches ante clientes.",
+        bold_prefix="4. Tableros de Colección con Portadas y Slideshow (/collections/{id}): "
     )
     add_bullet(
         doc,
-        "Al publicar una obra, el artista cuenta con un interruptor dedicado para declarar si la obra incluye trabajo asistido por Inteligencia Artificial ('Obra con IA'). Esto protege la confianza de los reclutadores que buscan habilidades manuales específicas.",
-        bold_prefix="5. Publicación con Declaración de IA y Etiquetado: "
+        "Onboarding en 3 pasos con geolocalización inteligente y selector de países con banderas en caché de 30 días, editor visual interactivo de encuadre (drag & zoom con coordenadas matemáticas X, Y, Zoom) para Avatar circular y Banner panorámico sin recortar archivos en el servidor.",
+        bold_prefix="5. Onboarding Guiado y Perfil de Artista con Drag & Zoom: "
     )
     add_bullet(
         doc,
-        "Panel ejecutivo de 3 tarjetas con indicadores clave (KPIs): Total de Obras Activas (con desglose por categoría), Impacto de Favoritos recibidos (con la obra estrella más destacada) y Estado de Visibilidad Profesional ('Disponible para contratos' vs 'Portafolio en exhibición') junto al ranking del Top 5 de obras más exitosas.",
-        bold_prefix="6. Dashboard de Rendimiento para el Artista: "
+        "Protección de audiencia mediante el atributo is_mature con desenfoque automático (blur) en el feed para usuarios anónimos o que hayan activado el filtro en su perfil, y tarjetas de obra rediseñadas con CSS Grid simétrico de 3 columnas que alinea matemáticamente títulos, autores, métricas y acciones.",
+        bold_prefix="6. Protección de Contenido Maduro (+18) y Tarjetas Simétricas: "
     )
 
     # --- CATEGORÍA 5 ---
     add_h1(doc, "Categoría 5: Gobernanza, Moderación y Cierre de Inversión (Min 7:45 – 9:00)")
     add_bullet(
         doc,
-        "Un riesgo clásico de los portafolios basados en enlaces es que el enlace externo muera. Artfolio incluye un comando automatizable ('artworks:check-links') que verifica periódicamente el estado HTTP de las obras, oculta automáticamente del explorador los enlaces caídos (404/410) y envía un correo de alerta al artista para que lo actualice.",
-        bold_prefix="Salud Automática del Catálogo (Self-Healing Catalog): "
+        "Panel exclusivo para administradores (/admin/audit-logs) que registra con trazabilidad forense inmutable los inicios de sesión, cambios de perfil, suspensiones de cuentas, eliminación/restauración de obras y resolución de reportes, con filtrado por severidad (info, warning, danger).",
+        bold_prefix="1. Módulo de Auditoría del Sistema (Audit Logs): "
     )
     add_bullet(
         doc,
-        "Sistema de denuncias con validación anti-duplicados, bloqueo bidireccional entre usuarios (invisibiliza obras mutuas en el explorador), papelera de reciclaje con ventana de recuperación de 30 días y suspensión administrativa inmediata para cuentas infractoras.",
-        bold_prefix="Moderación y Convivencia Comunitaria: "
+        "Gestión centralizada de habilidades, herramientas de software y estilos artísticos oficiales (/admin/tags) que nutren automáticamente el onboarding, el perfil y los filtros del explorador.",
+        bold_prefix="2. Taxonomía Curada y Ecosistema de Tags: "
+    )
+    add_bullet(
+        doc,
+        "Comando automatizable ('artworks:check-links') que verifica el estado HTTP de las obras, oculta enlaces caídos (404/410) y envía correos de alerta automática al creador para que repare el enlace sin romper la experiencia comunitaria.",
+        bold_prefix="3. Catálogo Autolimpiante (Self-Healing Catalog): "
+    )
+    add_bullet(
+        doc,
+        "Papelera de reciclaje con ventana de recuperación de 30 días ('artworks:purge-trash'), bloqueo bidireccional entre usuarios (invisibiliza obras en ambos sentidos) y suspensión inmediata de infractores mediante middleware en caliente (EnsureUserIsActive).",
+        bold_prefix="4. Moderación Comunitaria y Resiliencia Técnica: "
     )
 
     doc.add_page_break()
@@ -503,89 +473,55 @@ def build_document():
     add_part_banner(
         doc,
         "PARTE II — DEFENSA TÉCNICA DE PROVEEDORES MULTIMEDIA Y WHITELISTS",
-        "Funcionamiento Interno y Ubicación Exacta de Archivos (Whitelists, YouTube, Pinterest, DeviantArt y Google Docs)",
-        "Guía detallada para responder con precisión quirúrgica cuando el profesor pregunte cómo funcionan las integraciones externas y en qué archivos están programadas."
+        "Funcionamiento Interno y Ubicación Exacta de Archivos (Whitelists, YouTube, Pinterest, DeviantArt, Sketchfab y Google Docs)",
+        "Guía detallada para responder con precisión quirúrgica cuando el evaluador interrogue sobre cómo operan las integraciones externas, el bypass de bloqueos y la ubicación de su código."
     )
 
     # --- 2.1 WHITELISTS ---
     add_h1(doc, "1. Sistema de Whitelists (Listas Blancas) y Protección Anti-SSRF")
     add_p(
         doc,
-        "Como el servidor backend de Artfolio realiza peticiones HTTP salientes para extraer miniaturas y metadatos de los enlaces que ingresan los usuarios, aceptar cualquier URL arbitraria expondría al servidor a ataques de SSRF (Server-Side Request Forgery), donde un atacante podría intentar escanear la red interna (ej. http://127.0.0.1 o puertos locales) o inyectar sitios maliciosos.",
+        "Como el servidor backend de Artfolio realiza peticiones HTTP salientes para extraer miniaturas y metadatos de los enlaces ingresados, aceptar cualquier URL arbitraria expondría al servidor a ataques de SSRF (Server-Side Request Forgery), donde un atacante podría escanear la red local (ej. 127.0.0.1, 192.168.x.x) o inyectar servidores de comando maliciosos.",
         bold_prefix="¿Por qué existe y qué problema resuelve?: "
     )
-    add_p(
-        doc,
-        "La validación actúa en tres pasos dentro del método processUrl(string $url) de EmbedService.php:",
-        bold_prefix="¿Cómo funciona paso a paso?: "
-    )
-    add_bullet(doc, "Paso 1 (Validación de Formato y Bloqueo de Red Local): Se analiza la URL con filter_var($url, FILTER_VALIDATE_URL) y parse_url(). Luego se bloquea explícitamente cualquier dirección IP cruda (filter_var($host, FILTER_VALIDATE_IP)) o el dominio 'localhost' (líneas 68–70), neutralizando ataques SSRF.", bold_prefix="Filtro Anti-SSRF: ")
-    add_bullet(doc, "Paso 2 (Normalización del Host): Se convierte el host a minúsculas y se limpia el prefijo 'www.' mediante preg_replace('/^www\\./', '', $host).", bold_prefix="Limpieza de Dominio: ")
-    add_bullet(doc, "Paso 3 (Cotejo Estricto contra $allowedDomains): Se recorre el diccionario de proveedores autorizados (pinterest, deviantart, spotify, youtube, sketchfab, vimeo, soundcloud, googledocs, imgur). Solo se aprueba si el host coincide exactamente con uno de los dominios de la lista blanca o es un subdominio legítimo terminado en '.dominio' (str_ends_with($cleanHost, '.' . $domain)). Si no coincide con ninguno, lanza una excepción controlada y rechaza la publicación.", bold_prefix="Verificación de Lista Blanca: ")
+    add_bullet(doc, "Paso 1 (Validación de Formato y Bloqueo de Red Local): Se valida la URL con filter_var($url, FILTER_VALIDATE_URL) y parse_url(). Luego se bloquea explícitamente cualquier dirección IP cruda (filter_var($host, FILTER_VALIDATE_IP)) o el dominio 'localhost' (líneas 68–70 de EmbedService.php), neutralizando ataques SSRF.", bold_prefix="Filtro Anti-SSRF: ")
+    add_bullet(doc, "Paso 2 (Normalización del Host): Se normaliza a minúsculas y se limpia el prefijo 'www.' mediante preg_replace('/^www\\./', '', $host).", bold_prefix="Limpieza de Dominio: ")
+    add_bullet(doc, "Paso 3 (Cotejo Estricto contra $allowedDomains): Se verifica contra la lista de proveedores permitidos (pinterest, deviantart, spotify, youtube, sketchfab, vimeo, soundcloud, googledocs, imgur). Solo se autoriza si el host coincide exactamente o es un subdominio legítimo terminado en '.dominio' (str_ends_with($cleanHost, '.' . $domain)).", bold_prefix="Verificación de Lista Blanca: ")
 
     add_code_box(
         doc,
-        "1) Archivo Principal (Motor de Whitelist de Obras):\n"
+        "1) Motor Principal de Whitelist y Bloqueo Anti-SSRF:\n"
         "   -> app/Services/EmbedService.php\n"
-        "      - Propiedad protegida $allowedDomains (Líneas 12 a 32): Define los dominios permitidos por proveedor.\n"
-        "      - Método processUrl(string $url) (Líneas 41 a 90): Ejecuta el bloqueo anti-IP/localhost y valida la Whitelist.\n\n"
-        "2) Validación de Entrada en el Formulario de Creación/Edición de Obra:\n"
-        "   -> app/Http/Requests/ArtworkRequest.php (Líneas 22 a 33)\n"
-        "      - Valida 'source_url' => ['required', 'url', 'max:500'] antes de llegar al controlador.\n\n"
-        "3) Controlador que Invoca la Whitelist y Captura Errores:\n"
+        "      - Propiedad $allowedDomains (Líneas 12 a 32): Define los dominios autorizados.\n"
+        "      - Método processUrl(string $url) (Líneas 41 a 90): Bloqueo anti-IP/localhost y verificación de Whitelist.\n\n"
+        "2) Validación de Entrada Formulario Obra:\n"
+        "   -> app/Http/Requests/ArtworkRequest.php (Líneas 22 a 33): Valida 'source_url' => ['required', 'url', 'max:500'].\n\n"
+        "3) Controlador que Invoca la Whitelist:\n"
         "   -> app/Http/Controllers/ArtworkController.php\n"
-        "      - Método previewUrl() (Líneas 27 a 53): Endpoint AJAX (/artworks/preview) que valida la URL en vivo.\n"
-        "      - Método store() (Líneas 58 a 95): Revalida la URL en backend antes de guardar en la base de datos.\n\n"
-        "4) Whitelist Adicional para Imágenes de Avatar y Banner de Perfil:\n"
-        "   -> app/Http/Requests/ProfileUpdateRequest.php (Líneas 32 a 85)\n"
-        "      - Valida que 'avatar_url' y 'banner_url' provengan de HTTPS y pasen por una lista blanca de CDNs de imagen seguras.",
-        title="UBICACIÓN EXACTA DE ARCHIVOS — WHITELISTS"
+        "      - previewUrl() (Líneas 27 a 53): Endpoint AJAX (/artworks/preview) para validar en vivo.\n"
+        "      - store() (Líneas 58 a 95): Revalida en backend antes de persistir en MySQL.\n\n"
+        "4) Whitelist Adicional para Imágenes de Avatar y Banner:\n"
+        "   -> app/Http/Requests/ProfileUpdateRequest.php (Líneas 32 a 85): Valida HTTPS y CDNs autorizadas.",
+        title="UBICACIÓN EXACTA DE ARCHIVOS — WHITELISTS Y SEGURIDAD HTTP"
     )
 
     # --- 2.2 YOUTUBE ---
     add_h1(doc, "2. Implementación de Enlaces de Videos de YouTube")
     add_p(
         doc,
-        "YouTube permite múltiples formatos de enlace (enlaces largos de navegador watch?v=..., enlaces cortos móviles youtu.be/..., enlaces de YouTube Shorts shorts/... y enlaces /embed/...). Artfolio los unifica todos en un reproductor limpio y extrae la mejor miniatura disponible.",
-        bold_prefix="¿Cómo funciona la integración de YouTube?: "
+        "YouTube permite múltiples formatos de enlace (watch?v=..., enlaces cortos youtu.be/..., shorts/... y /embed/...). Artfolio extrae su ID con regex, consulta el API oEmbed oficial para el título, evalúa miniaturas HD dinámicamente y genera un reproductor 16:9 con sandboxing seguro.",
+        bold_prefix="Flujo Técnico: "
     )
-    add_bullet(
-        doc,
-        "En el método fetchYouTubeData(string $url, array &$result), se aplica la expresión regular: #(?:youtube\\.com/(?:watch\\?.*v=|shorts/|embed/)|youtu\\.be/)([a-zA-Z0-9_-]{11})#i para capturar el identificador único de 11 caracteres ($videoId).",
-        bold_prefix="1. Extracción del ID de 11 caracteres: "
-    )
-    add_bullet(
-        doc,
-        "Se realiza una petición GET con timeout de 5 segundos a https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={$videoId}&format=json para obtener el título oficial del video.",
-        bold_prefix="2. Consulta al API Oficial oEmbed: "
-    )
-    add_bullet(
-        doc,
-        "No todos los videos de YouTube tienen miniatura HD (1280x720). Por eso, Artfolio hace una petición rápida Http::timeout(3)->head() a https://img.youtube.com/vi/{$videoId}/maxresdefault.jpg. Si responde HTTP 200 OK, usa maxresdefault.jpg; si da 404, degrada automáticamente a hqdefault.jpg (que siempre existe).",
-        bold_prefix="3. Verificación Inteligente de Miniatura HD (maxresdefault vs hqdefault): "
-    )
-    add_bullet(
-        doc,
-        "Construye la URL embebible https://www.youtube.com/embed/{$videoId}?rel=0 y genera un <iframe> con atributos de seguridad sandbox=\"allow-scripts allow-same-origin allow-presentation\", asignando render_type = 'iframe' y category = 'video'.",
-        bold_prefix="4. Generación del Iframe Seguro (Sandbox): "
-    )
-    add_bullet(
-        doc,
-        "En el modelo Artwork.php (método getPreviewUrlAttribute), cuando la obra se muestra en las tarjetas pequeñas del explorador, reemplaza dinámicamente maxresdefault.jpg por hqdefault.jpg para ahorrar ancho de banda y acelerar la carga de la grilla.",
-        bold_prefix="5. Optimización de Rendimiento en Grilla: "
-    )
+    add_bullet(doc, "Extracción de ID: Regex #(?:youtube\\.com/(?:watch\\?.*v=|shorts/|embed/)|youtu\\.be/)([a-zA-Z0-9_-]{11})#i.", bold_prefix="Paso 1: ")
+    add_bullet(doc, "Consulta oEmbed: Petición GET con timeout de 5s a https://www.youtube.com/oembed?url=... para obtener el título.", bold_prefix="Paso 2: ")
+    add_bullet(doc, "Detección de Miniatura HD: Petición HEAD a maxresdefault.jpg; si da 200 la conserva, si da 404 degrada a hqdefault.jpg.", bold_prefix="Paso 3: ")
+    add_bullet(doc, "Optimización en Tarjeta: En Artwork.php, getPreviewUrlAttribute() sirve hqdefault.jpg en la grilla para acelerar el renderizado.", bold_prefix="Paso 4: ")
 
     add_code_box(
         doc,
-        "1) Extracción de ID, oEmbed, Miniatura y Construcción del Iframe:\n"
-        "   -> app/Services/EmbedService.php\n"
-        "      - Método fetchYouTubeData(string $url, array &$result) (Líneas 385 a 444).\n\n"
-        "2) Optimización Dinámica de Miniatura para el Explorador:\n"
-        "   -> app/Models/Artwork.php\n"
-        "      - Accessor getPreviewUrlAttribute() (Líneas 44 a 57): Cambia maxresdefault por hqdefault en tarjetas.\n\n"
-        "3) Renderizado Visual en la Interfaz (Frontend Blade):\n"
-        "   -> resources/views/components/artwork-card.blade.php (Líneas 36 a 62): Muestra la miniatura y el badge 'VIDEO'.\n"
-        "   -> resources/views/components/viewer-modal.blade.php (Líneas 120 a 136): Inyecta el <iframe> 16:9 interactivo.",
+        "-> app/Services/EmbedService.php (Método fetchYouTubeData, líneas 385 a 444).\n"
+        "-> app/Models/Artwork.php (Accessor getPreviewUrlAttribute, líneas 44 a 57).\n"
+        "-> resources/views/components/viewer-modal.blade.php (Renderizado en iframe seguro 16:9).",
         title="UBICACIÓN EXACTA DE ARCHIVOS — YOUTUBE"
     )
 
@@ -593,136 +529,38 @@ def build_document():
     add_h1(doc, "3. Implementación de Enlaces de Pinterest y Extracción de Imagen HD")
     add_p(
         doc,
-        "Pinterest es uno de los proveedores técnicamente más desafiantes porque: (a) los usuarios suelen compartir enlaces acortados de 'pin.it', (b) su API oEmbed entrega por defecto miniaturas pequeñas de 236 píxeles (/236x/), y (c) su servidor de imágenes (i.pinimg.com) bloquea la carga si detecta que otra web intenta incrustar la imagen (Hotlink Protection). Artfolio resuelve los tres obstáculos:",
-        bold_prefix="¿Por qué Pinterest requiere una ingeniería especial y cómo toma la imagen?: "
+        "Pinterest presenta tres desafíos técnicos: enlaces acortados pin.it, miniaturas por defecto de baja resolución (/236x/) y protección contra hotlinking en i.pinimg.com. Artfolio los resuelve mediante resolución de redirecciones, promoción regex a /originals/, fallback OpenGraph y el atributo referrerpolicy='no-referrer' en el frontend.",
+        bold_prefix="Ingeniería de Extracción: "
     )
-    add_bullet(
-        doc,
-        "Si el usuario pega un enlace corto (ej. https://pin.it/...), fetchPinterestData() realiza primero una petición HTTP siguiendo redirecciones y extrae $res->effectiveUri() para obtener la URL canónica real del Pin (líneas 153–163 de EmbedService.php).",
-        bold_prefix="Paso 1 — Resolución de Redirecciones Acortadas (pin.it): "
-    )
-    add_bullet(
-        doc,
-        "Consulta https://www.pinterest.com/oembed.json?url=... que devuelve un JSON con 'thumbnail_url' (normalmente en baja resolución, ej. https://i.pinimg.com/236x/...). Nuestro algoritmo intercepta esa ruta y mediante preg_replace('#/(236x|474x|564x|736x)/#', '/originals/', $thumb) la transforma a la versión original sin compresión (/originals/). A continuación, dispara una petición HEAD de 2 segundos para verificar que el archivo original exista en el CDN de Pinterest; si no existe, hace fallback automático a alta definición (/736x/).",
-        bold_prefix="Paso 2 — Escalado Automático de Baja Resolución (/236x/) a Original (/originals/): "
-    )
-    add_bullet(
-        doc,
-        "Si un Pin específico no responde en el endpoint oEmbed, el método descarga el HTML del Pin y busca primero bloques estructurados <script type=\"application/ld+json\"> y, en última instancia, la etiqueta <meta property=\"og:image\">, aplicando igualmente la promoción a /originals/ o /736x/.",
-        bold_prefix="Paso 3 — Doble Motor de Respaldo (JSON-LD y OpenGraph): "
-    )
-    add_bullet(
-        doc,
-        "En Artwork.php, el accessor preview_url transforma dinámicamente la URL a /474x/ para que el Explorador cargue rápido, mientras que high_res_url fuerza /originals/ cuando el usuario abre la obra en pantalla completa en el Visor Modal.",
-        bold_prefix="Paso 4 — Doble Resolución Dinámica (Grilla vs Modal): "
-    )
-    add_bullet(
-        doc,
-        "Para evitar que el CDN i.pinimg.com bloquee la imagen por venir desde nuestro dominio local, las etiquetas <img> en Blade incluyen el atributo referrerpolicy=\"no-referrer\", logrando que la imagen cargue limpia como un elemento nativo (render_type = 'image').",
-        bold_prefix="Paso 5 — Bypass Legítimo de Bloqueo de Hotlinking: "
-    )
+    add_bullet(doc, "Resolución pin.it: Sigue redirecciones HTTP y extrae la URL canónica del Pin ($res->effectiveUri()).", bold_prefix="Paso 1: ")
+    add_bullet(doc, "Promoción a Original: Transforma /236x/ a /originals/ mediante preg_replace y verifica con HEAD de 2 segundos; si falla, degrada a /736x/.", bold_prefix="Paso 2: ")
+    add_bullet(doc, "Doble Resolución: preview_url entrega /474x/ en tarjetas mientras que high_res_url entrega /originals/ en el visor de pantalla completa.", bold_prefix="Paso 3: ")
+    add_bullet(doc, "Protección Anti-Hotlink: Las etiquetas <img> incluyen referrerpolicy='no-referrer', permitiendo cargar la imagen directamente desde la CDN de Pinterest.", bold_prefix="Paso 4: ")
 
     add_code_box(
         doc,
-        "1) Motor de Extracción de Imagen de Pinterest (Redirección pin.it + oEmbed + Escalado /originals/ + Fallback OG):\n"
-        "   -> app/Services/EmbedService.php\n"
-        "      - Método fetchPinterestData(string $url, array &$result) (Líneas 147 a 250).\n\n"
-        "2) Conversión Dinámica de Resolución (/474x/ en Tarjetas vs /originals/ en Visor Modal):\n"
-        "   -> app/Models/Artwork.php\n"
-        "      - Accessor getPreviewUrlAttribute() (Líneas 44 a 49): Convierte a /474x/ en la grilla.\n"
-        "      - Accessor getHighResUrlAttribute() (Líneas 62 a 68): Convierte a /originals/ en el modal.\n\n"
-        "3) Renderizado con Protección Anti-Hotlink (referrerpolicy=\"no-referrer\"):\n"
-        "   -> resources/views/components/artwork-card.blade.php (Línea 40).\n"
-        "   -> resources/views/components/viewer-modal.blade.php (Líneas 139 y 146).",
+        "-> app/Services/EmbedService.php (Método fetchPinterestData, líneas 147 a 250).\n"
+        "-> app/Models/Artwork.php (Accessors preview_url y high_res_url, líneas 44 a 68).\n"
+        "-> resources/views/components/artwork-card.blade.php y viewer-modal.blade.php (referrerpolicy='no-referrer').",
         title="UBICACIÓN EXACTA DE ARCHIVOS — PINTEREST"
     )
 
-    # --- 2.4 DEVIANTART ---
-    add_h1(doc, "4. Implementación de Enlaces de DeviantArt")
-    add_p(
+    # --- 2.4 DEVIANTART, SKETCHFAB Y OTROS ---
+    add_h1(doc, "4. Implementación de DeviantArt, Sketchfab (3D) y Google Docs")
+    add_bullet(
         doc,
-        "DeviantArt aloja ilustraciones digitales de alta resolución en dominios como deviantart.com y enlaces cortos sta.sh. Su integración se resuelve mediante su backend oficial de oEmbed con respaldo OpenGraph:",
-        bold_prefix="¿Cómo toma la imagen y los datos de DeviantArt?: "
+        "DeviantArt (app/Services/EmbedService.php, L.256-315): Consulta backend.deviantart.com/oembed capturando la URL del archivo de alta definición en $data['url'] y atribuyendo el nombre del artista, con fallback scraping de etiquetas <meta property='og:image'>.",
+        bold_prefix="DeviantArt (Ilustración Digital): "
     )
     add_bullet(
         doc,
-        "El método fetchDeviantArtData() realiza una petición GET a https://backend.deviantart.com/oembed?url={urlencode($url)} enviando un cabecera User-Agent estándar.",
-        bold_prefix="1. Consulta al Backend Oficial oEmbed de DeviantArt: "
+        "Sketchfab (app/Services/EmbedService.php, L.321-379): Consulta sketchfab.com/oembed, extrayendo el reproductor 3D interactivo en WebGL con iframe sandbox='allow-scripts allow-same-origin allow-popups' y miniatura en alta resolución.",
+        bold_prefix="Sketchfab (Modelos 3D Interactivos): "
     )
     add_bullet(
         doc,
-        "A diferencia de otros servicios que solo entregan una miniatura pequeña, el JSON de DeviantArt devuelve en el campo $data['url'] la ruta directa al archivo gráfico completo en sus servidores (y $data['thumbnail_url'] como respaldo). Artfolio prioriza $data['url'] para garantizar nitidez total y establece render_type = 'image'.",
-        bold_prefix="2. Captura de Imagen en Resolución Completa: "
-    )
-    add_bullet(
-        doc,
-        "Extrae $data['title'] y, si está presente $data['author_name'], formatea automáticamente el título sugerido como «Título de la Obra - por Autor».",
-        bold_prefix="3. Atribución Automática de Autoría: "
-    )
-    add_bullet(
-        doc,
-        "Si por políticas de privacidad de una desviación el endpoint oEmbed no devuelve la imagen, el código ejecuta un segundo intento leyendo directamente el HTML de la página y extrayendo mediante expresiones regulares <meta property=\"og:image\"> y <meta property=\"og:title\">.",
-        bold_prefix="4. Respaldo por Scraping de Metaetiquetas OpenGraph: "
-    )
-
-    add_code_box(
-        doc,
-        "1) Extracción oEmbed y Fallback OpenGraph de DeviantArt:\n"
-        "   -> app/Services/EmbedService.php\n"
-        "      -Lista blanca: 'deviantart' => ['deviantart.com', 'sta.sh'] (Línea 14).\n"
-        "      - Método fetchDeviantArtData(string $url, array &$result) (Líneas 256 a 315).\n\n"
-        "2) Visualización como Imagen Nativa de Alta Resolución:\n"
-        "   -> resources/views/components/artwork-card.blade.php (Líneas 38 a 45).\n"
-        "   -> resources/views/components/viewer-modal.blade.php (Líneas 137 a 148).",
-        title="UBICACIÓN EXACTA DE ARCHIVOS — DEVIANTART"
-    )
-
-    # --- 2.5 GOOGLE DOCS / GOOGLE DRIVE ---
-    add_h1(doc, "5. Implementación de Enlaces de Google Docs y Google Drive")
-    add_p(
-        doc,
-        "Para que escritores, guionistas, diseñadores de narrativa (Game Designers) y directores de arte puedan exhibir guiones, presentaciones o hojas de cálculo sin obligar al visitante a descargar archivos PDF/Word, Artfolio integra Google Docs y Google Drive en vivo:",
-        bold_prefix="¿Cómo funciona la transformación de enlaces de Google Docs?: "
-    )
-    add_bullet(
-        doc,
-        "Los usuarios suelen copiar enlaces terminados en /edit, /view o ?usp=sharing (que no pueden incrustarse directamente en un iframe o muestran barras de edición pesadas). El método fetchGoogleDocsData() aplica la expresión regular #(?:docs|drive)\\.google\\.com/(document|presentation|spreadsheets|file)/d/([a-zA-Z0-9_-]+)#i para extraer dos datos clave: el tipo de documento ($docType) y el ID alfanumérico del archivo ($docId).",
-        bold_prefix="1. Detección de Tipo de Documento y Extracción de ID: "
-    )
-    add_bullet(
-        doc,
-        "Si es un archivo general de Drive ($docType === 'file'), construye https://drive.google.com/file/d/{$docId}/preview. Si es un documento, presentación u hoja de cálculo, construye https://docs.google.com/{$docType}/d/{$docId}/preview. El endpoint /preview de Google genera un lector limpio, rápido y de solo lectura ideal para portafolios.",
-        bold_prefix="2. Conversión Automática al Visor Limpio (/preview): "
-    )
-    add_bullet(
-        doc,
-        "Google Docs no posee un endpoint oEmbed público. Para que la tarjeta en el explorador tenga una vista previa real de la primera página del documento sin requerir una API Key privada, Artfolio utiliza el generador oficial de miniaturas de Drive: https://drive.google.com/thumbnail?id={$docId}&sz=w800.",
-        bold_prefix="3. Generación de Miniatura Visual sin API Key: "
-    )
-    add_bullet(
-        doc,
-        "Realiza una petición GET a la URL para leer la etiqueta <meta property=\"og:title\"> o <title>, limpia los sufijos '- Google Docs' / '- Google Drive', asigna category = 'docs' y render_type = 'iframe', e inyecta un <iframe> con sandbox=\"allow-scripts allow-same-origin allow-popups\".",
-        bold_prefix="4. Extracción del Título Real y Renderizado Seguro: "
-    )
-
-    add_code_box(
-        doc,
-        "1) Transformación a /preview, Miniatura de Drive y Scraping de Título:\n"
-        "   -> app/Services/EmbedService.php\n"
-        "      - Lista blanca: 'googledocs' => ['docs.google.com', 'drive.google.com'] (Línea 29).\n"
-        "      - Método fetchGoogleDocsData(string $url, array &$result) (Líneas 490 a 560).\n\n"
-        "2) Renderizado en Tarjeta (con fallback visual de icono de documento si el archivo restringe miniatura) y Visor:\n"
-        "   -> resources/views/components/artwork-card.blade.php (Líneas 38 a 62).\n"
-        "   -> resources/views/components/viewer-modal.blade.php (Líneas 120 a 136).",
-        title="UBICACIÓN EXACTA DE ARCHIVOS — GOOGLE DOCS Y DRIVE"
-    )
-
-    # --- 2.6 OTROS PROVEEDORES (SKETCHFAB Y SPOTIFY) ---
-    add_h2(doc, "Nota Complementaria: Sketchfab (3D) y Spotify (Audio)")
-    add_p(
-        doc,
-        "En el mismo archivo app/Services/EmbedService.php también se encuentran implementados los motores para las dos categorías restantes: fetchSketchfabData() (líneas 321–379, que consulta https://sketchfab.com/oembed para modelos 3D interactivos con WebGL) y fetchSpotifyData() (líneas 450–485, que consulta https://open.spotify.com/oembed para pistas, álbumes y listas de reproducción de audio).",
-        bold_prefix="Cobertura Completa de las 5 Categorías: "
+        "Google Docs y Drive (app/Services/EmbedService.php, L.490-560): Convierte enlaces de edición (/edit, ?usp=sharing) a la vista de lectura limpia /preview y genera la miniatura oficial mediante drive.google.com/thumbnail?id={docId}&sz=w800.",
+        bold_prefix="Google Docs / Sheets / Slides / Drive: "
     )
 
     doc.add_page_break()
@@ -732,263 +570,192 @@ def build_document():
     # =========================================================================
     add_part_banner(
         doc,
-        "PARTE III — ANEXO INDEPENDIENTE DE INTERROGATORIO TÉCNICO (Q&A DEL PROFESOR)",
-        "Servicio de Mail, Base de Datos, Acceso de Visitantes, API de Países y Seguridad",
-        "Respuestas estructuradas (aparte de la presentación al inversor) con explicaciones de flujo y rutas exactas de archivos para responder al profesor."
+        "PARTE III — ANEXO DE INTERROGATORIO TÉCNICO Y ARQUITECTURA DEL SISTEMA",
+        "Servicio de Mail, MySQL, Visitantes, Países, Directorio de Artistas, Buscador Facetado, Obras Pinterest, Colecciones, Auditoría y +18",
+        "Respuestas exhaustivas organizadas en 10 preguntas maestras con diagramación técnica, flujos lógicos y referencias de archivos para responder cualquier pregunta del evaluador."
     )
 
     # --- PREGUNTA 1: MAIL ---
     add_h1(doc, "Pregunta 1: ¿Cómo funciona el Servicio de Mail y la Confirmación de Cuenta, cómo se accede a él y qué archivos lo manejan?")
     add_p(
         doc,
-        "Artfolio implementa un sistema completo de correo transaccional sobre Laravel 12 y Laravel Breeze, cubriendo 4 flujos críticos: (1) Confirmación/Verificación de correo al registrarse, (2) Recuperación de contraseña olvidada, (3) Formulario de contacto directo Cliente -> Artista en el perfil público, y (4) Alertas automáticas al artista cuando uno de sus enlaces externos se cae.",
-        bold_prefix="A. ¿Qué funciones cumple el servicio de correo?: "
+        "Artfolio implementa el contrato MustVerifyEmail en el modelo User (app/Models/User.php, L.16). Al registrarse, Laravel emite un enlace firmado criptográficamente SHA-1 (/verify-email/{id}/{hash}). Hasta su confirmación, el middleware 'verified' bloquea el acceso a funciones privadas. En desarrollo, Mailpit escucha en SMTP (127.0.0.1:1025) y su bandeja web interactiva se visualiza en http://127.0.0.1:8025. Contamos además con el comando artesanal 'php artisan mail:test {email?}' para pruebas inmediatas por consola.",
+        bold_prefix="Resumen Operativo: "
     )
-    add_p(
-        doc,
-        "El modelo User implementa la interfaz MustVerifyEmail (en app/Models/User.php, línea 16). Cuando un usuario completa el formulario de registro en RegisteredUserController@store, Laravel dispara el evento Registered($user), que genera automáticamente un enlace firmado criptográficamente con hash SHA-1 y fecha de expiración (/verify-email/{id}/{hash}). Hasta que el usuario hace clic en ese enlace (procesado por VerifyEmailController), cualquier intento de entrar a rutas protegidas con el middleware 'verified' (como el Dashboard, Onboarding o Publicación de Obras) lo redirige a la pantalla de aviso 'Verifica tu dirección de correo electrónico' (verify-email.blade.php), desde donde puede reenviar el correo con límite anti-spam (throttle:6,1 = máximo 6 intentos por minuto).",
-        bold_prefix="B. ¿Cómo funciona exactamente la Confirmación de Cuenta?: "
-    )
-    add_p(
-        doc,
-        "En entorno de desarrollo y evaluación local (Laragon), el sistema está configurado en el archivo .env mediante el protocolo SMTP apuntando al servidor local de captura de correos Mailpit (o alternativamente al driver 'log'):",
-        bold_prefix="C. ¿Cómo se configura y cómo se accede a la bandeja de correos durante la demostración?: "
-    )
-    add_bullet(
-        doc,
-        "En el archivo .env se define MAIL_MAILER=smtp, MAIL_HOST=127.0.0.1 y MAIL_PORT=1025. Laragon incluye Mailpit escuchando en el puerto 1025 (SMTP) y ofrece una interfaz web completa en http://127.0.0.1:8025 (o http://localhost:8025). Al abrir http://127.0.0.1:8025 en el navegador durante la defensa, el profesor verá llegar en tiempo real el correo de confirmación, podrá inspeccionar su diseño HTML oscuro y hacer clic en el botón 'Confirmar Cuenta' para activar el usuario al instante.",
-        bold_prefix="1. Acceso Visual en Vivo vía Mailpit Web UI (Recomendado para la Defensa): "
-    )
-    add_bullet(
-        doc,
-        "Creamos un comando artesanal propio en routes/console.php (líneas 29–46). Ejecutando en la terminal: php artisan mail:test profesor@ejemplo.com, el sistema envía un correo de prueba inmediato y confirma por consola si la conexión con el servidor de correo está activa.",
-        bold_prefix="2. Comando de Diagnóstico Rápido por Consola: "
-    )
-    add_bullet(
-        doc,
-        "Si en .env se cambia MAIL_MAILER=log, todos los correos enviados (incluyendo el enlace firmado de confirmación) quedan impresos íntegramente en el archivo storage/logs/laravel.log.",
-        bold_prefix="3. Modo Respaldo sin Servidor SMTP (Driver Log): "
-    )
-
     add_code_box(
         doc,
-        "1) Activación del Contrato de Verificación Obligatoria:\n"
-        "   -> app/Models/User.php (Línea 16): class User extends Authenticatable implements MustVerifyEmail\n\n"
-        "2) Controladores de Verificación y Registro:\n"
-        "   -> app/Http/Controllers/Auth/RegisteredUserController.php: Registra al usuario y dispara el correo.\n"
-        "   -> app/Http/Controllers/Auth/EmailVerificationPromptController.php: Muestra la vista de espera de confirmación.\n"
-        "   -> app/Http/Controllers/Auth/VerifyEmailController.php: Valida el hash firmado y marca email_verified_at.\n"
-        "   -> app/Http/Controllers/Auth/EmailVerificationNotificationController.php: Reenvía el enlace de confirmación.\n\n"
-        "3) Rutas de Autenticación y Confirmación:\n"
-        "   -> routes/auth.php (Líneas 40 a 55): Define verify-email, verify-email/{id}/{hash} (middleware 'signed') y verification.send.\n\n"
-        "4) Clases Mailable Personalizadas del Proyecto y sus Plantillas HTML:\n"
-        "   -> app/Mail/ContactArtist.php  --> Vista: resources/views/emails/contact-artist.blade.php\n"
-        "   -> app/Mail/LinkDownAlert.php  --> Vista: resources/views/emails/link-down-alert.blade.php\n"
-        "   -> Vista de bloqueo hasta confirmar: resources/views/auth/verify-email.blade.php\n\n"
-        "5) Configuración y Comando de Prueba:\n"
-        "   -> .env y config/mail.php (Configuración de MAIL_MAILER, MAIL_HOST=127.0.0.1, MAIL_PORT=1025).\n"
-        "   -> routes/console.php (Líneas 29 a 46): Comando 'php artisan mail:test {email?}'.",
-        title="UBICACIÓN EXACTA DE ARCHIVOS — SERVICIO DE MAIL Y CONFIRMACIÓN"
+        "-> app/Models/User.php (L.16): implements MustVerifyEmail.\n"
+        "-> routes/auth.php (L.40-55): Rutas de verificación firmada.\n"
+        "-> app/Mail/ContactArtist.php y app/Mail/LinkDownAlert.php: Correos transaccionales.\n"
+        "-> routes/console.php (L.29-46): Comando de consola 'php artisan mail:test'.\n"
+        "-> Bandeja Web en Vivo: http://127.0.0.1:8025 (Mailpit).",
+        title="ARCHIVOS — SERVICIO DE MAIL Y CONFIRMACIÓN"
     )
 
-    # --- PREGUNTA 2: ALMACENAMIENTO DE DATOS ---
+    # --- PREGUNTA 2: BASE DE DATOS ---
     add_h1(doc, "Pregunta 2: ¿Dónde y cómo se almacenan los datos de los usuarios y sus obras?")
     add_p(
         doc,
-        "Todos los datos se almacenan en una base de datos relacional MySQL llamada 'artfolio' (gestionada a través del ORM Eloquent de Laravel 12). Siguiendo nuestra arquitectura Zero-Binary Storage, la base de datos no guarda archivos binarios pesados (ni blobs de video ni imágenes subidas al disco local), sino referencias normalizadas, metadatos verificados y vectores matemáticos de posicionamiento.",
-        bold_prefix="A. Motor de Base de Datos y Filosofía de Almacenamiento: "
+        "Se almacenan en MySQL mediante Eloquent ORM bajo el principio Zero-Binary Storage. No se guardan archivos pesados, sino registros normalizados:",
+        bold_prefix="Arquitectura de Datos: "
     )
-    add_bullet(
-        doc,
-        "Almacena credenciales seguras (password hasheado con Bcrypt), identidad pública (name, artistic_name, slug único para la URL /artista/{slug}, email, email_verified_at, role ['artist'|'admin'], status ['active'|'suspended']), perfil profesional (bio, location, work_status, y 3 columnas tipo JSON llamadas skills, software y hiring_types que Eloquent convierte automáticamente en arrays de PHP), e información visual no destructiva: avatar_url junto a sus coordenadas de recorte circular (crop_x, crop_y, crop_zoom) y banner_url junto a sus coordenadas de encuadre rectangular panorámico (banner_crop_x, banner_crop_y, banner_crop_zoom).",
-        bold_prefix="B. Tabla 'users' (Datos de Usuarios y Artistas): "
-    )
-    add_bullet(
-        doc,
-        "Relacionada con 'users' mediante clave foránea user_id (con borrado en cascada onDelete('cascade')). Guarda: title, description, category ('imagen', 'video', 'audio', '3d', 'docs'), has_ai (booleano que indica si tiene trabajo de IA), provider (ej. 'youtube', 'pinterest', 'deviantart', 'googledocs'), render_type ('image' o 'iframe'), source_url (enlace original), image_url (miniatura extraída), embed_url (URL para el iframe), tags (texto separado por comas), status ('published', 'draft', 'archived'), link_status ('active', 'down') y deleted_at (para la papelera SoftDeletes de 30 días).",
-        bold_prefix="C. Tabla 'artworks' (Datos de las Obras): "
-    )
-    add_bullet(
-        doc,
-        "1) Tabla 'bookmarks': Relación muchos-a-muchos de Favoritos (user_id + artwork_id con índice único compuesto para impedir dar like dos veces).\n"
-        "2) Tabla 'collections' y tabla pivote 'artwork_collection': Almacena las colecciones creadas por usuarios, incluyendo su nivel de privacidad visibility ('public', 'unlisted', 'private') y su token criptográfico share_token para enlaces no-listados.\n"
-        "3) Tabla 'reports': Guarda los reportes de moderación (user_id, artwork_id, reason, details, status).\n"
-        "4) Tabla 'user_blocks': Almacena bloqueos entre usuarios (blocker_id, blocked_id).",
-        bold_prefix="D. Tablas Relacionales Complementarias: "
-    )
+    add_bullet(doc, "Tabla 'users': Credenciales (Bcrypt), identidad, arrays JSON (skills, software, hiring_types), crop de avatar (crop_x, crop_y, crop_zoom) y crop de banner (banner_crop_x, banner_crop_y, banner_crop_zoom), estatus 'active'|'suspended' y campo 'is_verified'.", bold_prefix="Usuarios: ")
+    add_bullet(doc, "Tabla 'artworks': user_id, title, category, provider, render_type, source_url, embed_html, has_ai, is_mature, views_count, likes_count, status, link_status y deleted_at (SoftDeletes). Con índice compuesto ['status', 'category', 'created_at'] para búsquedas ultrarrápidas.", bold_prefix="Obras: ")
+    add_bullet(doc, "Tablas Relacionales: 'artwork_likes' (apreciaciones), 'artwork_comments' (comentarios), 'bookmarks' (favoritos), 'collections' y 'artwork_collection' (con preview_artwork_ids y sort_order), 'reports' (moderación), 'user_blocks' (bloqueos mutuos), 'curated_tags' (taxonomía) y 'audit_logs' (auditoría).", bold_prefix="Ecosistema Relacional: ")
 
     add_code_box(
         doc,
-        "1) Modelos Eloquent (Representación en Código de las Tablas y sus Relaciones):\n"
-        "   -> app/Models/User.php: Define $fillable, $casts (skills/software/hiring_types como 'array') y relaciones.\n"
-        "   -> app/Models/Artwork.php: Usa el trait SoftDeletes, define $appends = ['preview_url', 'high_res_url'] y relaciones.\n"
-        "   -> app/Models/Collection.php: Gestiona visibilidad ('public', 'unlisted', 'private') y generación de share_token.\n"
-        "   -> app/Models/Bookmark.php y app/Models/Report.php.\n\n"
-        "2) Migraciones SQL (Estructura Exacta de las Tablas):\n"
-        "   -> database/migrations/0001_01_01_000000_create_users_table.php\n"
-        "   -> database/migrations/2026_02_25_001053_add_artfolio_fields_to_users_table.php\n"
-        "   -> database/migrations/2026_02_25_001054_create_artworks_table.php\n"
-        "   -> database/migrations/2026_02_25_001055_create_bookmarks_table.php\n"
-        "   -> database/migrations/2026_02_25_001056_create_collections_table.php\n"
-        "   -> database/migrations/2026_02_25_001057_create_reports_table.php\n"
-        "   -> database/migrations/2026_11_11_180000_add_p1_fields_to_users_and_artworks.php (Añade has_ai y user_blocks).\n"
-        "   -> database/migrations/2026_11_11_185000_add_visibility_to_collections_table.php (Añade visibility y share_token).\n"
-        "   -> database/migrations/2026_11_11_190500_add_banner_crop_fields_to_users_table.php (Añade banner_crop_x/y/zoom).",
-        title="UBICACIÓN EXACTA DE ARCHIVOS — BASE DE DATOS Y MODELOS"
+        "-> database/migrations/: Migraciones versionadas y fechadas cronológicamente.\n"
+        "-> app/Models/: User.php, Artwork.php, Collection.php, Comment.php, CuratedTag.php, AuditLog.php.\n"
+        "-> database/seeders/RichCommunitySeeder.php: Datos semilla con 100% de enlaces reales y verificados (HTTP 200).",
+        title="ARCHIVOS — MODELOS Y BASE DE DATOS"
     )
 
-    # --- PREGUNTA 3: USUARIO VISITANTE (GUEST) ---
+    # --- PREGUNTA 3: VISITANTE GUEST ---
     add_h1(doc, "Pregunta 3: ¿Cómo accede un usuario visitante sin tener cuenta y qué archivos manejan eso?")
     add_p(
         doc,
-        "Para maximizar la retención y permitir que clientes o reclutadores evalúen portafolios sin obligarlos a registrarse de entrada, Artfolio implementa una arquitectura de 'Acceso Público Abierto con Intercepción Progresiva de Acciones':",
-        bold_prefix="A. Filosofía de Navegación para Visitantes (Guests): "
+        "Rutas públicas sin middleware 'auth' (home '/', '/explore', '/artists', '/artworks/{id}', '/artista/{slug}', '/collections/{collection}'). Los controladores comprueban Auth::check(). Si un visitante intenta dar like, guardar en favoritos o añadir a colección, el evento Alpine.js $dispatch('open-guest-modal', { context: '...' }) intercepta la acción y abre un modal persuasivo sin recargar.",
+        bold_prefix="Acceso Público con Intercepción Gradual: "
     )
-    add_bullet(
-        doc,
-        "En routes/web.php, la ruta raíz GET / (Explorador), la ruta GET /artista/{slug} (Perfil Público del Artista), la ruta GET /collections/{collection} (Colecciones públicas o con enlace no-listado) y el formulario POST /artista/{slug}/contact (Contacto directo al artista) se encuentran FUERA del grupo de middleware 'auth'. Cualquier visitante anónimo puede buscar obras, filtrar por categorías o IA, abrir el visor modal interactivo, reproducir videos/modelos 3D y ver el perfil y banner del artista.",
-        bold_prefix="1. Qué puede hacer el visitante libremente (Rutas Públicas): "
-    )
-    add_bullet(
-        doc,
-        "En los controladores ExplorerController y PublicProfileController se consulta Auth::check() y Auth::id(). Si el usuario es un visitante anónimo, las consultas omiten el cruce de bloqueos personales o colecciones privadas sin lanzar ningún error de sesión nula.",
-        bold_prefix="2. Cómo los Controladores distinguen entre Visitante y Usuario Registrado: "
-    )
-    add_bullet(
-        doc,
-        "En las vistas Blade (artwork-card.blade.php y viewer-modal.blade.php), los botones de interacción social están envueltos en directivas condicionales @auth ... @else ... @endauth:\n"
-        "   • El selector desplegable de añadir a Colección (<x-collection-picker />) está dentro de @auth, por lo que solo se renderiza para usuarios con cuenta activa.\n"
-        "   • Cuando un visitante sin cuenta hace clic en 'Favorito' o 'Reportar', en lugar de enviar una petición fallida al servidor, el botón ejecuta en el navegador el evento Alpine.js: $dispatch('open-guest-modal', { context: 'favorito' }). Esto despliega al instante un modal persuasivo (guest-modal.blade.php) que le explica la función y le ofrece los botones 'Crear cuenta gratis' o 'Ya tengo una cuenta'.",
-        bold_prefix="3. Cómo se interceptan las acciones exclusivas de usuarios registrados: "
-    )
-
     add_code_box(
         doc,
-        "1) Definición de Rutas Públicas (Sin Middleware 'auth'):\n"
-        "   -> routes/web.php\n"
-        "      - Línea 60: Route::get('/', [ExplorerController::class, 'index'])->name('home');\n"
-        "      - Línea 61: Route::get('/artista/{slug}', [PublicProfileController::class, 'show'])->name('artist.portfolio');\n"
-        "      - Línea 62: Route::post('/artista/{slug}/contact', [PublicProfileController::class, 'contact']);\n"
-        "      - Línea 115: Route::get('/collections/{collection}', [CollectionController::class, 'show']);\n\n"
-        "2) Controladores que Soportan Navegación Anónima:\n"
-        "   -> app/Http/Controllers/ExplorerController.php (Líneas 13 a 89).\n"
-        "   -> app/Http/Controllers/PublicProfileController.php (Líneas 16 a 63).\n\n"
-        "3) Vistas y Componente Interceptor de Visitantes (Guest Modal):\n"
-        "   -> resources/views/components/guest-modal.blade.php (Modal reactivo que escucha '@open-guest-modal.window').\n"
-        "   -> resources/views/components/artwork-card.blade.php (Líneas 75 a 112: directivas @auth / @else).\n"
-        "   -> resources/views/components/viewer-modal.blade.php (Líneas 36 a 108: directivas @auth / @else).\n"
-        "   -> resources/views/layouts/navigation.blade.php (Muestra 'Iniciar Sesión / Registrarse' si es visitante).",
-        title="UBICACIÓN EXACTA DE ARCHIVOS — ACCESO DE VISITANTES SIN CUENTA"
+        "-> routes/web.php: Rutas públicas fuera del grupo de autenticación.\n"
+        "-> resources/views/components/guest-modal.blade.php: Modal reactivo interceptor.\n"
+        "-> resources/views/components/artwork-card.blade.php y show.blade.php: Directivas @auth / @else.",
+        title="ARCHIVOS — INTERCEPTOR DE VISITANTES"
     )
 
     # --- PREGUNTA 4: PAÍSES ---
     add_h1(doc, "Pregunta 4: ¿De dónde se sacan los países disponibles en el registro/onboarding y perfil, y qué archivo los maneja?")
     add_p(
         doc,
-        "Para que el selector de país con banderas funcione siempre de forma instantánea y nunca falle (incluso si durante la evaluación en clase no hubiera conexión a Internet o fallara una API externa), diseñamos un micro-servicio interno en Laravel con Caché de 30 días y Triple Fallback (3 niveles de respaldo):",
-        bold_prefix="A. Arquitectura de Triple Respaldo para los Países: "
+        "Ruta interna GET /api/countries con Cache::remember() por 30 días y triple nivel de respaldo: (1) Repositorio GitHub mledoze/countries (240+ países con banderas), (2) API pública restcountries.com y (3) Arreglo local estático en routes/web.php garantizando funcionamiento offline absoluto.",
+        bold_prefix="Triple Fallback: "
     )
-    add_bullet(
-        doc,
-        "En routes/web.php (líneas 15 a 57) está declarada la ruta GET /api/countries (nombre: api.countries). Utiliza Cache::remember('global_countries_list_v1', 86400 * 30, ...) para guardar el listado completo de países en caché durante 30 días, de modo que las consultas subsiguientes tardan menos de 2 milisegundos.",
-        bold_prefix="1. Endpoint Interno con Caché de 30 Días (/api/countries): "
-    )
-    add_bullet(
-        doc,
-        "La primera vez que se solicita (si la caché está vacía), el backend hace una petición HTTP con timeout de 4 segundos al repositorio oficial de países en GitHub: https://raw.githubusercontent.com/mledoze/countries/master/countries.json, extrayendo los nombres comunes ($c['name']['common']) de más de 240 países y territorios.",
-        bold_prefix="2. Fuente Primaria (Dataset Oficial GitHub mledoze/countries): "
-    )
-    add_bullet(
-        doc,
-        "Si GitHub no respondiera, el bloque catch consulta automáticamente la API pública https://restcountries.com/v3.1/all?fields=name.",
-        bold_prefix="3. Fuente Secundaria (API REST Countries v3.1): "
-    )
-    add_bullet(
-        doc,
-        "Si el servidor estuviera completamente desconectado de Internet, el endpoint devuelve un arreglo estático local de más de 100 países codificado directamente en las líneas 41 a 54 de routes/web.php, garantizando disponibilidad del 100%.",
-        bold_prefix="4. Fuente Terciaria Offline (Arreglo Local en Código): "
-    )
-    add_bullet(
-        doc,
-        "Tanto en el Paso 1 del Onboarding inicial (step1.blade.php) como en la Pestaña de Perfil Público del Centro de Configuración (tab-profile.blade.php), un componente Alpine.js ejecuta fetch('/api/countries') al iniciar, hidrata el buscador desplegable y asocia un mapa de banderas Unicode junto a la opción especial 'Remoto / Global'.",
-        bold_prefix="5. Consumo Reactivo en el Frontend: "
-    )
-
     add_code_box(
         doc,
-        "1) Backend — Endpoint Proveedor de Países con Caché y Triple Fallback:\n"
-        "   -> routes/web.php (Líneas 15 a 57): Ruta GET '/api/countries' (->name('api.countries')).\n\n"
-        "2) Frontend — Selector Desplegable con Buscador y Banderas durante el Onboarding Post-Registro:\n"
-        "   -> resources/views/onboarding/step1.blade.php (Líneas 60 a 165 y script Alpine en líneas 215 a 265).\n\n"
-        "3) Frontend — Selector Desplegable de Países en Edición de Perfil:\n"
-        "   -> resources/views/profile/partials/tab-profile.blade.php (Líneas 195 a 280).\n\n"
-        "4) Validación y Guardado del País en la Base de Datos (Columna 'location' de la tabla 'users'):\n"
-        "   -> app/Http/Controllers/OnboardingController.php (Método saveStep1, líneas 35 a 58).\n"
-        "   -> app/Http/Requests/ProfileUpdateRequest.php (Línea 29: 'location' => ['nullable', 'string', 'max:120']).",
-        title="UBICACIÓN EXACTA DE ARCHIVOS — ORIGEN Y GESTIÓN DE PAÍSES"
+        "-> routes/web.php (L.15-57): Endpoint GET /api/countries con caché 30d.\n"
+        "-> resources/views/onboarding/step1.blade.php y tab-profile.blade.php: Consumo reactivo Alpine.js.",
+        title="ARCHIVOS — API DE PAÍSES"
     )
 
-    # --- PREGUNTA 5: OTRAS FUNCIONES CLAVE QUE PUEDEN PREGUNTARSE ---
-    add_h1(doc, "Pregunta 5: Otras Funciones Clave que el Profesor Puede Cuestionar (Guía Rápida)")
+    # --- PREGUNTA 5: AVATAR, SESIÓN, COLECCIONES Y PAPELERA ---
+    add_h1(doc, "Pregunta 5: ¿Cómo funcionan el Drag & Zoom de Avatar/Banner, la Expiración de Sesión y la Papelera de 30 Días?")
+    add_bullet(
+        doc,
+        "Editor interactivo de arrastrar y zoom (1x-3x) que guarda coordenadas matemáticas porcentuales en la tabla 'users'. El perfil público aplica transform: translate(X%, Y%) scale(Zoom) en CSS sin recortar ni duplicar imágenes.",
+        bold_prefix="Avatar y Banner Drag & Zoom: "
+    )
+    add_bullet(
+        doc,
+        "Sesión de 10 min en config/session.php. El componente session-timeout-modal.blade.php detecta 8 min de inactividad, muestra cuenta regresiva de 120s y permite extender la sesión mediante POST /session/keep-alive.",
+        bold_prefix="Aviso de Inactividad de Sesión: "
+    )
+    add_bullet(
+        doc,
+        "Trait SoftDeletes en Artwork.php llena deleted_at. La papelera (/trash) permite restaurar o purgar. El comando 'artworks:purge-trash' elimina automáticamente obras con más de 30 días en papelera.",
+        bold_prefix="Papelera de 30 Días: "
+    )
 
-    add_h2(doc, "5.1. ¿Cómo funciona el Editor de Posicionamiento de Avatar (Circular) y Banner (Rectangular)?")
+    # --- PREGUNTA 6: DIRECTORIO DE ARTISTAS Y BUSCADOR FACETADO ---
+    add_h1(doc, "Pregunta 6: ¿Cómo funcionan el Directorio de Artistas (/artists) y los nuevos Filtros Avanzados de Obras (/explore)?")
     add_p(
         doc,
-        "Tanto el Avatar como el Banner funcionan sin subir archivos al servidor: el usuario pega el enlace de su imagen y puede arrastrarla con el ratón (drag) y usar un deslizador de zoom (1x a 3x). En lugar de recortar físicamente un archivo nuevo, guardamos en la tabla 'users' los desplazamientos porcentuales y el factor de escala (crop_x, crop_y, crop_zoom para el Avatar; banner_crop_x, banner_crop_y, banner_crop_zoom para el Banner). Luego, cuando cualquier visitante entra al Public Profile del artista, aplicamos una transformación CSS acelerada por hardware: transform: translate(X%, Y%) scale(Zoom) dentro de un contenedor con overflow-hidden.",
-        bold_prefix="Explicación Técnica: "
+        "El Directorio de Artistas (app/Http/Controllers/ArtistExplorerController.php) ofrece un motor de búsqueda y reclutamiento creativo. Permite buscar por nombre, biografía o especialidad, y filtrar por: país de residencia (conectado a /api/countries), disponibilidad de comisiones ('available', 'busy', 'not_available'), herramientas de software (Photoshop, Blender, Unreal, etc.), habilidades técnicas y artistas verificados. Admite ordenamientos por seguidores, apreciaciones totales recibidas o recencia. Las tarjetas (resources/views/components/artist-card.blade.php) cargan en mosaico las 3 obras más destacadas de cada creador evitando consultas N+1.",
+        bold_prefix="Directorio Global de Artistas: "
     )
-    add_code_box(
-        doc,
-        "-> Editor Interactivo (Drag & Zoom): resources/views/profile/partials/tab-profile.blade.php (Líneas 18 a 175 y script en líneas 370 a 470).\n"
-        "-> Renderizado del Banner Superior y Avatar en Perfil Público: resources/views/profile/show.blade.php (Líneas 10 a 68).\n"
-        "-> Validación de Coordenadas (-100 a 100 y Zoom 1 a 3): app/Http/Requests/ProfileUpdateRequest.php (Líneas 86 a 91).",
-        title="ARCHIVOS — ENCUADRE DE AVATAR Y BANNER"
-    )
-
-    add_h2(doc, "5.2. ¿Cómo funciona la Expiración de Sesión por Inactividad y el Aviso de Extensión?")
     add_p(
         doc,
-        "El tiempo de vida de la sesión está configurado en 10 minutos (SESSION_LIFETIME=10 en config/session.php). Para evitar que el artista pierda cambios mientras edita su portafolio, el componente session-timeout-modal.blade.php monitorea eventos de ratón, teclado y scroll. Si detecta 8 minutos de inactividad continua, muestra un modal con una cuenta regresiva de 120 segundos. Al pulsar 'Extender mi sesión', realiza un fetch POST a /session/keep-alive que regenera la marca de tiempo de sesión en el servidor sin recargar la página.",
-        bold_prefix="Explicación Técnica: "
+        "El Buscador de Obras (app/Http/Controllers/ExplorerController.php) se unificó estéticamente con el directorio de artistas. Emplea dropdowns limpios para ordenamiento (recientes, populares, más vistas, más apreciadas), botones unificados por tipo de medio (imagen, video, 3D, audio, doc) y filtros combinables por software y estilo artístico mediante la tabla 'curated_tags'. El selector redundante de IA se eliminó del buscador general para otorgar una interfaz profesional sin distracciones, manteniendo la insignia ética en cada obra individual.",
+        bold_prefix="Buscador Facetado de Obras: "
     )
     add_code_box(
         doc,
-        "-> Configuración de Tiempo de Sesión: config/session.php (Línea 35).\n"
-        "-> Endpoint Keep-Alive: routes/web.php (Líneas 71 a 74: POST '/session/keep-alive').\n"
-        "-> Modal y Temporizador JS: resources/views/components/session-timeout-modal.blade.php.",
-        title="ARCHIVOS — SESIÓN E INACTIVIDAD"
+        "-> app/Http/Controllers/ArtistExplorerController.php: Lógica del directorio de artistas.\n"
+        "-> resources/views/artists/index.blade.php y components/artist-card.blade.php: Vistas del directorio.\n"
+        "-> app/Http/Controllers/ExplorerController.php: Filtros combinados de obras.\n"
+        "-> resources/views/explorer/index.blade.php: Grilla responsiva de obras con filtros estilizados.",
+        title="ARCHIVOS — DIRECTORIO DE ARTISTAS Y EXPLORADOR DE OBRAS"
     )
 
-    add_h2(doc, "5.3. ¿Cómo funcionan las Colecciones Públicas, No-Listadas y Privadas y el Botón Rápido en las Obras?")
+    # --- PREGUNTA 7: VISTA DETALLE DE OBRA, LIKES Y COMENTARIOS ---
+    add_h1(doc, "Pregunta 7: ¿Cómo funciona la Vista Detalle de Obra (/artworks/{id}), el Sistema de Likes y los Comentarios?")
     add_p(
         doc,
-        "Cada colección tiene una columna visibility ('public', 'unlisted', 'private') y un share_token aleatorio de 32 caracteres. La autorización se centraliza en CollectionPolicy.php: (a) 'public' es visible para todos y aparece en el perfil público del artista; (b) 'unlisted' se oculta del perfil público, pero si el dueño comparte el enlace con ?token=..., cualquier cliente con ese enlace puede verla; (c) 'private' bloquea el acceso incluso teniendo el enlace (solo el dueño puede abrirla). Además, cada obra incluye el componente <x-collection-picker /> que permite añadirla a una colección existente o crear una nueva en el acto vía AJAX (POST /collections/quick-create).",
-        bold_prefix="Explicación Técnica: "
+        "La vista dedicada (resources/views/artworks/show.blade.php) ofrece una experiencia inmersiva estilo Pinterest/Behance. Integra un contador de visualizaciones persistente administrado por ArtworkViewController.php mediante cookies de sesión para evitar visitas duplicadas artificiales. El sistema de likes (ArtworkLikeController.php) opera asincrónicamente mediante peticiones POST AJAX a /artworks/{id}/like; cuando un usuario da o quita un like, se emite el evento global 'artwork-like-updated' en Alpine.js que actualiza instantáneamente todas las tarjetas visibles en la página. Además, incorpora un sistema de comentarios comunitarios (ArtworkCommentController.php) con soporte de eliminación garantizada tanto para el autor del comentario como para el dueño de la obra.",
+        bold_prefix="Mecanismo de Interacción y Feedback: "
+    )
+    add_p(
+        doc,
+        "En la cabecera de la obra, las insignias de formato (IMAGE, VIDEO, 3D, AUDIO, DOC), contenido sensible (18+) y procedencia ética (AI) están estandarizadas con una paleta índigo armónica (text-indigo-700 dark:text-indigo-300), ocultando textos genéricos redundantes como 'Todos los derechos reservados' para priorizar la apreciación estética.",
+        bold_prefix="Estandarización Visual de Badges: "
     )
     add_code_box(
         doc,
-        "-> Política de Acceso (3 niveles de privacidad): app/Policies/CollectionPolicy.php.\n"
-        "-> Controlador (CRUD + Quick-Create AJAX): app/Http/Controllers/CollectionController.php.\n"
-        "-> Botón Desplegable en Obras: resources/views/components/collection-picker.blade.php.\n"
-        "-> Vista y Modal de Configuración de Privacidad: resources/views/collections/show.blade.php y index.blade.php.",
-        title="ARCHIVOS — COLECCIONES Y PRIVACIDAD"
+        "-> app/Http/Controllers/ArtworkViewController.php: Registro anti-duplicado de visitas únicas.\n"
+        "-> app/Http/Controllers/ArtworkLikeController.php: Endpoints de like asíncrono.\n"
+        "-> app/Http/Controllers/ArtworkCommentController.php: CRUD y moderación de comentarios.\n"
+        "-> resources/views/artworks/show.blade.php: Plantilla completa de la obra.",
+        title="ARCHIVOS — VISTA DETALLE, LIKES, VISITAS Y COMENTARIOS"
     )
 
-    add_h2(doc, "5.4. ¿Cómo funcionan la Papelera de 30 Días, el Bloqueo de Usuarios y la Suspensión de Cuentas?")
-    add_bullet(
+    # --- PREGUNTA 8: TABLEROS DE COLECCIÓN, PORTADAS Y SLIDESHOW ---
+    add_h1(doc, "Pregunta 8: ¿Cómo funcionan los Tableros de Colección con Portadas Mosaico, Reordenamiento y Modo Slideshow?")
+    add_p(
         doc,
-        "Cuando un artista elimina una obra, no se hace un DELETE físico inmediato; gracias al trait SoftDeletes en Artwork.php se llena la columna deleted_at y la obra pasa a la Papelera (TrashController.php), desde donde puede restaurarse o borrarse definitivamente. El comando programado 'php artisan artworks:purge-trash' (en routes/console.php) purga automáticamente las obras que llevan más de 30 días en la papelera.",
-        bold_prefix="Papelera de Reciclaje (30 días): "
+        "Las colecciones (app/Models/Collection.php) evolucionaron a tableros visuales inspirados en Pinterest. En la tabla 'collections' se añadieron las columnas 'preview_artwork_ids' (array JSON que guarda las obras destacadas para la portada mosaico) y 'sort_order' (criterio de ordenamiento personalizado o por fecha). La vista de colección (resources/views/collections/show.blade.php) presenta un header dinámico con las miniaturas de portada y un botón para iniciar el 'Modo Presentación' (x-slideshow-modal.blade.php), que permite recorrer todas las obras de la colección a pantalla completa mediante teclado o controles táctiles, ideal para presentaciones de portafolio o pitches de diseño ante clientes.",
+        bold_prefix="Tableros Creativos Dinámicos: "
     )
-    add_bullet(
+    add_code_box(
         doc,
-        "Gestionado por UserBlockController.php y la tabla 'user_blocks'. Si el Usuario A bloquea al Usuario B, ExplorerController filtra las obras de ambos sentidos (whereNotIn('user_id', $excludedIds)) e impide visitar el perfil o enviar mensajes.",
-        bold_prefix="Bloqueo Bidireccional: "
+        "-> app/Models/Collection.php: Casts de preview_artwork_ids y generación de share_token.\n"
+        "-> app/Http/Controllers/CollectionController.php: Métodos show, edit, toggleArtwork y quickCreate.\n"
+        "-> resources/views/collections/show.blade.php: Header con mosaico de portadas.\n"
+        "-> resources/views/components/slideshow-modal.blade.php: Visor cinematográfico a pantalla completa.",
+        title="ARCHIVOS — TABLEROS DE COLECCIÓN Y SLIDESHOW"
     )
-    add_bullet(
+
+    # --- PREGUNTA 9: AUDITORÍA Y TAXONOMÍA EN ADMIN ---
+    add_h1(doc, "Pregunta 9: ¿Cómo funcionan los Módulos Administrativos de Auditoría del Sistema (/admin/audit-logs) y Taxonomía Curada (/admin/tags)?")
+    add_p(
         doc,
-        "El middleware EnsureUserIsActive.php verifica en cada petición si auth()->user()->status === 'suspended'. Si un administrador suspende una cuenta desde AdminController@toggleUserStatus, el middleware cierra la sesión del infractor inmediatamente y lo expulsa al login.",
-        bold_prefix="Suspensión Administrativa en Caliente: "
+        "Para auditorías de seguridad y gobernanza empresarial, se construyó el servicio app/Services/AuditLogger.php y el modelo app/Models/AuditLog.php. Cada evento crítico en la aplicación (logins fallidos/exitosos, cambios de contraseña, suspensiones de cuentas, eliminación/restauración de obras y resoluciones de reportes) se registra automáticamente con marca de tiempo, usuario, dirección IP, agente de usuario, severidad (info, warning, danger) y un diferencial de valores anteriores/nuevos en formato JSON. El panel (/admin/audit-logs) permite a los administradores filtrar eventos, inspeccionar detalles y exportar reportes de seguridad.",
+        bold_prefix="Auditoría Forense de Seguridad: "
+    )
+    add_p(
+        doc,
+        "El módulo de Taxonomía (/admin/tags gestionado por TaxonomyController.php y el modelo CuratedTag.php) administra el catálogo centralizado de etiquetas de la plataforma divididas en 'skills' (ej. Concept Art, Digital Artist), 'software' (ej. Blender, Photoshop) y 'styles' (ej. Anime, Sci-Fi). Esto garantiza que el autocompletado en el onboarding, en el perfil del artista y en el buscador de obras sea coherente, profesional y esté libre de etiquetas basura o duplicadas.",
+        bold_prefix="Taxonomía Curada Oficial: "
+    )
+    add_code_box(
+        doc,
+        "-> app/Services/AuditLogger.php y app/Models/AuditLog.php: Motor de registro forense.\n"
+        "-> app/Http/Controllers/Admin/AuditLogController.php: Panel de visualización y filtros de auditoría.\n"
+        "-> app/Models/CuratedTag.php y app/Http/Controllers/Admin/TaxonomyController.php: Gestión de tags.\n"
+        "-> database/seeders/TaxonomySeeder.php: Catálogo de tags y software pre-poblados.",
+        title="ARCHIVOS — AUDITORÍA DEL SISTEMA Y TAXONOMÍA"
+    )
+
+    # --- PREGUNTA 10: CONTENIDO MADURO (+18) Y TARJETAS SIMÉTRICAS ---
+    add_h1(doc, "Pregunta 10: ¿Cómo funciona la Protección de Contenido Maduro (+18), el Desenfoque Automático y el Diseño Simétrico de Tarjetas en CSS Grid?")
+    add_p(
+        doc,
+        "Para proteger a audiencias menores y cumplir estándares de plataformas globales, se incorporó la columna booleana 'is_mature' en la tabla 'artworks' y el método 'wantsMatureBlurred()' en el modelo User.php. En las tarjetas y visores, las obras con contenido maduro se renderizan con un filtro CSS blur-lg por defecto para visitantes y usuarios con el filtro activo, mostrando un botón discreto de advertencia que permite desenfocar la obra bajo consentimiento explícito sin exponer imágenes no solicitadas.",
+        bold_prefix="Protección de Contenido Maduro: "
+    )
+    add_p(
+        doc,
+        "En el pie de cada tarjeta de obra (resources/views/components/artwork-card.blade.php), se implementó una estructura basada en CSS Grid de 3 columnas (grid-cols-[1fr_auto_auto] items-center gap-x-2 gap-y-2). Esto garantiza una alineación matemática perfecta: la Fila 1 alinea horizontalmente el Título de la obra con el botón de Likes y el botón de Favoritos; la Fila 2 alinea horizontalmente el Avatar y Nombre del artista con el contador de Vistas y el selector de Colecciones. Además, la Columna 2 alinea verticalmente el Corazón sobre el Ojo (ambos con íconos de tamaño w-4 h-4 y tipografía font-mono de idéntica altura), y la Columna 3 alinea verticalmente el Marcador sobre el selector de Colecciones (ajustado con size='sm' en x-collection-picker.blade.php).",
+        bold_prefix="Diseño Simétrico de Tarjetas en CSS Grid: "
+    )
+    add_code_box(
+        doc,
+        "-> database/migrations/*_add_is_mature_to_artworks_and_mature_pref_to_users_table.php\n"
+        "-> resources/views/components/artwork-card.blade.php: Cuadrícula CSS Grid de 3 columnas simétrica.\n"
+        "-> resources/views/components/collection-picker.blade.php: Selector de colecciones escalable (size='sm').\n"
+        "-> tests/Feature/MatureContentTest.php: Suite de pruebas de verificación de desenfoque.",
+        title="ARCHIVOS — CONTENIDO MADURO Y TARJETAS SIMÉTRICAS"
     )
 
     # --- TABLA MAESTRA DE ARCHIVOS ---
@@ -1000,16 +767,23 @@ def build_document():
             ["Whitelists y Anti-SSRF", "app/Services/EmbedService.php", "$allowedDomains (L.12-32), processUrl() (L.41-90)"],
             ["Enlaces y Videos de YouTube", "app/Services/EmbedService.php\napp/Models/Artwork.php", "fetchYouTubeData() (L.385-444)\ngetPreviewUrlAttribute() (L.44-57)"],
             ["Enlaces e Imágenes de Pinterest", "app/Services/EmbedService.php\nresources/views/components/artwork-card.blade.php", "fetchPinterestData() (L.147-250)\nreferrerpolicy=\"no-referrer\" (L.40)"],
-            ["Enlaces de DeviantArt", "app/Services/EmbedService.php", "fetchDeviantArtData() (L.256-315)"],
+            ["Enlaces de DeviantArt y Sketchfab", "app/Services/EmbedService.php", "fetchDeviantArtData() (L.256-315)\nfetchSketchfabData() (L.321-379)"],
             ["Enlaces de Google Docs / Drive", "app/Services/EmbedService.php", "fetchGoogleDocsData() (L.490-560)"],
-            ["Servicio de Mail y Confirmación", "app/Models/User.php\nroutes/auth.php\napp/Mail/ContactArtist.php & LinkDownAlert.php", "implements MustVerifyEmail (L.16)\nRutas verify-email (L.40-55)\nMailpit UI: http://127.0.0.1:8025"],
-            ["Almacenamiento (Usuarios y Obras)", "app/Models/User.php & Artwork.php\ndatabase/migrations/*.php", "Tablas MySQL: users, artworks, collections, bookmarks, reports, user_blocks"],
-            ["Acceso de Visitante (Guest)", "routes/web.php\napp/Http/Controllers/ExplorerController.php\nresources/views/components/guest-modal.blade.php", "Rutas públicas (L.60-62, 115)\nInterceptor @open-guest-modal.window"],
-            ["Países Disponibles en Registro", "routes/web.php\nresources/views/onboarding/step1.blade.php\nresources/views/profile/partials/tab-profile.blade.php", "GET /api/countries con Caché 30d y 3 fallbacks (L.15-57)"],
-            ["Recorte de Avatar y Banner", "resources/views/profile/partials/tab-profile.blade.php\nresources/views/profile/show.blade.php", "Drag & Zoom interactivo -> crop_x/y/zoom y banner_crop_x/y/zoom"],
-            ["Colecciones y Privacidad", "app/Policies/CollectionPolicy.php\napp/Http/Controllers/CollectionController.php\nresources/views/components/collection-picker.blade.php", "Visibilidad public/unlisted/private y Quick-Create AJAX"]
+            ["Servicio de Mail y Confirmación", "app/Models/User.php\nroutes/auth.php\nroutes/console.php", "implements MustVerifyEmail (L.16)\nRutas verify-email (L.40-55)\nComando mail:test (L.29-46)"],
+            ["Directorio de Artistas", "app/Http/Controllers/ArtistExplorerController.php\nresources/views/artists/index.blade.php", "Filtros por skills, software, país y comisiones\nComponente x-artist-card"],
+            ["Buscador Avanzado de Obras", "app/Http/Controllers/ExplorerController.php\nresources/views/explorer/index.blade.php", "Filtros por medio, software, ordenamiento y tags\nGrilla responsiva de tarjetas"],
+            ["Vista Detalle Pinterest de Obra", "app/Http/Controllers/ArtworkController.php\nresources/views/artworks/show.blade.php", "ArtworkViewController (visitas)\nArtworkLikeController (likes AJAX)\nArtworkCommentController (comentarios)"],
+            ["Tableros de Colección y Slideshow", "app/Http/Controllers/CollectionController.php\nresources/views/collections/show.blade.php", "preview_artwork_ids (mosaico portadas)\nx-slideshow-modal (presentación pantalla completa)"],
+            ["Auditoría del Sistema (Admin)", "app/Services/AuditLogger.php\napp/Http/Controllers/Admin/AuditLogController.php", "Registro inmutable de seguridad y severidad\nVista admin/audit_logs/index.blade.php"],
+            ["Taxonomía Curada (Admin)", "app/Models/CuratedTag.php\napp/Http/Controllers/Admin/TaxonomyController.php", "CuratedTag::where('type', ...)\nTaxonomySeeder.php"],
+            ["Contenido Maduro (+18) y Blur", "app/Models/Artwork.php\napp/Models/User.php", "is_mature, wantsMatureBlurred()\nDesenfoque CSS blur-lg en miniaturas"],
+            ["Tarjetas Simétricas de Obra", "resources/views/components/artwork-card.blade.php\nresources/views/components/collection-picker.blade.php", "CSS Grid 3 columnas (grid-cols-[1fr_auto_auto])\nx-collection-picker size='sm' (w-4 h-4)"],
+            ["Acceso Visitante (Guest Modal)", "routes/web.php\nresources/views/components/guest-modal.blade.php", "Rutas públicas fuera de auth\nInterceptor @open-guest-modal.window"],
+            ["API de Países con Banderas", "routes/web.php\nresources/views/onboarding/step1.blade.php", "GET /api/countries con Caché 30d y Triple Fallback"],
+            ["Drag & Zoom Avatar y Banner", "resources/views/profile/partials/tab-profile.blade.php\nresources/views/profile/show.blade.php", "Drag & Zoom -> crop_x/y/zoom y banner_crop_x/y/zoom\ntransform CSS acelerado por GPU"],
+            ["Tests Automatizados (173 tests)", "tests/Feature/*.php\nphpunit.xml", "173 pruebas pasando al 100% (816 aserciones)"]
         ],
-        col_widths=[1.85, 2.75, 2.2]
+        col_widths=[1.8, 2.7, 2.3]
     )
 
     out_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1029,4 +803,3 @@ def build_document():
 
 if __name__ == "__main__":
     build_document()
-

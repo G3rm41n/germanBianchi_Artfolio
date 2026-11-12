@@ -16,7 +16,7 @@ class TrashController extends Controller
     {
         $user = Auth::user();
         $artworks = $user->artworks()->onlyTrashed()->latest('deleted_at')->get();
-        $collections = $user->collections()->onlyTrashed()->latest('deleted_at')->get();
+        $collections = $user->collections()->onlyTrashed()->withCount('artworks')->latest('deleted_at')->get();
 
         return view('trash.index', compact('artworks', 'collections'));
     }

@@ -15,6 +15,9 @@ https://sketchfab.com/3d-models/skull-grave-halloween-2026-4d7da31a3cf94aa1b4399
 
 https://sketchfab.com/3d-models/6644341d86224cca8f6fc2713eada618
 
+https://ar.pinterest.com/pin/717972365647454876/
+
+https://www.deviantart.com/danloe/art/Warrior-Leva-958615578
 
 
 Banner icon:
@@ -22,3 +25,17 @@ Banner icon:
 https://i.pinimg.com/1200x/3c/24/2e/3c242eb786d1eae1ac53ed1713794e30.jpg
 
 https://i.pinimg.com/1200x/07/3b/2b/073b2b384c655339589ac07927658d3c.jpg
+
+
+Usuarios:
+aria@artfolio.test
+admin@artfolio.test
+kenji@artfolio.test
+
+
+
+
+pruebas:
+https://api.sketchfab.com/v3/models/f1722ab650ad4d8dbe6fc4bf44e33d38
+https://sketchfab.com/oembed?url=
+https://backend.deviantart.com/oembed?url=
